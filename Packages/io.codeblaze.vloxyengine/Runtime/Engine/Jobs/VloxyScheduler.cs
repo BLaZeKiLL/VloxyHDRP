@@ -7,7 +7,7 @@ using CodeBlaze.Vloxy.Engine.Jobs.Collider;
 using CodeBlaze.Vloxy.Engine.Jobs.Mesh;
 using CodeBlaze.Vloxy.Engine.Settings;
 using CodeBlaze.Vloxy.Engine.Utils.Extensions;
-
+using CodeBlaze.Vloxy.Engine.Utils.Logger;
 using Priority_Queue;
 
 using Unity.Mathematics;
@@ -174,16 +174,38 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
             _ColliderBuildScheduler.Dispose();
         }
 
-        private bool ShouldScheduleForGenerating(int3 position) => !_ChunkManager.IsChunkLoaded(position) && !_DataSet.Contains(position);
-        private bool ShouldScheduleForMeshing(int3 position) => (!_ChunkPool.IsActive(position) || _ChunkManager.ShouldReMesh(position)) && !_ViewSet.Contains(position);
-        private bool ShouldScheduleForBaking(int3 position) => (!_ChunkPool.IsCollidable(position) || _ChunkManager.ShouldReCollide(position)) && !_ColliderSet.Contains(position);
+        private bool ShouldScheduleForGenerating(int3 position)
+        {
+            return !_ChunkManager.IsChunkLoaded(position) && !_DataSet.Contains(position);
+        }
+
+        private bool ShouldScheduleForMeshing(int3 position)
+        {
+            return 
+            // Should be loaded and not an air chunk
+            (_ChunkManager.IsChunkLoaded(position) && !_ChunkManager.IsAirChunk(position)) &&
+            // Should not be active or should be marked for re-build
+            (!_ChunkPool.IsActive(position) || _ChunkManager.ShouldReMesh(position))
+            // Should not be scheduled in a job 
+            && !_ViewSet.Contains(position);
+        }
+
+        private bool ShouldScheduleForBaking(int3 position)
+        {
+            return (!_ChunkPool.IsCollidable(position) || _ChunkManager.ShouldReCollide(position)) && !_ColliderSet.Contains(position);
+        }
 
         /// <summary>
-        /// Checks if the specified chunks and it's neighbours are generated
+        /// Checks if the specified chunks and it's neighbors are generated
         /// </summary>
         /// <param name="position">Position of chunk to check</param>
         /// <returns>Is it ready to be meshed</returns>
         private bool CanGenerateMeshForChunk(int3 position) {
+            // Skip Air Chunks
+            if (_ChunkManager.IsChunkLoaded(position) && _ChunkManager.IsAirChunk(position)) {
+                return false;
+            }
+
             var result = true;
             
             for (var x = -1; x <= 1; x++) {

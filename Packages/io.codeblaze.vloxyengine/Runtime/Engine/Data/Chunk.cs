@@ -23,6 +23,8 @@ namespace CodeBlaze.Vloxy.Engine.Data {
             Data = new UnsafeIntervalList(128, Allocator.Persistent);
         }
 
+        public readonly bool IsAirChunk => Data.CompressedLength == 1 && Data.Get(0) == (int) Block.AIR;
+
         public void AddBlocks(int block, int count) {
             Data.AddInterval(block, count);
         }

@@ -91,6 +91,13 @@ namespace CodeBlaze.Vloxy.Engine.Components {
 
         #endregion
         
+        /// <summary>
+        /// Used by the scheduler to skip the chunk for Meshing and Baking
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
+        public bool IsAirChunk(int3 position) => _Chunks[position].IsAirChunk;
+
         internal bool ShouldReMesh(int3 position) => _ReMeshChunks.Contains(position);
         internal bool ShouldReCollide(int3 position) => _ReCollideChunks.Contains(position);
         internal void RemoveChunk(int3 position) => _Chunks.Remove(position);

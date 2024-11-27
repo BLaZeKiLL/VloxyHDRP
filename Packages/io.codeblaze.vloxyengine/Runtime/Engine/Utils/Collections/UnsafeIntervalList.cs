@@ -34,7 +34,7 @@ namespace CodeBlaze.Vloxy.Engine.Utils.Collections {
 
         public int Length;
 
-        public int CompressedLength => Internal.Length;
+        public readonly int CompressedLength => Internal.Length;
 
         public UnsafeIntervalList(int capacity, Allocator allocator) {
             Internal = new UnsafeList<Node>(capacity, allocator);
