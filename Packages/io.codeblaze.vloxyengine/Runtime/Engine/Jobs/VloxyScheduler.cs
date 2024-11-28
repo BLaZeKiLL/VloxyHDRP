@@ -76,6 +76,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
 
             for (var x = -load; x <= load; x++) {
                 for (var z = -load; z <= load; z++) {
+                    // Y can be contained between heigh limits instead of load limits for faster 2D world
                     for (var y = -load; y <= load; y++) {
                         var pos = focus + _Settings.Chunk.ChunkSize.MemberMultiply(x, y, z);
 
@@ -201,12 +202,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         /// <param name="position">Position of chunk to check</param>
         /// <returns>Is it ready to be meshed</returns>
         private bool CanGenerateMeshForChunk(int3 position) {
-            // Skip Air Chunks
-            if (_ChunkManager.IsChunkLoaded(position) && _ChunkManager.IsAirChunk(position)) {
-                return false;
-            }
-
-            var result = true;
+             var result = true;
             
             for (var x = -1; x <= 1; x++) {
                 for (var z = -1; z <= 1; z++) {

@@ -129,7 +129,6 @@ namespace CodeBlaze.Vloxy.Engine.Components {
                 
                 if (_Queue.Count >= _ChunkStoreSize) {
                     _Chunks.Remove(_Queue.Dequeue());
-                    // if dirty save chunk
                 }
                 
                 _Chunks.Add(position, chunk);

@@ -32,10 +32,10 @@ namespace CodeBlaze.Vloxy.Engine.Components {
         private int _ChunkPoolSize;
         
         internal ChunkPool(Transform transform, VloxySettings settings) {
-            _ChunkPoolSize = (settings.Chunk.DrawDistance + 2).CubedSize();
+            _ChunkPoolSize = settings.Chunk.DrawDistance.CubedSize();
 
             _MeshMap = new Dictionary<int3, ChunkBehaviour>(_ChunkPoolSize);
-            _ColliderSet = new HashSet<int3>((settings.Chunk.UpdateDistance + 2).CubedSize());
+            _ColliderSet = new HashSet<int3>(settings.Chunk.UpdateDistance.CubedSize());
             _Queue = new SimpleFastPriorityQueue<int3, int>();
 
             _Pool = new ObjectPool<ChunkBehaviour>( // pool size = x^2 + 1
@@ -78,7 +78,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             _Focus = focus;
 
             foreach (var position in _Queue) {
-                _Queue.UpdatePriority(position, -(position - _Focus).SqrMagnitude());
+                _Queue.UpdatePriority(position, - (position - _Focus).SqrMagnitude());
             }
         }
         
@@ -88,17 +88,12 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             }
 
             // Reclaim
-            if (_Queue.Count >= _ChunkPoolSize) {
+            if (_Queue.Count >= _ChunkPoolSize)
+            {
                 var reclaim = _Queue.Dequeue();
-                var reclaim_behaviour = _MeshMap[reclaim];
-
-                reclaim_behaviour.Collider.sharedMesh = null;
-                
-                _Pool.Release(reclaim_behaviour);
-                _MeshMap.Remove(reclaim);
-                _ColliderSet.Remove(reclaim);
+                ReclaimChunk(reclaim);
             }
-                
+
             // Claim
             var behaviour = _Pool.Get();
                 
@@ -109,6 +104,17 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             _Queue.Enqueue(position, -(position - _Focus).SqrMagnitude());
 
             return behaviour;
+        }
+
+        private void ReclaimChunk(int3 reclaim_position)
+        {
+            var reclaim_behaviour = _MeshMap[reclaim_position];
+
+            reclaim_behaviour.Collider.sharedMesh = null;
+
+            _Pool.Release(reclaim_behaviour);
+            _MeshMap.Remove(reclaim_position);
+            _ColliderSet.Remove(reclaim_position);
         }
 
         internal Dictionary<int3, ChunkBehaviour> GetActiveMeshes(List<int3> positions) {

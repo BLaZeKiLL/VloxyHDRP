@@ -65,7 +65,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AOIntensity: 1
-    - _AOPower: 10
+    - _AOPower: 8
     - _AOSpread: 0.4
     - _AddPrecomputedVelocity: 0
     - _AlphaCutoffEnable: 0
@@ -124,7 +124,7 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _AOColor: {r: 0, g: 0, b: 0, a: 0}
-    - _AOCurve: {r: 0.4, g: 0.5, b: 0.7, a: 1}
+    - _AOCurve: {r: 0.5, g: 0.6, b: 0.8, a: 1}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

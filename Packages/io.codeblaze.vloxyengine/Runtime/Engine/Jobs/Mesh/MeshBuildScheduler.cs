@@ -49,7 +49,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh {
             _VertexParams[4] = new VertexAttributeDescriptor(VertexAttribute.TexCoord1, VertexAttributeFormat.Float32, 2);
             _VertexParams[5] = new VertexAttributeDescriptor(VertexAttribute.TexCoord2, VertexAttributeFormat.Float32, 4);
             
-            _Results = new NativeParallelHashMap<int3, int>(settings.Chunk.DrawDistance.CubedSize(),Allocator.Persistent);
+            _Results = new NativeParallelHashMap<int3, int>(settings.Chunk.DrawDistance.CubedSize(),Allocator.Persistent); // TODO: should be based on batch size
             _Jobs = new NativeList<int3>(Allocator.Persistent);
         }
 

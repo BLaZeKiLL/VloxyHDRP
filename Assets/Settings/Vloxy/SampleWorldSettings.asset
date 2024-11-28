@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Noise: {fileID: 11400000, guid: 04d404acab5ed4130bdca0f8706b64ed, type: 2}
   Chunk:
-    DrawDistance: 10
+    DrawDistance: 8
     ChunkSize:
       x: 32
       y: 32
