@@ -19,15 +19,15 @@ MonoBehaviour:
       x: 32
       y: 32
       z: 32
-    LoadDistance: 10
-    UpdateDistance: 6
+    LoadDistance: 9
+    ColliderDistance: 2
   Renderer:
     Materials:
     - {fileID: 2100000, guid: 4adecf602abe1664ab5a0cb24b2ea23a, type: 2}
     - {fileID: 2100000, guid: 25fdd7c3100144ffbb60d3d5224231fd, type: 2}
     CastShadows: 1
   Scheduler:
-    MeshingBatchSize: 4
+    MeshingBatchSize: 6
     StreamingBatchSize: 8
-    ColliderBatchSize: 4
+    ColliderBatchSize: 6
     TickRate: 1

@@ -62,9 +62,9 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
 
         // Priority Updates for Reclaim
         // At max 2 Queues are updated in total (ViewReclaimQueue, DataReclaimQueue)
-        internal void FocusUpdate(int3 focus) {
-            _ChunkManager.FocusUpdate(focus);
-            _ChunkPool.FocusUpdate(focus);
+        internal void FocusChunkUpdate(int3 focus_chunk_coords) {
+            _ChunkManager.FocusChunkUpdate(focus_chunk_coords);
+            _ChunkPool.FocusChunkUpdate(focus_chunk_coords);
         }
 
         // TODO : This thing takes 4ms every frame need to make a reactive system and maybe try the fast queue

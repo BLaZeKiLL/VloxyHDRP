@@ -111,12 +111,12 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             }
         }
         
-        internal void FocusUpdate(int3 focus) {
-            _Focus = focus;
+        internal void FocusChunkUpdate(int3 focus_chunk_coords) {
+            _Focus = focus_chunk_coords;
 
             foreach (var position in _Queue) {
                 // TODO Reclaim chunks here, imp due skipping out of data gen bounds chunk
-                _Queue.UpdatePriority(position, -(position - focus).SqrMagnitude());
+                _Queue.UpdatePriority(position, -(position - focus_chunk_coords).SqrMagnitude());
             }
         }
 

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Height: 256
   WaterLevel: 96
-  Seed: 81768
+  Seed: 87197
   Scale: 512
-  Persistance: 0.5
-  Lacunarity: 2
-  Octaves: 6
+  Persistance: 0.3
+  Lacunarity: 3
+  Octaves: 3

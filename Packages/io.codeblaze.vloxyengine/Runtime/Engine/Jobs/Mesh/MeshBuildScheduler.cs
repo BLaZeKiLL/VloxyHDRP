@@ -98,8 +98,8 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh {
 
             UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(
                 _MeshDataArray, 
-                meshes, 
-                MeshUpdateFlags.DontRecalculateBounds
+                meshes
+                //MeshUpdateFlags.DontRecalculateBounds
             );
             
             for (var index = 0; index < meshes.Length; index++) {

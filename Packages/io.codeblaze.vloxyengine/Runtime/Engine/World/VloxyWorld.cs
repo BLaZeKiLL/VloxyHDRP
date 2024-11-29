@@ -86,7 +86,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
 
             if (!(NewFocusChunkCoord == FocusChunkCoord).AndReduce()) {
                 FocusChunkCoord = NewFocusChunkCoord;
-                Scheduler.FocusUpdate(FocusChunkCoord);
+                Scheduler.FocusChunkUpdate(FocusChunkCoord);
                 WorldFocusUpdate();
             }
             
