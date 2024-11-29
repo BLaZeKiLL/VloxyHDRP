@@ -7,14 +7,11 @@ namespace CodeBlaze.Vloxy.Engine.Settings {
     [Serializable]
     public class SchedulerSettings {
 
-        [HideInInspector]
-        public int MeshingBatchSize;
+        public int MeshingBatchSize = 4;
         
-        [HideInInspector]
-        public int StreamingBatchSize;
+        public int StreamingBatchSize = 8;
 
-        [HideInInspector] 
-        public int ColliderBatchSize;
+        public int ColliderBatchSize = 4;
 
         [Tooltip("Framerate at which the scheduler updates")]
         public int TickRate = 4;

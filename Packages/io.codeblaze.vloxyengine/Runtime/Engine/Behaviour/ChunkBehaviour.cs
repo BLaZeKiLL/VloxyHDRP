@@ -24,6 +24,11 @@ namespace CodeBlaze.Vloxy.Engine.Behaviour {
 
             if (!settings.CastShadows) _Renderer.shadowCastingMode = ShadowCastingMode.Off;
         }
+
+        private void OnDrawGizmos() {
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Gizmos.DrawWireCube(transform.position + new Vector3(16, 16, 16), new Vector3(32, 32, 32));
+        }
     }
 
 }

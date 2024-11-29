@@ -70,6 +70,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             var block_pos = VloxyUtils.GetBlockIndex(position);
 
             if (!_Chunks.ContainsKey(chunk_pos)) {
+                // TODO Create out of data generation bound chunk (> height and < -height)
                 VloxyLogger.Warn<ChunkManager>($"Chunk : {chunk_pos} not loaded");
                 return false;
             }
@@ -114,6 +115,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             _Focus = focus;
 
             foreach (var position in _Queue) {
+                // TODO Reclaim chunks here, imp due skipping out of data gen bounds chunk
                 _Queue.UpdatePriority(position, -(position - focus).SqrMagnitude());
             }
         }
@@ -136,6 +138,12 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="positions"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         internal ChunkAccessor GetAccessor(List<int3> positions) {
             _AccessorMap.Clear();
             

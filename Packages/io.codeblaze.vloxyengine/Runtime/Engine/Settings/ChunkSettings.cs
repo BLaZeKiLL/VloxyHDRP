@@ -24,7 +24,7 @@ namespace CodeBlaze.Vloxy.Engine.Settings {
         
         [HideInInspector]
         [Tooltip("Should be less than equal to DrawDistance")]
-        public int UpdateDistance = 0;
+        public int ColliderDistance = 0;
 
     }
 

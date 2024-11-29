@@ -121,13 +121,13 @@ namespace CodeBlaze.Vloxy.Engine.World {
         #endregion
 
         private void ConfigureSettings() {
-            Settings.Chunk.LoadDistance = Settings.Chunk.DrawDistance + 2;
-            Settings.Chunk.UpdateDistance = math.max(Settings.Chunk.DrawDistance - 2, 2);
+            Settings.Chunk.LoadDistance = Settings.Chunk.DrawDistance + 1;
+            Settings.Chunk.ColliderDistance = math.min(Settings.Chunk.DrawDistance - 2, 2);
 
-            // TODO : these need to be dynamic or exposed ?
-            Settings.Scheduler.MeshingBatchSize = 4;
-            Settings.Scheduler.StreamingBatchSize = 8;
-            Settings.Scheduler.ColliderBatchSize = 4;
+            // TODO : ideally these should be dynamic based on device
+            // Settings.Scheduler.MeshingBatchSize = 4;
+            // Settings.Scheduler.StreamingBatchSize = 8;
+            // Settings.Scheduler.ColliderBatchSize = 4;
 
             WorldConfigure();
         }

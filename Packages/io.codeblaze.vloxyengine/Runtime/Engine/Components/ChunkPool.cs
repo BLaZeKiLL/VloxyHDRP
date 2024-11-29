@@ -23,20 +23,26 @@ namespace CodeBlaze.Vloxy.Engine.Components {
     /// </summary>
     public class ChunkPool {
 
-        private ObjectPool<ChunkBehaviour> _Pool;
-        private Dictionary<int3, ChunkBehaviour> _MeshMap;
-        private HashSet<int3> _ColliderSet;
-        private SimpleFastPriorityQueue<int3, int> _Queue;
+        private readonly ObjectPool<ChunkBehaviour> _Pool;
+        private readonly Dictionary<int3, ChunkBehaviour> _MeshMap;
+        private readonly HashSet<int3> _ColliderSet;
+        private readonly SimpleFastPriorityQueue<int3, int> _Queue;
+        private readonly List<int3> _FocusUpdateReclaimList;
+
+        private readonly int _ChunkPoolSize;
+        private readonly int3 _DrawDistanceVec;
 
         private int3 _Focus;
-        private int _ChunkPoolSize;
         
         internal ChunkPool(Transform transform, VloxySettings settings) {
             _ChunkPoolSize = settings.Chunk.DrawDistance.CubedSize();
+            _DrawDistanceVec = new int3(1, 1, 1) * settings.Chunk.DrawDistance;
 
             _MeshMap = new Dictionary<int3, ChunkBehaviour>(_ChunkPoolSize);
-            _ColliderSet = new HashSet<int3>(settings.Chunk.UpdateDistance.CubedSize());
+            _ColliderSet = new HashSet<int3>(settings.Chunk.ColliderDistance.CubedSize());
             _Queue = new SimpleFastPriorityQueue<int3, int>();
+
+            _FocusUpdateReclaimList = new List<int3>();
 
             _Pool = new ObjectPool<ChunkBehaviour>( // pool size = x^2 + 1
                 () => {
@@ -67,7 +73,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             );
             
 #if VLOXY_LOGGING
-            VloxyLogger.Info<ChunkPool>("Max Size : " + _ChunkPoolSize);
+            VloxyLogger.Info<ChunkPool>("Chunk Pool Size : " + _ChunkPoolSize);
 #endif
         }
 
@@ -78,7 +84,23 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             _Focus = focus;
 
             foreach (var position in _Queue) {
-                _Queue.UpdatePriority(position, - (position - _Focus).SqrMagnitude());
+                var should_reclaim = (_Focus - position > _DrawDistanceVec).OrReduce();
+
+                // Reclaim far chunks, imp to do here due to air chunk skip
+                if (should_reclaim) { 
+                    _FocusUpdateReclaimList.Add(position);
+                } else {
+                    _Queue.UpdatePriority(position, - (position - _Focus).SqrMagnitude());
+                }
+            }
+
+            if (_FocusUpdateReclaimList.Count > 0) {
+                foreach (var position in _FocusUpdateReclaimList) {
+                    _Queue.Remove(position);
+                    ReclaimChunk(position);
+                }
+
+                _FocusUpdateReclaimList.Clear();
             }
         }
         
@@ -90,8 +112,8 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             // Reclaim
             if (_Queue.Count >= _ChunkPoolSize)
             {
-                var reclaim = _Queue.Dequeue();
-                ReclaimChunk(reclaim);
+                var reclaim_position = _Queue.Dequeue();
+                ReclaimChunk(reclaim_position);
             }
 
             // Claim

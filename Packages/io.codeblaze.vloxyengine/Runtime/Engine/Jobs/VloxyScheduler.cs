@@ -72,7 +72,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         internal void SchedulerUpdate(int3 focus) {
             var load = _Settings.Chunk.LoadDistance;
             var draw = _Settings.Chunk.DrawDistance;
-            var update = _Settings.Chunk.UpdateDistance;
+            var update = _Settings.Chunk.ColliderDistance;
 
             for (var x = -load; x <= load; x++) {
                 for (var z = -load; z <= load; z++) {
