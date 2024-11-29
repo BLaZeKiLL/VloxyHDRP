@@ -19,7 +19,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh {
         [ReadOnly] public ChunkAccessor Accessor;
         [ReadOnly] public NativeList<int3> Jobs;
 
-        [WriteOnly] public NativeParallelHashMap<int3, int>.ParallelWriter Results;
+        [WriteOnly] public NativeParallelHashMap<int3, int2>.ParallelWriter Results;
 
         public UnityEngine.Mesh.MeshDataArray MeshDataArray;
 
@@ -56,7 +56,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh {
             mesh.SetSubMesh(0, descriptor0, MeshUpdateFlags.DontRecalculateBounds);
             mesh.SetSubMesh(1, descriptor1, MeshUpdateFlags.DontRecalculateBounds);
             
-            Results.TryAdd(position, index);
+            Results.TryAdd(position, new int2(index, vertexCount));
 
             meshBuffer.Dispose();
         }
