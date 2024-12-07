@@ -44,7 +44,7 @@ namespace CodeBlaze.Vloxy.Engine.Mesher {
                 neighbor.Normal == current.Normal &&
 
                 // Don't merge visible fluid (mesh index = 1) faces
-                // current.Block != (int) Block.WATER &&
+                current.Block != (int) Block.WATER &&
 
                 // AO Comparison, int4 equality check returns bool4
                 neighbor.AO[0] == current.AO[0] &&

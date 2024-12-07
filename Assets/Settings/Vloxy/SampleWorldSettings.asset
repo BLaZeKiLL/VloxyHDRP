@@ -24,7 +24,7 @@ MonoBehaviour:
   Renderer:
     Materials:
     - {fileID: 2100000, guid: 4adecf602abe1664ab5a0cb24b2ea23a, type: 2}
-    - {fileID: 2100000, guid: 25fdd7c3100144ffbb60d3d5224231fd, type: 2}
+    - {fileID: 2100000, guid: b458752dfcecd44ea8cc5cc865912422, type: 2}
     CastShadows: 1
   Scheduler:
     MeshingBatchSize: 6

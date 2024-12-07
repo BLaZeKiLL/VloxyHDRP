@@ -335,7 +335,7 @@ MonoBehaviour:
   active: 1
   quality:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 3
   enabled:
     m_OverrideState: 1
     m_Value: 1
@@ -347,10 +347,10 @@ MonoBehaviour:
     m_Value: 1
   m_MinSmoothness:
     m_OverrideState: 1
-    m_Value: 0.9
+    m_Value: 0.8
   m_SmoothnessFadeStart:
     m_OverrideState: 1
-    m_Value: 0.9
+    m_Value: 0.8
   reflectSky:
     m_OverrideState: 1
     m_Value: 1
@@ -359,7 +359,7 @@ MonoBehaviour:
     m_Value: 0
   depthBufferThickness:
     m_OverrideState: 1
-    m_Value: 0.01
+    m_Value: 0.001
   screenFadeDistance:
     m_OverrideState: 1
     m_Value: 0.1
@@ -389,7 +389,7 @@ MonoBehaviour:
     m_Value: 0
   m_RayMaxIterations:
     m_OverrideState: 1
-    m_Value: 32
+    m_Value: 512
   rayMiss:
     m_OverrideState: 1
     m_Value: 3
