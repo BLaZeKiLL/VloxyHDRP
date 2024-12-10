@@ -4007,7 +4007,7 @@
     "m_CustomColors": {
         "m_SerializableColors": []
     },
-    "m_Space": 2,
+    "m_Space": 4,
     "m_PositionSource": 0
 }
 
@@ -11066,8 +11066,8 @@
     "m_ObjectId": "c3c690753903491f80b258e3d4036079",
     "m_Title": "Wave",
     "m_Position": {
-        "x": 63.09447479248047,
-        "y": -1679.4302978515625
+        "x": 63.0,
+        "y": -1679.0
     }
 }
 

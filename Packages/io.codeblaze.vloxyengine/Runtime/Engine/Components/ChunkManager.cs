@@ -28,7 +28,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
 
         internal ChunkManager(VloxySettings settings) {
             _ChunkSize = settings.Chunk.ChunkSize;
-            _ChunkStoreSize = (settings.Chunk.LoadDistance + 2).CubedSize();
+            _ChunkStoreSize = settings.Chunk.LoadDistance.CubedSize();
 
             _ReMeshChunks = new HashSet<int3>();
             _ReCollideChunks = new HashSet<int3>();

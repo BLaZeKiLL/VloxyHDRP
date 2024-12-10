@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.runevision.layerprocgen": "https://github.com/runevision/LayerProcGen.git#upm",
     "com.tayx.graphy": "3.0.5",
     "com.unity.collab-proxy": "2.5.2",
     "com.unity.feature.development": "1.0.2",

@@ -335,7 +335,7 @@ MonoBehaviour:
   active: 1
   quality:
     m_OverrideState: 1
-    m_Value: 3
+    m_Value: 2
   enabled:
     m_OverrideState: 1
     m_Value: 1
@@ -350,7 +350,7 @@ MonoBehaviour:
     m_Value: 0.8
   m_SmoothnessFadeStart:
     m_OverrideState: 1
-    m_Value: 0.8
+    m_Value: 1
   reflectSky:
     m_OverrideState: 1
     m_Value: 1
@@ -389,7 +389,7 @@ MonoBehaviour:
     m_Value: 0
   m_RayMaxIterations:
     m_OverrideState: 1
-    m_Value: 512
+    m_Value: 64
   rayMiss:
     m_OverrideState: 1
     m_Value: 3

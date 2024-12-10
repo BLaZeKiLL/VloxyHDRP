@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.runevision.layerprocgen": {
+      "version": "https://github.com/runevision/LayerProcGen.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "51be1a43056b1bf52d4b5da121b3ad8ec39f05be"
+    },
     "com.tayx.graphy": {
       "version": "3.0.5",
       "depth": 0,

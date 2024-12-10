@@ -74,10 +74,13 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
             var draw = _Settings.Chunk.DrawDistance;
             var update = _Settings.Chunk.ColliderDistance;
 
+            // TODO : This is a quick little optimization for out of generation bounds pruning, +1 for meshing
+            var y_load = math.min(load, ((_Settings.Noise.Height / 2) / _Settings.Chunk.ChunkSize.y) + 1);
+
             for (var x = -load; x <= load; x++) {
                 for (var z = -load; z <= load; z++) {
                     // Y can be contained between heigh limits instead of load limits for faster 2D world
-                    for (var y = -load; y <= load; y++) {
+                    for (var y = -y_load; y <= y_load; y++) {
                         var pos = focus + _Settings.Chunk.ChunkSize.MemberMultiply(x, y, z);
 
                         if (
