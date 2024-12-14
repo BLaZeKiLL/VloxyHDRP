@@ -1,8 +1,11 @@
+using Gists;
 using Runevision.Common;
 using Runevision.LayerProcGen;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
+using UnityEngine;
 
 public class PointsChunk : LayerChunk<PointsLayer, PointsChunk> {
 	// Data for this chunk goes here.
@@ -18,15 +21,22 @@ public class PointsChunk : LayerChunk<PointsLayer, PointsChunk> {
 		}
 		else {
 			// Create data for this chunk here.
-			for (int i = 0; i < 3; i++) {
-				// bounds and index are useful properties of the base LayerChunk class.
-				Point point = new Point(
-					// The first two Range arguments specify the range.
-					// The remaining arguments are input for the hash function.
-					layer.rand.Range(bounds.min.x, bounds.max.x, index.x, index.y, i * 2),
-					layer.rand.Range(bounds.min.y, bounds.max.y, index.x, index.y, i * 2 + 1));
-				pointList.Add(point);
-			}
+			var pts = FastPoissonDiskSampling
+				.Sampling(
+					new UnityEngine.Vector2(bounds.min.x, bounds.min.y), 
+					new UnityEngine.Vector2(bounds.max.x, bounds.max.y), 
+					10)
+				.Select(pt => new Point(Mathf.RoundToInt(pt.x), Mathf.RoundToInt(pt.y)));
+			pointList.AddRange(pts);
+			// for (int i = 0; i < 3; i++) {
+			// 	// bounds and index are useful properties of the base LayerChunk class.
+			// 	Point point = new Point(
+			// 		// The first two Range arguments specify the range.
+			// 		// The remaining arguments are input for the hash function.
+			// 		layer.rand.Range(bounds.min.x, bounds.max.x, index.x, index.y, i * 2),
+			// 		layer.rand.Range(bounds.min.y, bounds.max.y, index.x, index.y, i * 2 + 1));
+			// 	pointList.Add(point);
+			// }
 		}
 	}
 }
@@ -37,7 +47,7 @@ public class PointsLayer : ChunkBasedDataLayer<PointsLayer, PointsChunk> {
 	public override int chunkH { get { return 256; } }
 
 	// Data common for all chunks of this layer goes here.
-	public RandomHash rand = new RandomHash(1234);
+	public RandomHash rand = new(1234);
 
 	public PointsLayer() {
 		// Dependencies on other layers are set up here with appropriate padding.
@@ -54,7 +64,7 @@ public class PointsLayer : ChunkBasedDataLayer<PointsLayer, PointsChunk> {
 		HandleAllChunks(0, c => {
 			foreach (Point p in c.pointList)
             {
-                DebugDrawer.DrawCross(p, 16f, UnityEngine.Color.green);
+                DebugDrawer.DrawCross(p, 2f, UnityEngine.Color.green);
             }
         });
 	}

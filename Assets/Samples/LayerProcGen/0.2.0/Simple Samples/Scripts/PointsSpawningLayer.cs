@@ -6,7 +6,7 @@ using UnityEngine;
 public class PointsSpawningChunk : LayerChunk<PointsSpawningLayer, PointsSpawningChunk> {
 	
 	// A pool of List<Point> that all have the specified capacity.
-	static ListPool<Point> pointsListPool = new ListPool<Point>(12);
+	static ListPool<Point> pointsListPool = new ListPool<Point>(128);
 
 	// Data for this chunk goes here.
 	TransformWrapper chunkParent;
@@ -34,7 +34,7 @@ public class PointsSpawningChunk : LayerChunk<PointsSpawningLayer, PointsSpawnin
 				MainThreadActionQueue.Enqueue(() => {
 					Transform tr = GameObject.CreatePrimitive(PrimitiveType.Sphere).transform;
 					tr.position = new Vector3(currentPoint.x, 0f, currentPoint.y);
-					tr.localScale = Vector3.one * 50f;
+					tr.localScale = Vector3.one * 10f;
 					currentChunkParent.AddChild(tr);
 				});
 			}

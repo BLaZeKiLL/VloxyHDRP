@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 1046711063}
   - component: {fileID: 1046711065}
   - component: {fileID: 1046711064}
+  - component: {fileID: 1046711066}
   m_Layer: 0
   m_Name: LayerManager
   m_TagString: Untagged
@@ -186,6 +187,25 @@ MonoBehaviour:
   generationPlane: 1
   debugQueueText: {fileID: 0}
   debugStatusText: {fileID: 0}
+--- !u!114 &1046711066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1046711062}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ca4b91f6f7b43e99055b67c253781f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layers:
+  - layerClassName:
+      className: CodeBlaze.Vloxy.Demo.RasterLayer
+    color: {r: 0, g: 0, b: 0, a: 0}
+  worldOffset: 0
+  spacingUnit: 1
+  spacingAmount: 4
 --- !u!1 &1741154450
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,6 +216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1741154451}
   - component: {fileID: 1741154452}
+  - component: {fileID: 1741154453}
   m_Layer: 0
   m_Name: GenerationSource
   m_TagString: Untagged
@@ -212,7 +233,7 @@ Transform:
   m_GameObject: {fileID: 1741154450}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 16, y: 0, z: 16}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -231,10 +252,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer:
-    className: PointsLayer
+    className: CodeBlaze.Vloxy.Demo.RasterLayer
   size:
-    x: 2000
-    y: 2000
+    x: 128
+    y: 128
+--- !u!114 &1741154453
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741154450}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f79f5f14dc34bf9b53b959a91df523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2013410473
 GameObject:
   m_ObjectHideFlags: 1
@@ -265,7 +298,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Profile: {fileID: 11400000, guid: dcc3713e9e8b8447eb041bb07cf34a4b, type: 2}
-  m_StaticLightingSkyUniqueID: 4
+  m_StaticLightingSkyUniqueID: 0
   m_StaticLightingCloudsUniqueID: 0
   m_StaticLightingVolumetricClouds: 0
   bounces: 1
