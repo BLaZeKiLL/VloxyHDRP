@@ -90,8 +90,8 @@ namespace CodeBlaze.Vloxy.Engine.World {
                 WorldFocusUpdate();
             }
             
-            // We can change this, so that update happens only when required
-            Scheduler.SchedulerUpdate(FocusChunkCoord);
+            // There are "should" and "could" checks that need to happen every frame as chunks may be ready
+            // Scheduler.SchedulerUpdate(FocusChunkCoord);
 
             // Schedule every 'x' frames (throttling)
             if (_UpdateFrame % Settings.Scheduler.TickRate == 0) {

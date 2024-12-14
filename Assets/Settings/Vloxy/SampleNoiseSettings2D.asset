@@ -15,7 +15,7 @@ MonoBehaviour:
   Height: 256
   WaterLevel: 96
   Seed: 87197
-  Scale: 512
+  Scale: 256
   Persistance: 0.3
   Lacunarity: 3
   Octaves: 3

@@ -3519,6 +3519,7 @@ GameObject:
   - component: {fileID: 980039885}
   - component: {fileID: 980039884}
   - component: {fileID: 980039883}
+  - component: {fileID: 980039886}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -3632,6 +3633,23 @@ MonoBehaviour:
   JumpPostGroundingGraceTime: 0
   Gravity: {x: 0, y: -30, z: 0}
   _State: 1
+--- !u!114 &980039886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 980039881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4cf5e19ddc8e4a0eab971574202728a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layer:
+    className: CodeBlaze.Vloxy.Demo.RasterLayer
+  size:
+    x: 196
+    y: 196
 --- !u!1 &1028647055
 GameObject:
   m_ObjectHideFlags: 0
@@ -7868,6 +7886,9 @@ GameObject:
   - component: {fileID: 2120864381}
   - component: {fileID: 2120864380}
   - component: {fileID: 2120864379}
+  - component: {fileID: 2120864384}
+  - component: {fileID: 2120864383}
+  - component: {fileID: 2120864382}
   m_Layer: 0
   m_Name: World
   m_TagString: Untagged
@@ -7917,6 +7938,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2120864382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120864378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85ca4b91f6f7b43e99055b67c253781f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  layers:
+  - layerClassName:
+      className: CodeBlaze.Vloxy.Demo.RasterLayer
+    color: {r: 1, g: 0, b: 0, a: 0}
+  worldOffset: 0
+  spacingUnit: 1
+  spacingAmount: 4
+--- !u!114 &2120864383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120864378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1371bf6245f347d9b232d50000656d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  display: 1
+  debugLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  shaderZOn: {fileID: 4800000, guid: 4b0723e29d1cc43868429c70134e2868, type: 3}
+  shaderZOff: {fileID: 4800000, guid: 4a4437c127aa14f04a75f51916cfe09d, type: 3}
+--- !u!114 &2120864384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2120864378}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63f788e7d356b4a5cafd9dc42d4b15e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useParallelThreads: 1
+  generationPlane: 1
+  debugQueueText: {fileID: 0}
+  debugStatusText: {fileID: 0}
 --- !u!1 &2128243692
 GameObject:
   m_ObjectHideFlags: 0
