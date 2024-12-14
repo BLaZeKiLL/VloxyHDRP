@@ -1,4 +1,5 @@
 using CodeBlaze.Vloxy.Engine.Data;
+using Runevision.Common;
 using Runevision.LayerProcGen;
 using Unity.Mathematics;
 using Unity.VisualScripting;
@@ -40,8 +41,6 @@ namespace CodeBlaze.Vloxy.Demo {
                 }
                 
                 chunk.AddBlocks(current_block, count); // Finale interval
-
-                Debug.Log(chunk);
             }
         }
 
@@ -67,9 +66,11 @@ namespace CodeBlaze.Vloxy.Demo {
 
         public FastNoiseLite fnl;
 
+        // public GridBounds Bounds => this.Bounds;
+
         public RasterLayer() {
             fnl = new FastNoiseLite();
-
+            
             fnl.SetSeed(1337);
             fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
             fnl.SetFrequency(0.01f);
