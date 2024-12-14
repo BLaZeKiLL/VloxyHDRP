@@ -34,7 +34,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Chunk {
             
             int count = 0;
         
-            // Loop order should be same as flatten order for AddBlocks to work properly
+            // Loop order should be same as int3.flatten order for AddBlocks to work properly
             for (var y = 0; y < ChunkSize.y; y++) {
                 for (var z = 0; z < ChunkSize.z; z++) {
                     for (var x = 0; x < ChunkSize.x; x++) {
