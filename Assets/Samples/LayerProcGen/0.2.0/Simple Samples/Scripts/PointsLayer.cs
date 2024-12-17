@@ -77,7 +77,5 @@ public class PointsLayer : ChunkBasedDataLayer<PointsLayer, PointsChunk> {
 				if (bounds.Contains(point))
 					outPoints.Add(point);
 		});
-
-		
 	}
 }

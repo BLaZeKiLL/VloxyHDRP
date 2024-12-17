@@ -5,7 +5,7 @@ using Unity.Mathematics;
 namespace CodeBlaze.Vloxy.Engine.Data {
 
     [BurstCompile]
-    internal struct ChunkAccessor {
+    public struct ChunkAccessor {
         
         private NativeParallelHashMap<int3, Chunk>.ReadOnly _Chunks;
         private int3 _ChunkSize;

@@ -9,6 +9,8 @@ using CodeBlaze.Vloxy.Engine.Utils;
 using CodeBlaze.Vloxy.Engine.Utils.Extensions;
 using CodeBlaze.Vloxy.Engine.Utils.Logger;
 
+using Runevision.Common;
+
 using Unity.Mathematics;
 
 using UnityEngine;
@@ -24,6 +26,8 @@ namespace CodeBlaze.Vloxy.Engine.World {
         public Transform Focus => _Focus;
         public VloxySettings Settings => _Settings;
         public int3 FocusChunkCoord { get; private set; }
+        public GridBounds LastUpdateBound { get; private set; }
+        public GridBounds DiffBounds { get; private set; } // this will be used to query chunks for meshing
         
         
         public VloxyScheduler Scheduler { get; private set; }
@@ -71,6 +75,8 @@ namespace CodeBlaze.Vloxy.Engine.World {
             ConstructVloxyComponents();
             
             FocusChunkCoord = new int3(1,1,1) * int.MinValue;
+            LastUpdateBound = new(int.MinValue, int.MinValue, 160, 160); // size 128 * 128
+            DiffBounds = LastUpdateBound;
 
             WorldAwake();
         }
@@ -86,6 +92,10 @@ namespace CodeBlaze.Vloxy.Engine.World {
 
             if (!(NewFocusChunkCoord == FocusChunkCoord).AndReduce()) {
                 FocusChunkCoord = NewFocusChunkCoord;
+                GridBounds NewUpdateBound = new(-64 + FocusChunkCoord.x, -64 + FocusChunkCoord.z, 160, 160);
+                DiffBounds = NewUpdateBound.DiffBounds(LastUpdateBound);
+                LastUpdateBound = NewUpdateBound;
+
                 Scheduler.FocusChunkUpdate(FocusChunkCoord);
                 WorldFocusUpdate();
             }
@@ -105,6 +115,11 @@ namespace CodeBlaze.Vloxy.Engine.World {
             }
 
             WorldUpdate();
+
+#if VLOXY_LOGGING
+            DebugUtils.DrawBounds(DiffBounds, Color.green);
+            DebugUtils.DrawBounds(LastUpdateBound, Color.cyan);
+#endif
         }
 
         private void LateUpdate() {

@@ -25,6 +25,8 @@ namespace CodeBlaze.Vloxy.Engine {
             Octaves = Settings.Noise.Octaves,
         });
 
+        internal virtual IChunkManager TopLevelChunkManager() => null;
+
         internal virtual ChunkManager ChunkManager() => new(Settings);
 
         internal virtual ChunkPool ChunkPool(Transform transform) => new (transform, Settings);

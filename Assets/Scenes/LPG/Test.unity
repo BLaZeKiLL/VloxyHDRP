@@ -255,8 +255,8 @@ MonoBehaviour:
   layer:
     className: CodeBlaze.Vloxy.Demo.RasterLayer
   size:
-    x: 128
-    y: 128
+    x: 192
+    y: 192
 --- !u!114 &1741154453
 MonoBehaviour:
   m_ObjectHideFlags: 0
