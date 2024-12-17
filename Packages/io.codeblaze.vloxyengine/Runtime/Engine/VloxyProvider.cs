@@ -25,31 +25,32 @@ namespace CodeBlaze.Vloxy.Engine {
             Octaves = Settings.Noise.Octaves,
         });
 
-        internal virtual IChunkManager TopLevelChunkManager() => null;
+        protected internal virtual IChunkManager TopLevelChunkManager() => null;
 
-        internal virtual ChunkManager ChunkManager() => new(Settings);
+        protected internal virtual ChunkManager ChunkManager() => new(Settings);
 
-        internal virtual ChunkPool ChunkPool(Transform transform) => new (transform, Settings);
+        protected internal virtual ChunkPool ChunkPool(Transform transform) => new (transform, Settings);
 
-        internal virtual VloxyScheduler VloxyScheduler(
+        protected internal virtual VloxyScheduler VloxyScheduler(
             MeshBuildScheduler meshBuildScheduler,
             ChunkScheduler ChunkScheduler,
             ColliderBuildScheduler colliderBuildScheduler,
             ChunkManager ChunkManager,
-            ChunkPool chunkPool
-        ) => new(Settings, meshBuildScheduler, ChunkScheduler, colliderBuildScheduler, ChunkManager, chunkPool);
+            ChunkPool chunkPool,
+            IChunkManager topChunk
+        ) => new(Settings, meshBuildScheduler, ChunkScheduler, colliderBuildScheduler, ChunkManager, chunkPool, topChunk);
 
-        internal virtual ChunkScheduler ChunkDataScheduler(
+        protected internal virtual ChunkScheduler ChunkDataScheduler(
             ChunkManager ChunkManager,
             NoiseProfile noiseProfile
         ) => new(Settings, ChunkManager, noiseProfile);
 
-        internal virtual MeshBuildScheduler MeshBuildScheduler(
+        protected internal virtual MeshBuildScheduler MeshBuildScheduler(
             ChunkManager ChunkManager,
             ChunkPool chunkPool
         ) => new(Settings, ChunkManager, chunkPool);
 
-        internal virtual ColliderBuildScheduler ColliderBuildScheduler(
+        protected internal virtual ColliderBuildScheduler ColliderBuildScheduler(
             ChunkManager chunkManager,
             ChunkPool chunkPool
         ) => new(chunkManager, chunkPool);

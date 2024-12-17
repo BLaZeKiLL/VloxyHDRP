@@ -9,7 +9,7 @@ using CodeBlaze.Vloxy.Engine.Settings;
 using CodeBlaze.Vloxy.Engine.Utils.Extensions;
 using CodeBlaze.Vloxy.Engine.Utils.Logger;
 using Priority_Queue;
-
+using Runevision.Common;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -22,6 +22,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         private readonly ColliderBuildScheduler _ColliderBuildScheduler;
 
         private readonly ChunkManager _ChunkManager;
+        private readonly IChunkManager _TopLayer;
         private readonly ChunkPool _ChunkPool;
 
         private readonly SimpleFastPriorityQueue<int3, int> _ViewQueue;
@@ -40,7 +41,8 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
             ChunkScheduler chunkScheduler,
             ColliderBuildScheduler colliderBuildScheduler,
             ChunkManager chunkManager,
-            ChunkPool chunkPool
+            ChunkPool chunkPool,
+            IChunkManager topLayer
         ) {
             _MeshBuildScheduler = meshBuildScheduler;
             _ChunkScheduler = chunkScheduler;
@@ -48,6 +50,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
 
             _ChunkManager = chunkManager;
             _ChunkPool = chunkPool;
+            _TopLayer = topLayer;
 
             _ViewQueue = new SimpleFastPriorityQueue<int3, int>();
             _DataQueue = new SimpleFastPriorityQueue<int3, int>();
@@ -65,6 +68,11 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         internal void FocusChunkUpdate(int3 focus_chunk_coords) {
             _ChunkManager.FocusChunkUpdate(focus_chunk_coords);
             _ChunkPool.FocusChunkUpdate(focus_chunk_coords);
+        }
+
+        internal void SchedulerUpdate2(GridBounds diff) {
+            var temp = _TopLayer.GetChunksInBounds(diff);
+            Debug.Log(temp.Count);
         }
 
         // TODO : This thing takes 4ms every frame need to make a reactive system and maybe try the fast queue

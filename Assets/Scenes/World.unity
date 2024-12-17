@@ -3648,8 +3648,8 @@ MonoBehaviour:
   layer:
     className: CodeBlaze.Vloxy.Demo.RasterLayer
   size:
-    x: 196
-    y: 196
+    x: 256
+    y: 256
 --- !u!1 &1028647055
 GameObject:
   m_ObjectHideFlags: 0
@@ -7922,6 +7922,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Focus: {fileID: 980039882}
+  _GenerationSource: {fileID: 980039886}
   _Settings: {fileID: 11400000, guid: 9bbcd6a6c04834ddeb43ccb34c77e185, type: 2}
 --- !u!4 &2120864381
 Transform:

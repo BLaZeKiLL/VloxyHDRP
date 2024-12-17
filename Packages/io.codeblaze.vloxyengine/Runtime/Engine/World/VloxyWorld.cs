@@ -10,7 +10,7 @@ using CodeBlaze.Vloxy.Engine.Utils.Extensions;
 using CodeBlaze.Vloxy.Engine.Utils.Logger;
 
 using Runevision.Common;
-
+using Runevision.LayerProcGen;
 using Unity.Mathematics;
 
 using UnityEngine;
@@ -20,6 +20,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
     public class VloxyWorld : MonoBehaviour {
 
         [SerializeField] private Transform _Focus;
+        [SerializeField] private GenerationSource _GenerationSource;
         [SerializeField] private VloxySettings _Settings;
         
         #region API
@@ -33,6 +34,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
         public VloxyScheduler Scheduler { get; private set; }
         public NoiseProfile NoiseProfile { get; private set; }
         public ChunkManager ChunkManager { get; private set; }
+        public IChunkManager TopLevelChunkManager { get; private set; }
 
         #endregion
         
@@ -42,8 +44,9 @@ namespace CodeBlaze.Vloxy.Engine.World {
         private ColliderBuildScheduler _ColliderBuildScheduler;
 
         private bool _IsFocused;
-
         private byte _UpdateFrame = 1;
+        private int _BoundSize = 0;
+        private int _BoundOffset = 0;
 
         #region Virtual
 
@@ -75,7 +78,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
             ConstructVloxyComponents();
             
             FocusChunkCoord = new int3(1,1,1) * int.MinValue;
-            LastUpdateBound = new(int.MinValue, int.MinValue, 160, 160); // size 128 * 128
+            LastUpdateBound = new(int.MinValue, int.MinValue, _BoundSize, _BoundSize); // size 128 * 128
             DiffBounds = LastUpdateBound;
 
             WorldAwake();
@@ -88,13 +91,28 @@ namespace CodeBlaze.Vloxy.Engine.World {
         }
 
         private void Update() {
+            #region Wait
+            // Wait till initial chunks are generated
+            if ((FocusChunkCoord == new int3(1,1,1) * int.MinValue).AndReduce() && TopLevelChunkManager.ChunkCount() == 0) {
+                Debug.Log("Waiting");
+                return;
+            }
+
+            if (LayerManager.instance.building) {
+                Debug.Log("Waiting");
+                return;
+            }
+            #endregion
+
             var NewFocusChunkCoord = _IsFocused ? VloxyUtils.GetChunkCoords(_Focus.position) : int3.zero;
 
             if (!(NewFocusChunkCoord == FocusChunkCoord).AndReduce()) {
                 FocusChunkCoord = NewFocusChunkCoord;
-                GridBounds NewUpdateBound = new(-64 + FocusChunkCoord.x, -64 + FocusChunkCoord.z, 160, 160);
+                GridBounds NewUpdateBound = new(_BoundOffset + FocusChunkCoord.x, _BoundOffset + FocusChunkCoord.z, _BoundSize, _BoundSize);
                 DiffBounds = NewUpdateBound.DiffBounds(LastUpdateBound);
                 LastUpdateBound = NewUpdateBound;
+
+                Scheduler.SchedulerUpdate2(DiffBounds);
 
                 Scheduler.FocusChunkUpdate(FocusChunkCoord);
                 WorldFocusUpdate();
@@ -139,6 +157,10 @@ namespace CodeBlaze.Vloxy.Engine.World {
             Settings.Chunk.LoadDistance = Settings.Chunk.DrawDistance + 1;
             Settings.Chunk.ColliderDistance = math.min(Settings.Chunk.DrawDistance - 2, 2);
 
+            _BoundOffset = -1 * Settings.Chunk.DrawDistance * 32;
+            _BoundSize = (-2 * _BoundOffset) + 32;
+            _GenerationSource.size = new Point(_BoundSize + 32, _BoundSize + 32);
+
             // TODO : ideally these should be dynamic based on device
             // Settings.Scheduler.MeshingBatchSize = 4;
             // Settings.Scheduler.StreamingBatchSize = 8;
@@ -150,6 +172,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
         private void ConstructVloxyComponents() {
             NoiseProfile = VloxyProvider.Current.NoiseProfile();
             ChunkManager = VloxyProvider.Current.ChunkManager();
+            TopLevelChunkManager = VloxyProvider.Current.TopLevelChunkManager();
 
             _ChunkPool = VloxyProvider.Current.ChunkPool(transform);
 
@@ -173,7 +196,8 @@ namespace CodeBlaze.Vloxy.Engine.World {
                 _ChunkScheduler,
                 _ColliderBuildScheduler,
                 ChunkManager,
-                _ChunkPool
+                _ChunkPool,
+                TopLevelChunkManager
             );
 
 #if VLOXY_LOGGING

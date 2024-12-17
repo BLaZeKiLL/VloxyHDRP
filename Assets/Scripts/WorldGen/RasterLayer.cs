@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Data;
 using Runevision.Common;
 using Runevision.LayerProcGen;
@@ -58,7 +62,7 @@ namespace CodeBlaze.Vloxy.Demo {
         }
     }
 
-    public class RasterLayer : ChunkBasedDataLayer<RasterLayer, RasterChunk>
+    public class RasterLayer : ChunkBasedDataLayer<RasterLayer, RasterChunk>, IChunkManager
     {
         public override int chunkW => 32;
 
@@ -78,6 +82,32 @@ namespace CodeBlaze.Vloxy.Demo {
             fnl.SetFractalOctaves(3);
             fnl.SetFractalLacunarity(2.0f);
             fnl.SetFractalGain(0.5f);
+        }
+
+        public bool IsChunkLoaded(int3 position)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public List<int3> GetChunksInBounds(GridBounds bounds)
+        {
+            List<int3> chunks = new();
+
+            HandleChunksInBounds(null, bounds, 0, (chunk) => {
+                chunks.Add(new int3(chunk.bounds.min.x, 0 , chunk.bounds.min.y));
+            });
+
+            return chunks;
+        }
+
+        public ChunkAccessor GetAccessor(List<int3> positions)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int ChunkCount()
+        {
+            return chunks.Count();
         }
     }
 }
