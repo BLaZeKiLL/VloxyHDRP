@@ -19,6 +19,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
     {
 
         private readonly ChunkManager _ChunkManager;
+        private readonly IChunkManager _TopLevel;
         private readonly ChunkPool _ChunkPool;
 
         private int3 _ChunkSize;
@@ -33,10 +34,12 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
         public MeshBuildScheduler(
             VloxySettings settings,
             ChunkManager chunkManager,
-            ChunkPool chunkPool
+            ChunkPool chunkPool,
+            IChunkManager topLevel
         )
         {
             _ChunkManager = chunkManager;
+            _TopLevel = topLevel;
             _ChunkPool = chunkPool;
 
             _ChunkSize = settings.Chunk.ChunkSize;
@@ -65,7 +68,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
 
             IsReady = false;
 
-            _ChunkAccessor = _ChunkManager.GetAccessor(jobs);
+            _ChunkAccessor = _TopLevel.GetAccessor(jobs);
 
             foreach (var j in jobs)
             {

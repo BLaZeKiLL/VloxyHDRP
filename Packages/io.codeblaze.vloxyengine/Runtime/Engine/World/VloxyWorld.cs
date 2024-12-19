@@ -112,9 +112,8 @@ namespace CodeBlaze.Vloxy.Engine.World {
                 DiffBounds = NewUpdateBound.DiffBounds(LastUpdateBound);
                 LastUpdateBound = NewUpdateBound;
 
-                Scheduler.SchedulerUpdate2(DiffBounds);
-
                 Scheduler.FocusChunkUpdate(FocusChunkCoord);
+                
                 WorldFocusUpdate();
             }
             
@@ -141,6 +140,10 @@ namespace CodeBlaze.Vloxy.Engine.World {
         }
 
         private void LateUpdate() {
+            // if (DoFocusLateUpdate) {
+            Scheduler.SchedulerUpdate2(DiffBounds, FocusChunkCoord);
+            // }
+
             Scheduler.SchedulerLateUpdate();
 
             WorldLateUpdate();
@@ -178,7 +181,8 @@ namespace CodeBlaze.Vloxy.Engine.World {
 
             _MeshBuildScheduler = VloxyProvider.Current.MeshBuildScheduler(
                 ChunkManager, 
-                _ChunkPool
+                _ChunkPool,
+                TopLevelChunkManager
             );
             
             _ChunkScheduler = VloxyProvider.Current.ChunkDataScheduler(

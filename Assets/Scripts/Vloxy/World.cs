@@ -23,7 +23,7 @@ namespace CodeBlaze.Vloxy.Demo {
         // }
 
         public Vector3 GetSpawnPoint() {
-            return new Vector3(16f, NoiseProfile.GetNoise(int3.zero).Height + 16, 16f);
+            return new Vector3(16f, 16f, 16f);
         }
 
     }

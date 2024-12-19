@@ -47,8 +47,9 @@ namespace CodeBlaze.Vloxy.Engine {
 
         protected internal virtual MeshBuildScheduler MeshBuildScheduler(
             ChunkManager ChunkManager,
-            ChunkPool chunkPool
-        ) => new(Settings, ChunkManager, chunkPool);
+            ChunkPool chunkPool,
+            IChunkManager topLevel
+        ) => new(Settings, ChunkManager, chunkPool, topLevel);
 
         protected internal virtual ColliderBuildScheduler ColliderBuildScheduler(
             ChunkManager chunkManager,

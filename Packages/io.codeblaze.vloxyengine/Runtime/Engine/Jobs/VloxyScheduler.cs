@@ -70,9 +70,18 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
             _ChunkPool.FocusChunkUpdate(focus_chunk_coords);
         }
 
-        internal void SchedulerUpdate2(GridBounds diff) {
-            var temp = _TopLayer.GetChunksInBounds(diff);
-            Debug.Log(temp.Count);
+        internal void SchedulerUpdate2(GridBounds diff, int3 focus) {
+            var chunk_positions = _TopLayer.GetChunksInBounds(diff);
+
+            foreach (var chunk_pos in chunk_positions) {
+                if (_ViewQueue.Contains(chunk_pos)) {
+                    _ViewQueue.UpdatePriority(chunk_pos, (chunk_pos - focus).SqrMagnitude());
+                } else if (ShouldScheduleForMeshing2(chunk_pos) && CanGenerateMeshForChunk2(chunk_pos)) {
+                    _ViewQueue.Enqueue(chunk_pos, (chunk_pos - focus).SqrMagnitude());
+                } else {
+                    Debug.Log("Chunk Not Loaded");
+                }
+            }
         }
 
         // TODO : This thing takes 4ms every frame need to make a reactive system and maybe try the fast queue
@@ -144,7 +153,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
                     
                     // The chunk may be removed from memory by the time we schedule,
                     // Should we check this only here ?
-                    if (CanGenerateMeshForChunk(chunk)) _ViewSet.Add(chunk);
+                    if (CanGenerateMeshForChunk2(chunk)) _ViewSet.Add(chunk);
                 }
 
                 _MeshBuildScheduler.Start(_ViewSet.ToList());
@@ -191,6 +200,15 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
             return !_ChunkManager.IsChunkLoaded(position) && !_DataSet.Contains(position);
         }
 
+        private bool ShouldScheduleForMeshing2(int3 position)
+        {
+            return 
+            // Should not be active or should be marked for re-build
+            (!_ChunkPool.IsActive(position) /* || _ChunkManager.ShouldReMesh(position), need to handle this somewhere */)
+            // Should not be scheduled in a job 
+            && !_ViewSet.Contains(position);
+        }
+
         private bool ShouldScheduleForMeshing(int3 position)
         {
             return 
@@ -212,8 +230,26 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         /// </summary>
         /// <param name="position">Position of chunk to check</param>
         /// <returns>Is it ready to be meshed</returns>
+        private bool CanGenerateMeshForChunk2(int3 position) {
+            var result = true;
+            
+            for (var x = -1; x <= 1; x++) {
+                for (var z = -1; z <= 1; z++) {
+                    var pos = position + _Settings.Chunk.ChunkSize.MemberMultiply(x, 0, z);
+                    result &= _TopLayer.IsChunkLoaded(pos);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Checks if the specified chunks and it's neighbors are generated
+        /// </summary>
+        /// <param name="position">Position of chunk to check</param>
+        /// <returns>Is it ready to be meshed</returns>
         private bool CanGenerateMeshForChunk(int3 position) {
-             var result = true;
+            var result = true;
             
             for (var x = -1; x <= 1; x++) {
                 for (var z = -1; z <= 1; z++) {

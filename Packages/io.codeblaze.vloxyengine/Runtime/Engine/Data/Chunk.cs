@@ -4,6 +4,7 @@ using CodeBlaze.Vloxy.Engine.Utils.Extensions;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Engine.Data {
 

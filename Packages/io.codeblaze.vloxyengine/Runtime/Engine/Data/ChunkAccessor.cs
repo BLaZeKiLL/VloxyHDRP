@@ -10,7 +10,7 @@ namespace CodeBlaze.Vloxy.Engine.Data {
         private NativeParallelHashMap<int3, Chunk>.ReadOnly _Chunks;
         private int3 _ChunkSize;
 
-        internal ChunkAccessor(NativeParallelHashMap<int3, Chunk>.ReadOnly chunks, int3 chunkSize) {
+        public ChunkAccessor(NativeParallelHashMap<int3, Chunk>.ReadOnly chunks, int3 chunkSize) {
             _Chunks = chunks;
             _ChunkSize = chunkSize;
         }
