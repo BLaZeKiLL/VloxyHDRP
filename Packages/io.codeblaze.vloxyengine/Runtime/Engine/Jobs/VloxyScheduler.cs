@@ -78,8 +78,6 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
                     _ViewQueue.UpdatePriority(chunk_pos, (chunk_pos - focus).SqrMagnitude());
                 } else if (ShouldScheduleForMeshing2(chunk_pos) && CanGenerateMeshForChunk2(chunk_pos)) {
                     _ViewQueue.Enqueue(chunk_pos, (chunk_pos - focus).SqrMagnitude());
-                } else {
-                    Debug.Log("Chunk Not Loaded");
                 }
             }
         }

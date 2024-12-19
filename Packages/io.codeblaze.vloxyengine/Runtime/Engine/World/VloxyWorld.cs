@@ -91,15 +91,15 @@ namespace CodeBlaze.Vloxy.Engine.World {
         }
 
         private void Update() {
-            #region Wait
+            #region Wait // This doesn't work after initial load
             // Wait till initial chunks are generated
             if ((FocusChunkCoord == new int3(1,1,1) * int.MinValue).AndReduce() && TopLevelChunkManager.ChunkCount() == 0) {
-                Debug.Log("Waiting");
+                Debug.Log("INI Waiting");
                 return;
             }
 
             if (LayerManager.instance.building) {
-                Debug.Log("Waiting");
+                Debug.Log("UPD Waiting");
                 return;
             }
             #endregion

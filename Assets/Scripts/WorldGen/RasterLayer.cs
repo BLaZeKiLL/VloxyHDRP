@@ -24,7 +24,7 @@ namespace CodeBlaze.Vloxy.Demo {
             } else {
                 var data = new Chunk(new int3(bounds.min.x, 0, bounds.min.y), new int3(32, 32, 32));
 
-                var noise = GetNoise(bounds.min.x, bounds.min.y);
+                var noise = layer.GetNoise(bounds.min.x, bounds.min.y);
                 int current_block = GetBlock(0, noise);
                 
                 int count = 0;
@@ -33,7 +33,7 @@ namespace CodeBlaze.Vloxy.Demo {
                 for (var y = 0; y < 32; y++) {
                     for (var z = 0; z < 32; z++) {
                         for (var x = 0; x < 32; x++) {
-                            noise = GetNoise(x + bounds.min.x, z + bounds.min.y);
+                            noise = layer.GetNoise(bounds.min.x + x, bounds.min.y + z);
                             var block = GetBlock(y, noise);
             
                             if (block == current_block) {
@@ -53,14 +53,7 @@ namespace CodeBlaze.Vloxy.Demo {
             }
         }
 
-        private int GetNoise(float x, float z) {
-            var height = layer.fnl.GetNoise(x, z);
-            return math.clamp((int) math.round(height * 16), -16, 16) + 16;
-        }
-
         private static int GetBlock(int Y, int height) {
-            // return Y >= 14 ? 0 : 1;
-
             if (Y > height) return Y > 6 ? (int) Block.AIR : (int) Block.WATER;
             if (Y == height) return (int) Block.GRASS;
             if (Y <= height - 1 && Y >= height - 2) return (int) Block.DIRT;
@@ -102,6 +95,11 @@ namespace CodeBlaze.Vloxy.Demo {
             _ChunkSize = new int3(1, 1, 1) * 32; // TODO : Fix Hardcode
         }
 
+        public int GetNoise(float x, float z) {
+            var height = fnl.GetNoise(x, z);
+            return math.clamp((int) math.round(height * 16), -16, 16) + 16;
+        }
+
         public bool IsChunkLoaded(int3 position)
         {
             return chunks[position.x / chunkW, position.z / chunkH] != null;
@@ -132,9 +130,10 @@ namespace CodeBlaze.Vloxy.Demo {
                             throw new InvalidOperationException($"Chunk {pos} has not been generated");
                         }
 
-                        var raster_chunk = chunks[position.x / chunkW, position.z / chunkH];
-                            
-                        if (!_AccessorMap.ContainsKey(pos)) _AccessorMap.Add(pos, raster_chunk.Chunk.AsReadOnly().Value);
+                        var raster_chunk = chunks[pos.x / 32, pos.z / 32];
+
+                        if (!_AccessorMap.ContainsKey(pos)) 
+                            _AccessorMap.Add(pos, raster_chunk.Chunk.AsReadOnly().Value);
                     }
                 }
             }
