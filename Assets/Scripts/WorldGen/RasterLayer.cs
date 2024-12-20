@@ -17,13 +17,15 @@ namespace CodeBlaze.Vloxy.Demo {
     {
         // TODO : Can we avoid this native reference
         public NativeReference<Chunk> Chunk { get; private set; }
+        public bool Loaded { get; private set; }
 
         public override void Create(int level, bool destroy)
         {
             if (destroy) {
                 Chunk.Dispose(); // Clear instead of dispose
+                Loaded = false;
             } else {
-                var data = new Chunk(new int3(bounds.min.x, 0, bounds.min.y), new int3(32, 32, 32));
+                var data = new Chunk(new int3(bounds.min.x, 0, bounds.min.y), new int3(32, 256, 32));
 
                 var noise = layer.GetNoise(bounds.min.x, bounds.min.y);
                 int current_block = GetBlock(0, noise);
@@ -31,7 +33,7 @@ namespace CodeBlaze.Vloxy.Demo {
                 int count = 0;
 
                 // Loop order should be same as flatten order for AddBlocks to work properly
-                for (var y = 0; y < 32; y++) {
+                for (var y = 0; y < 256; y++) {
                     for (var z = 0; z < 32; z++) {
                         for (var x = 0; x < 32; x++) {
                             noise = layer.GetNoise(bounds.min.x + x, bounds.min.y + z);
@@ -50,12 +52,13 @@ namespace CodeBlaze.Vloxy.Demo {
 
                 data.AddBlocks(current_block, count); // Finale interval
 
-                Chunk = new NativeReference<Chunk>(data, Allocator.Persistent);  
+                Chunk = new NativeReference<Chunk>(data, Allocator.Persistent);
+                Loaded = true; 
             }
         }
 
         private static int GetBlock(int Y, int height) {
-            if (Y > height) return Y > 8 ? (int) Block.AIR : (int) Block.WATER;
+            if (Y > height) return Y > 96 ? (int) Block.AIR : (int) Block.WATER;
             if (Y == height) return (int) Block.GRASS;
             if (Y <= height - 1 && Y >= height - 3) return (int) Block.DIRT;
 
@@ -93,18 +96,22 @@ namespace CodeBlaze.Vloxy.Demo {
                 Allocator.Persistent
             );
 
-            _ChunkSize = new int3(32, 32, 32); // TODO : Fix Hardcode
+            _ChunkSize = new int3(32, 256, 32); // TODO : Fix Hardcode
         }
 
         public int GetNoise(float x, float z) {
             var height = fnl.GetNoise(x, z);
             // [-1,1] -> [0,256]
-            return math.clamp((int) math.round(height * 16), -16, 16) + 16;
+            return math.clamp((int) math.round(height * 128), -128, 128) + 128;
         }
 
         public bool IsChunkLoaded(int3 position)
         {
-            return chunks[position.x / chunkW, position.z / chunkH] != null;
+            var chunk = chunks[position.x / chunkW, position.z / chunkH];
+
+            if (chunk == null) return false;
+
+            return chunk.Loaded;
         }
 
         public List<int3> GetChunksInBounds(GridBounds bounds)
@@ -134,8 +141,11 @@ namespace CodeBlaze.Vloxy.Demo {
 
                         var raster_chunk = chunks[pos.x / chunkW, pos.z / chunkH];
 
-                        if (!_AccessorMap.ContainsKey(pos)) 
-                            _AccessorMap.Add(pos, raster_chunk.Chunk.AsReadOnly().Value);
+                        if (!_AccessorMap.ContainsKey(pos))
+                        {
+                            UnityEngine.Debug.Log(raster_chunk.Chunk.IsCreated);
+                            _AccessorMap.Add(pos, raster_chunk.Chunk.Value);
+                        }
                     }
                 }
             }
