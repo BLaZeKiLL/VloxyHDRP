@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Data;
 using CodeBlaze.Vloxy.Engine.Utils.Extensions;
+
 using Runevision.Common;
 using Runevision.LayerProcGen;
+
 using Unity.Collections;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Demo {
     public class RasterChunk : LayerChunk<RasterLayer, RasterChunk> 
@@ -129,7 +131,7 @@ namespace CodeBlaze.Vloxy.Demo {
                             throw new InvalidOperationException($"Chunk {pos} has not been generated");
                         }
 
-                        var raster_chunk = chunks[pos.x / 32, pos.z / 32];
+                        var raster_chunk = chunks[pos.x / chunkW, pos.z / chunkH];
 
                         if (!_AccessorMap.ContainsKey(pos)) 
                             _AccessorMap.Add(pos, raster_chunk.Chunk.AsReadOnly().Value);
@@ -141,5 +143,12 @@ namespace CodeBlaze.Vloxy.Demo {
         }
 
         public int ChunkCount() => chunks.Count();
+
+        public void Dispose()
+        {
+            foreach (var chunk in chunks) {
+                chunk.Chunk.Dispose();
+            }
+        }
     }
 }

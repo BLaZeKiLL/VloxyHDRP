@@ -32,7 +32,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
         
         public VloxyScheduler Scheduler { get; private set; }
         public NoiseProfile NoiseProfile { get; private set; }
-        public IChunkManager TopLevelChunkManager { get; private set; }
+        public IChunkManager ChunkManager { get; private set; }
 
         #endregion
         
@@ -90,7 +90,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
         private void Update() {
             #region Wait // This doesn't work after initial load
             // Wait till initial chunks are generated
-            if ((FocusChunkCoord == new int3(1,1,1) * int.MinValue).AndReduce() && TopLevelChunkManager.ChunkCount() == 0) {
+            if ((FocusChunkCoord == new int3(1,1,1) * int.MinValue).AndReduce() && ChunkManager.ChunkCount() == 0) {
                 Debug.Log("INI Waiting");
                 return;
             }
@@ -115,7 +115,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
             }
             
             // There are "should" and "could" checks that need to happen every frame as chunks may be ready
-            // Scheduler.SchedulerUpdate(FocusChunkCoord);
+            Scheduler.SchedulerUpdate(DiffBounds, FocusChunkCoord);
 
             // Schedule every 'x' frames (throttling)
             if (_UpdateFrame % Settings.Scheduler.TickRate == 0) {
@@ -137,10 +137,6 @@ namespace CodeBlaze.Vloxy.Engine.World {
         }
 
         private void LateUpdate() {
-            // if (DoFocusLateUpdate) {
-            Scheduler.SchedulerUpdate2(DiffBounds, FocusChunkCoord);
-            // }
-
             Scheduler.SchedulerLateUpdate();
 
             WorldLateUpdate();
@@ -170,13 +166,13 @@ namespace CodeBlaze.Vloxy.Engine.World {
         
         private void ConstructVloxyComponents() {
             NoiseProfile = VloxyProvider.Current.NoiseProfile();
-            TopLevelChunkManager = VloxyProvider.Current.TopLevelChunkManager();
+            ChunkManager = VloxyProvider.Current.TopLevelChunkManager();
 
             _ChunkPool = VloxyProvider.Current.ChunkPool(transform);
 
             _MeshBuildScheduler = VloxyProvider.Current.MeshBuildScheduler(
                 _ChunkPool,
-                TopLevelChunkManager
+                ChunkManager
             );
 
             _ColliderBuildScheduler = VloxyProvider.Current.ColliderBuildScheduler(
@@ -187,7 +183,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
                 _MeshBuildScheduler, 
                 _ColliderBuildScheduler,
                 _ChunkPool,
-                TopLevelChunkManager
+                ChunkManager
             );
 
 #if VLOXY_LOGGING
