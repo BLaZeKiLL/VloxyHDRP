@@ -55,9 +55,9 @@ namespace CodeBlaze.Vloxy.Demo {
         }
 
         private static int GetBlock(int Y, int height) {
-            if (Y > height) return Y > 6 ? (int) Block.AIR : (int) Block.WATER;
+            if (Y > height) return Y > 8 ? (int) Block.AIR : (int) Block.WATER;
             if (Y == height) return (int) Block.GRASS;
-            if (Y <= height - 1 && Y >= height - 2) return (int) Block.DIRT;
+            if (Y <= height - 1 && Y >= height - 3) return (int) Block.DIRT;
 
             return (int) Block.STONE;
         }
@@ -93,11 +93,12 @@ namespace CodeBlaze.Vloxy.Demo {
                 Allocator.Persistent
             );
 
-            _ChunkSize = new int3(1, 1, 1) * 32; // TODO : Fix Hardcode
+            _ChunkSize = new int3(32, 32, 32); // TODO : Fix Hardcode
         }
 
         public int GetNoise(float x, float z) {
             var height = fnl.GetNoise(x, z);
+            // [-1,1] -> [0,256]
             return math.clamp((int) math.round(height * 16), -16, 16) + 16;
         }
 

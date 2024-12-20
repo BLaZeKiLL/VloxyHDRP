@@ -75,7 +75,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
             ConstructVloxyComponents();
             
             FocusChunkCoord = new int3(1,1,1) * int.MinValue;
-            LastUpdateBound = new(int.MinValue, int.MinValue, _BoundSize, _BoundSize); // size 128 * 128
+            LastUpdateBound = new(int.MinValue, int.MinValue, _BoundSize, _BoundSize);
             DiffBounds = LastUpdateBound;
 
             WorldAwake();
@@ -88,19 +88,6 @@ namespace CodeBlaze.Vloxy.Engine.World {
         }
 
         private void Update() {
-            #region Wait // This doesn't work after initial load
-            // Wait till initial chunks are generated
-            if ((FocusChunkCoord == new int3(1,1,1) * int.MinValue).AndReduce() && ChunkManager.ChunkCount() == 0) {
-                Debug.Log("INI Waiting");
-                return;
-            }
-
-            if (LayerManager.instance.building) {
-                Debug.Log("UPD Waiting");
-                return;
-            }
-            #endregion
-
             var NewFocusChunkCoord = _IsFocused ? VloxyUtils.GetChunkCoords(_Focus.position) : int3.zero;
 
             if (!(NewFocusChunkCoord == FocusChunkCoord).AndReduce()) {
