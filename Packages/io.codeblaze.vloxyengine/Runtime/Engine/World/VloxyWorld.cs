@@ -1,6 +1,5 @@
 ﻿using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Jobs;
-using CodeBlaze.Vloxy.Engine.Jobs.Chunk;
 using CodeBlaze.Vloxy.Engine.Jobs.Collider;
 using CodeBlaze.Vloxy.Engine.Jobs.Mesh;
 using CodeBlaze.Vloxy.Engine.Noise;
@@ -33,14 +32,12 @@ namespace CodeBlaze.Vloxy.Engine.World {
         
         public VloxyScheduler Scheduler { get; private set; }
         public NoiseProfile NoiseProfile { get; private set; }
-        public ChunkManager ChunkManager { get; private set; }
         public IChunkManager TopLevelChunkManager { get; private set; }
 
         #endregion
         
         private ChunkPool _ChunkPool;
         private MeshBuildScheduler _MeshBuildScheduler;
-        private ChunkScheduler _ChunkScheduler;
         private ColliderBuildScheduler _ColliderBuildScheduler;
 
         private bool _IsFocused;
@@ -151,7 +148,6 @@ namespace CodeBlaze.Vloxy.Engine.World {
 
         private void OnDestroy() {
             Scheduler.Dispose();
-            ChunkManager.Dispose();
         }
         
         #endregion
@@ -174,32 +170,22 @@ namespace CodeBlaze.Vloxy.Engine.World {
         
         private void ConstructVloxyComponents() {
             NoiseProfile = VloxyProvider.Current.NoiseProfile();
-            ChunkManager = VloxyProvider.Current.ChunkManager();
             TopLevelChunkManager = VloxyProvider.Current.TopLevelChunkManager();
 
             _ChunkPool = VloxyProvider.Current.ChunkPool(transform);
 
             _MeshBuildScheduler = VloxyProvider.Current.MeshBuildScheduler(
-                ChunkManager, 
                 _ChunkPool,
                 TopLevelChunkManager
             );
-            
-            _ChunkScheduler = VloxyProvider.Current.ChunkDataScheduler(
-                ChunkManager,
-                NoiseProfile
-            );
 
             _ColliderBuildScheduler = VloxyProvider.Current.ColliderBuildScheduler(
-                ChunkManager,
                 _ChunkPool
             );
 
             Scheduler = VloxyProvider.Current.VloxyScheduler(
                 _MeshBuildScheduler, 
-                _ChunkScheduler,
                 _ColliderBuildScheduler,
-                ChunkManager,
                 _ChunkPool,
                 TopLevelChunkManager
             );

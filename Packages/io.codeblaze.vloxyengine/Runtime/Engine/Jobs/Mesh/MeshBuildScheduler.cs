@@ -18,7 +18,6 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
     public class MeshBuildScheduler : JobScheduler
     {
 
-        private readonly ChunkManager _ChunkManager;
         private readonly IChunkManager _TopLevel;
         private readonly ChunkPool _ChunkPool;
 
@@ -33,12 +32,10 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
 
         public MeshBuildScheduler(
             VloxySettings settings,
-            ChunkManager chunkManager,
             ChunkPool chunkPool,
             IChunkManager topLevel
         )
         {
-            _ChunkManager = chunkManager;
             _TopLevel = topLevel;
             _ChunkPool = chunkPool;
 
@@ -111,14 +108,15 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
                 //     continue;
                 // }
 
-                if (_ChunkManager.ReMeshedChunk(position))
-                {
-                    meshes[_Results[position].x] = _ChunkPool.Get(position).Mesh;
-                }
-                else
-                {
-                    meshes[_Results[position].x] = _ChunkPool.Claim(position).Mesh;
-                }
+                // TODO ReMesh
+                // if (_ChunkManager.ReMeshedChunk(position))
+                // {
+                //     meshes[_Results[position].x] = _ChunkPool.Get(position).Mesh;
+                // }
+                // else
+                // {
+                meshes[_Results[position].x] = _ChunkPool.Claim(position).Mesh;
+                // }
             }
 
             UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(

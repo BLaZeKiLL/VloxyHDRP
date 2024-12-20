@@ -1,6 +1,5 @@
 ﻿using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Jobs;
-using CodeBlaze.Vloxy.Engine.Jobs.Chunk;
 using CodeBlaze.Vloxy.Engine.Jobs.Collider;
 using CodeBlaze.Vloxy.Engine.Jobs.Mesh;
 using CodeBlaze.Vloxy.Engine.Noise;
@@ -27,34 +26,23 @@ namespace CodeBlaze.Vloxy.Engine {
 
         protected internal virtual IChunkManager TopLevelChunkManager() => null;
 
-        protected internal virtual ChunkManager ChunkManager() => new(Settings);
-
         protected internal virtual ChunkPool ChunkPool(Transform transform) => new (transform, Settings);
 
         protected internal virtual VloxyScheduler VloxyScheduler(
             MeshBuildScheduler meshBuildScheduler,
-            ChunkScheduler ChunkScheduler,
             ColliderBuildScheduler colliderBuildScheduler,
-            ChunkManager ChunkManager,
             ChunkPool chunkPool,
             IChunkManager topChunk
-        ) => new(Settings, meshBuildScheduler, ChunkScheduler, colliderBuildScheduler, ChunkManager, chunkPool, topChunk);
-
-        protected internal virtual ChunkScheduler ChunkDataScheduler(
-            ChunkManager ChunkManager,
-            NoiseProfile noiseProfile
-        ) => new(Settings, ChunkManager, noiseProfile);
+        ) => new(Settings, meshBuildScheduler, colliderBuildScheduler, chunkPool, topChunk);
 
         protected internal virtual MeshBuildScheduler MeshBuildScheduler(
-            ChunkManager ChunkManager,
             ChunkPool chunkPool,
             IChunkManager topLevel
-        ) => new(Settings, ChunkManager, chunkPool, topLevel);
+        ) => new(Settings, chunkPool, topLevel);
 
         protected internal virtual ColliderBuildScheduler ColliderBuildScheduler(
-            ChunkManager chunkManager,
             ChunkPool chunkPool
-        ) => new(chunkManager, chunkPool);
+        ) => new(chunkPool);
 
     }
 

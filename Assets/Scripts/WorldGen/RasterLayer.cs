@@ -20,15 +20,14 @@ namespace CodeBlaze.Vloxy.Demo {
         {
             if (destroy) {
                 Chunk.Dispose(); // Clear instead of dispose
-                
             } else {
                 var data = new Chunk(new int3(bounds.min.x, 0, bounds.min.y), new int3(32, 32, 32));
 
                 var noise = layer.GetNoise(bounds.min.x, bounds.min.y);
                 int current_block = GetBlock(0, noise);
-                
+
                 int count = 0;
-            
+
                 // Loop order should be same as flatten order for AddBlocks to work properly
                 for (var y = 0; y < 32; y++) {
                     for (var z = 0; z < 32; z++) {
@@ -46,7 +45,7 @@ namespace CodeBlaze.Vloxy.Demo {
                         }
                     }
                 }
-                
+
                 data.AddBlocks(current_block, count); // Finale interval
 
                 Chunk = new NativeReference<Chunk>(data, Allocator.Persistent);  
@@ -68,15 +67,15 @@ namespace CodeBlaze.Vloxy.Demo {
 
         public override int chunkH => 32;
 
-        public FastNoiseLite fnl;
         private NativeParallelHashMap<int3, Chunk> _AccessorMap;
+        private readonly FastNoiseLite fnl;
         private readonly int3 _ChunkSize;
 
         // public GridBounds Bounds => this.Bounds;
 
         public RasterLayer() {
             fnl = new FastNoiseLite();
-            
+
             fnl.SetSeed(1337);
             fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
             fnl.SetFrequency(0.01f);
@@ -119,7 +118,7 @@ namespace CodeBlaze.Vloxy.Demo {
         public ChunkAccessor GetAccessor(List<int3> positions)
         {
             _AccessorMap.Clear();
-            
+
             foreach (var position in positions) {
                 for (var x = -1; x <= 1; x++) {
                     for (var z = -1; z <= 1; z++) {
@@ -141,9 +140,6 @@ namespace CodeBlaze.Vloxy.Demo {
             return new ChunkAccessor(_AccessorMap.AsReadOnly(), _ChunkSize);
         }
 
-        public int ChunkCount()
-        {
-            return chunks.Count();
-        }
+        public int ChunkCount() => chunks.Count();
     }
 }

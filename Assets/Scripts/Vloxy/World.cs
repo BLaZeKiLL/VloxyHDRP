@@ -16,7 +16,7 @@ namespace CodeBlaze.Vloxy.Demo {
 
     public class World : VloxyWorld {
         protected override VloxyProvider Provider() => new WorldProvider();
-        
+
         // protected override void WorldInitialize() {
         //     RenderSettings.fogMode = FogMode.Linear;
         //     RenderSettings.fogEndDistance = Settings.Chunk.DrawDistance * 32 - 16;

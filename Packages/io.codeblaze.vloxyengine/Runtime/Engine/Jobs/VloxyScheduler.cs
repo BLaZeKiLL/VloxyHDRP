@@ -2,7 +2,6 @@
 using System.Linq;
 
 using CodeBlaze.Vloxy.Engine.Components;
-using CodeBlaze.Vloxy.Engine.Jobs.Chunk;
 using CodeBlaze.Vloxy.Engine.Jobs.Collider;
 using CodeBlaze.Vloxy.Engine.Jobs.Mesh;
 using CodeBlaze.Vloxy.Engine.Settings;
@@ -17,11 +16,9 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
     
     public class VloxyScheduler {
         
-        private readonly ChunkScheduler _ChunkScheduler;
         private readonly MeshBuildScheduler _MeshBuildScheduler;
         private readonly ColliderBuildScheduler _ColliderBuildScheduler;
 
-        private readonly ChunkManager _ChunkManager;
         private readonly IChunkManager _TopLayer;
         private readonly ChunkPool _ChunkPool;
 
@@ -38,17 +35,13 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         internal VloxyScheduler(
             VloxySettings settings, 
             MeshBuildScheduler meshBuildScheduler,
-            ChunkScheduler chunkScheduler,
             ColliderBuildScheduler colliderBuildScheduler,
-            ChunkManager chunkManager,
             ChunkPool chunkPool,
             IChunkManager topLayer
         ) {
             _MeshBuildScheduler = meshBuildScheduler;
-            _ChunkScheduler = chunkScheduler;
             _ColliderBuildScheduler = colliderBuildScheduler;
 
-            _ChunkManager = chunkManager;
             _ChunkPool = chunkPool;
             _TopLayer = topLayer;
 
@@ -66,7 +59,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         // Priority Updates for Reclaim
         // At max 2 Queues are updated in total (ViewReclaimQueue, DataReclaimQueue)
         internal void FocusChunkUpdate(int3 focus_chunk_coords) {
-            _ChunkManager.FocusChunkUpdate(focus_chunk_coords);
+            // _ChunkManager.FocusChunkUpdate(focus_chunk_coords);
             _ChunkPool.FocusChunkUpdate(focus_chunk_coords);
         }
 
@@ -84,64 +77,64 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
 
         // TODO : This thing takes 4ms every frame need to make a reactive system and maybe try the fast queue
         // At max 3 Queues are updated in total (ViewQueue, DataQueue, ColliderQueue)
-        internal void SchedulerUpdate(int3 focus) {
-            var load = _Settings.Chunk.LoadDistance;
-            var draw = _Settings.Chunk.DrawDistance;
-            var update = _Settings.Chunk.ColliderDistance;
+        // internal void SchedulerUpdate(int3 focus) {
+        //     var load = _Settings.Chunk.LoadDistance;
+        //     var draw = _Settings.Chunk.DrawDistance;
+        //     var update = _Settings.Chunk.ColliderDistance;
 
-            // TODO : This is a quick little optimization for out of generation bounds pruning, +1 for meshing
-            var y_load = math.min(load, ((_Settings.Noise.Height / 2) / _Settings.Chunk.ChunkSize.y) + 1);
+        //     // TODO : This is a quick little optimization for out of generation bounds pruning, +1 for meshing
+        //     var y_load = math.min(load, ((_Settings.Noise.Height / 2) / _Settings.Chunk.ChunkSize.y) + 1);
 
-            for (var x = -load; x <= load; x++) {
-                for (var z = -load; z <= load; z++) {
-                    // Y can be contained between heigh limits instead of load limits for faster 2D world
-                    for (var y = -y_load; y <= y_load; y++) {
-                        var pos = focus + _Settings.Chunk.ChunkSize.MemberMultiply(x, y, z);
+        //     for (var x = -load; x <= load; x++) {
+        //         for (var z = -load; z <= load; z++) {
+        //             // Y can be contained between heigh limits instead of load limits for faster 2D world
+        //             for (var y = -y_load; y <= y_load; y++) {
+        //                 var pos = focus + _Settings.Chunk.ChunkSize.MemberMultiply(x, y, z);
 
-                        if (
-                            (x >= -draw && x <= draw) &&
-                            (y >= -draw && y <= draw) &&
-                            (z >= -draw && z <= draw)
-                        ) {
-                            if (_ViewQueue.Contains(pos)) {
-                                _ViewQueue.UpdatePriority(pos, (pos - focus).SqrMagnitude());
-                            } else if (ShouldScheduleForMeshing(pos) && CanGenerateMeshForChunk(pos)) {
-                                _ViewQueue.Enqueue(pos, (pos - focus).SqrMagnitude());
-                            }
-                        }
+        //                 if (
+        //                     (x >= -draw && x <= draw) &&
+        //                     (y >= -draw && y <= draw) &&
+        //                     (z >= -draw && z <= draw)
+        //                 ) {
+        //                     if (_ViewQueue.Contains(pos)) {
+        //                         _ViewQueue.UpdatePriority(pos, (pos - focus).SqrMagnitude());
+        //                     } else if (ShouldScheduleForMeshing(pos) && CanGenerateMeshForChunk(pos)) {
+        //                         _ViewQueue.Enqueue(pos, (pos - focus).SqrMagnitude());
+        //                     }
+        //                 }
                         
-                        if (
-                            (x >= -update && x <= update) &&
-                            (y >= -update && y <= update) &&
-                            (z >= -update && z <= update)
-                        ) {
-                            if (_ColliderQueue.Contains(pos)) {
-                                _ColliderQueue.UpdatePriority(pos, (pos - focus).SqrMagnitude());
-                            } else if (ShouldScheduleForBaking(pos) && CanBakeColliderForChunk(pos)) {
-                                _ColliderQueue.Enqueue(pos, (pos - focus).SqrMagnitude());
-                            }
-                        }
+        //                 if (
+        //                     (x >= -update && x <= update) &&
+        //                     (y >= -update && y <= update) &&
+        //                     (z >= -update && z <= update)
+        //                 ) {
+        //                     if (_ColliderQueue.Contains(pos)) {
+        //                         _ColliderQueue.UpdatePriority(pos, (pos - focus).SqrMagnitude());
+        //                     } else if (ShouldScheduleForBaking(pos) && CanBakeColliderForChunk(pos)) {
+        //                         _ColliderQueue.Enqueue(pos, (pos - focus).SqrMagnitude());
+        //                     }
+        //                 }
 
-                        if (_DataQueue.Contains(pos)) {
-                            _DataQueue.UpdatePriority(pos, (pos - focus).SqrMagnitude());
-                        } else if (ShouldScheduleForGenerating(pos)) {
-                            _DataQueue.Enqueue(pos, (pos - focus).SqrMagnitude());
-                        }
-                    }
-                }
-            }
-        }
+        //                 if (_DataQueue.Contains(pos)) {
+        //                     _DataQueue.UpdatePriority(pos, (pos - focus).SqrMagnitude());
+        //                 } else if (ShouldScheduleForGenerating(pos)) {
+        //                     _DataQueue.Enqueue(pos, (pos - focus).SqrMagnitude());
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         internal void JobUpdate() {
-            if (_DataQueue.Count > 0 && _ChunkScheduler.IsReady) {
-                var count = math.min(_Settings.Scheduler.StreamingBatchSize, _DataQueue.Count);
+            // if (_DataQueue.Count > 0 && _ChunkScheduler.IsReady) {
+            //     var count = math.min(_Settings.Scheduler.StreamingBatchSize, _DataQueue.Count);
                 
-                for (var i = 0; i < count; i++) {
-                    _DataSet.Add(_DataQueue.Dequeue());
-                }
+            //     for (var i = 0; i < count; i++) {
+            //         _DataSet.Add(_DataQueue.Dequeue());
+            //     }
                 
-                _ChunkScheduler.Start(_DataSet.ToList());
-            }  
+            //     _ChunkScheduler.Start(_DataSet.ToList());
+            // }  
             
             if (_ViewQueue.Count > 0 && _MeshBuildScheduler.IsReady) {
                 var count = math.min(_Settings.Scheduler.MeshingBatchSize, _ViewQueue.Count);
@@ -171,10 +164,10 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         }
 
         internal void SchedulerLateUpdate() {
-            if (_ChunkScheduler.IsComplete && !_ChunkScheduler.IsReady) {
-                _ChunkScheduler.Complete();
-                _DataSet.Clear();
-            }
+            // if (_ChunkScheduler.IsComplete && !_ChunkScheduler.IsReady) {
+            //     _ChunkScheduler.Complete();
+            //     _DataSet.Clear();
+            // }
             
             if (_MeshBuildScheduler.IsComplete && !_MeshBuildScheduler.IsReady) {
                 _MeshBuildScheduler.Complete();
@@ -188,14 +181,8 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         }
 
         internal void Dispose() {
-            _ChunkScheduler.Dispose();
             _MeshBuildScheduler.Dispose();
             _ColliderBuildScheduler.Dispose();
-        }
-
-        private bool ShouldScheduleForGenerating(int3 position)
-        {
-            return !_ChunkManager.IsChunkLoaded(position) && !_DataSet.Contains(position);
         }
 
         private bool ShouldScheduleForMeshing2(int3 position)
@@ -207,21 +194,10 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
             && !_ViewSet.Contains(position);
         }
 
-        private bool ShouldScheduleForMeshing(int3 position)
-        {
-            return 
-            // Should be loaded and not an air chunk
-            (_ChunkManager.IsChunkLoaded(position) && !_ChunkManager.IsAirChunk(position)) &&
-            // Should not be active or should be marked for re-build
-            (!_ChunkPool.IsActive(position) || _ChunkManager.ShouldReMesh(position))
-            // Should not be scheduled in a job 
-            && !_ViewSet.Contains(position);
-        }
-
-        private bool ShouldScheduleForBaking(int3 position)
-        {
-            return (!_ChunkPool.IsCollidable(position) || _ChunkManager.ShouldReCollide(position)) && !_ColliderSet.Contains(position);
-        }
+        // private bool ShouldScheduleForBaking(int3 position)
+        // {
+        //     return (!_ChunkPool.IsCollidable(position) || _ChunkManager.ShouldReCollide(position)) && !_ColliderSet.Contains(position);
+        // }
 
         /// <summary>
         /// Checks if the specified chunks and it's neighbors are generated
@@ -241,31 +217,11 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
             return result;
         }
 
-        /// <summary>
-        /// Checks if the specified chunks and it's neighbors are generated
-        /// </summary>
-        /// <param name="position">Position of chunk to check</param>
-        /// <returns>Is it ready to be meshed</returns>
-        private bool CanGenerateMeshForChunk(int3 position) {
-            var result = true;
-            
-            for (var x = -1; x <= 1; x++) {
-                for (var z = -1; z <= 1; z++) {
-                    for (var y = -1; y <= 1; y++) {
-                        var pos = position + _Settings.Chunk.ChunkSize.MemberMultiply(x, y, z);
-                        result &= _ChunkManager.IsChunkLoaded(pos);
-                    }
-                }
-            }
-
-            return result;
-        }
-
         private bool CanBakeColliderForChunk(int3 position) => _ChunkPool.IsActive(position);
 
         #region RuntimeStatsAPI
 
-        public float DataAvgTiming => _ChunkScheduler.AvgTime;
+        public float DataAvgTiming => 0f;
         public float MeshAvgTiming => _MeshBuildScheduler.AvgTime;
         public float BakeAvgTiming => _ColliderBuildScheduler.AvgTime;
 
