@@ -139,9 +139,11 @@ namespace CodeBlaze.Vloxy.Engine.World {
             Settings.Chunk.LoadDistance = Settings.Chunk.DrawDistance + 1;
             Settings.Chunk.ColliderDistance = math.min(Settings.Chunk.DrawDistance - 2, 2);
 
-            _BoundOffset = -1 * Settings.Chunk.DrawDistance * 32;
-            _BoundSize = (-2 * _BoundOffset) + 32;
-            _GenerationSource.size = new Point(_BoundSize + 32, _BoundSize + 32);
+            var chunk_size = Settings.Chunk.ChunkSize.x;
+
+            _BoundOffset = -1 * Settings.Chunk.DrawDistance * chunk_size;
+            _BoundSize = (-2 * _BoundOffset) + chunk_size;
+            _GenerationSource.size = new Point(_BoundSize + chunk_size, _BoundSize + chunk_size);
 
             // TODO : ideally these should be dynamic based on device
             // Settings.Scheduler.MeshingBatchSize = 4;
