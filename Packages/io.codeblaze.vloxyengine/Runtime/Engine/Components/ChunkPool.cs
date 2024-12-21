@@ -40,11 +40,11 @@ namespace CodeBlaze.Vloxy.Engine.Components
         internal ChunkPool(Transform transform, VloxySettings settings)
         {
             _ChunkSize = settings.Chunk.ChunkSize;
-            _ChunkPoolSize = settings.Chunk.DrawDistance.CubedSize();
+            _ChunkPoolSize = settings.Chunk.DrawDistance.XZSize();
             _DrawDistanceVec = new int3(1, 1, 1) * settings.Chunk.DrawDistance;
 
             _MeshMap = new Dictionary<int3, ChunkBehaviour>(_ChunkPoolSize);
-            _ColliderSet = new HashSet<int3>(settings.Chunk.ColliderDistance.CubedSize());
+            _ColliderSet = new HashSet<int3>(settings.Chunk.ColliderDistance.XZSize());
             _Queue = new SimpleFastPriorityQueue<int3, int>();
 
             _FocusUpdateReclaimList = new List<int3>();
@@ -88,51 +88,61 @@ namespace CodeBlaze.Vloxy.Engine.Components
         internal bool IsActive(int3 pos) => _MeshMap.ContainsKey(pos);
         internal bool IsCollidable(int3 pos) => _ColliderSet.Contains(pos);
 
-        internal void FocusChunkUpdate(int3 focus_chunk_coords)
+        internal void ReclaimChunks(List<int3> positions)
         {
-            _FocusChunkCoords = focus_chunk_coords;
-
-            foreach (var chunk_position in _Queue)
+            foreach (var chunk_position in positions)
             {
-                var should_reclaim = (math.abs(_FocusChunkCoords - chunk_position) / _ChunkSize > _DrawDistanceVec)
-                .OrReduce();
-
-                // Reclaim far chunks, imp to do here due to air chunk skip
-                if (should_reclaim)
-                {
-                    _FocusUpdateReclaimList.Add(chunk_position);
-                }
-                else
-                {
-                    _Queue.UpdatePriority(chunk_position, -(chunk_position - _FocusChunkCoords).SqrMagnitude());
-                }
-            }
-
-            if (_FocusUpdateReclaimList.Count > 0)
-            {
-                foreach (var chunk_position in _FocusUpdateReclaimList)
-                {
-                    _Queue.Remove(chunk_position);
+                if (_MeshMap.ContainsKey(chunk_position))
                     ReclaimChunk(chunk_position);
-                }
-
-                _FocusUpdateReclaimList.Clear();
             }
         }
 
+        // internal void FocusChunkUpdate(int3 focus_chunk_coords)
+        // {
+        //     _FocusChunkCoords = focus_chunk_coords;
+
+        //     foreach (var chunk_position in _Queue)
+        //     {
+        //         var should_reclaim = (math.abs(_FocusChunkCoords - chunk_position) / _ChunkSize > _DrawDistanceVec)
+        //         .OrReduce();
+
+        //         // Reclaim far chunks, imp to do here due to air chunk skip
+        //         if (should_reclaim)
+        //         {
+        //             _FocusUpdateReclaimList.Add(chunk_position);
+        //         }
+        //         else
+        //         {
+        //             _Queue.UpdatePriority(chunk_position, -(chunk_position - _FocusChunkCoords).SqrMagnitude());
+        //         }
+        //     }
+
+        //     if (_FocusUpdateReclaimList.Count > 0)
+        //     {
+        //         foreach (var chunk_position in _FocusUpdateReclaimList)
+        //         {
+        //             _Queue.Remove(chunk_position);
+        //             ReclaimChunk(chunk_position);
+        //         }
+
+        //         _FocusUpdateReclaimList.Clear();
+        //     }
+        // }
+
         internal ChunkBehaviour Claim(int3 position)
         {
+            Debug.Log(position);
             if (_MeshMap.ContainsKey(position))
             {
                 throw new InvalidOperationException($"Chunk ({position}) already active");
             }
 
             // Reclaim
-            if (_Queue.Count >= _ChunkPoolSize)
-            {
-                var reclaim_position = _Queue.Dequeue();
-                ReclaimChunk(reclaim_position);
-            }
+            // if (_Queue.Count >= _ChunkPoolSize)
+            // {
+            //     var reclaim_position = _Queue.Dequeue();
+            //     ReclaimChunk(reclaim_position);
+            // }
 
             // Claim
             var behaviour = _Pool.Get();
@@ -141,7 +151,7 @@ namespace CodeBlaze.Vloxy.Engine.Components
             behaviour.name = $"Chunk({position})";
 
             _MeshMap.Add(position, behaviour);
-            _Queue.Enqueue(position, -(position - _FocusChunkCoords).SqrMagnitude());
+            // _Queue.Enqueue(position, -(position - _FocusChunkCoords).SqrMagnitude());
 
             return behaviour;
         }

@@ -56,19 +56,24 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         // At max 2 Queues are updated in total (ViewReclaimQueue, DataReclaimQueue)
         internal void FocusChunkUpdate(int3 focus_chunk_coords) {
             // _ChunkManager.FocusChunkUpdate(focus_chunk_coords);
-            _ChunkPool.FocusChunkUpdate(focus_chunk_coords);
+            // _ChunkPool.FocusChunkUpdate(focus_chunk_coords);
         }
 
-        internal void SchedulerUpdate(GridBounds diff, int3 focus) {
-            var chunk_positions = _ChunkManager.GetChunksInBounds(diff);
+        internal void SchedulerUpdate(int3 focus, GridBounds new_diff, GridBounds old_diff) {
+            if (old_diff.min != Point.one * int.MinValue) {
+                var old_chunk_positions = _ChunkManager.GetChunkPositionsInBounds(old_diff);
+                _ChunkPool.ReclaimChunks(old_chunk_positions);
+            }
 
-            foreach (var chunk_pos in chunk_positions) {
+            var new_chunk_positions = _ChunkManager.GetChunkPositionsInBounds(new_diff);
+            foreach (var chunk_pos in new_chunk_positions) {
                 if (_ViewQueue.Contains(chunk_pos)) {
                     _ViewQueue.UpdatePriority(chunk_pos, (chunk_pos - focus).SqrMagnitude());
-                } else if (ShouldScheduleForMeshing(chunk_pos) && CanGenerateMeshForChunk(chunk_pos)) {
+                } else if (ShouldScheduleForMeshing(chunk_pos) /*&& CanGenerateMeshForChunk(chunk_pos)*/) {
                     _ViewQueue.Enqueue(chunk_pos, (chunk_pos - focus).SqrMagnitude());
                 }
             }
+            
         }
 
         internal void JobUpdate() {
@@ -76,12 +81,17 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
                 var count = math.min(_Settings.Scheduler.MeshingBatchSize, _ViewQueue.Count);
                 
                 for (var i = 0; i < count; i++) {
-                    var chunk = _ViewQueue.Dequeue();
+                    var chunk = _ViewQueue.First;
                     
                     // The chunk may be removed from memory by the time we schedule,
                     // Should we check this only here ?
-                    if (CanGenerateMeshForChunk(chunk)) _ViewSet.Add(chunk);
+                    if (CanGenerateMeshForChunk(chunk)) {
+                        _ViewQueue.Dequeue();
+                        _ViewSet.Add(chunk);
+                    }
                 }
+
+                Debug.Log(_ViewSet.Count);
 
                 _MeshBuildScheduler.Start(_ViewSet.ToList());
             }

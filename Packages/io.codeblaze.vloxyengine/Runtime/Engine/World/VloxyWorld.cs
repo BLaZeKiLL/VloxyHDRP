@@ -27,8 +27,8 @@ namespace CodeBlaze.Vloxy.Engine.World {
         public VloxySettings Settings => _Settings;
         public int3 FocusChunkCoord { get; private set; }
         public GridBounds LastUpdateBound { get; private set; }
-        public GridBounds DiffBounds { get; private set; } // this will be used to query chunks for meshing
-        
+        public GridBounds NextDiffBounds { get; private set; } // this will be used to query chunks for meshing
+        public GridBounds PrevDiffBounds { get; private set; }
         
         public VloxyScheduler Scheduler { get; private set; }
         public NoiseProfile NoiseProfile { get; private set; }
@@ -76,7 +76,9 @@ namespace CodeBlaze.Vloxy.Engine.World {
             
             FocusChunkCoord = new int3(1,1,1) * int.MinValue;
             LastUpdateBound = new(int.MinValue, int.MinValue, _BoundSize, _BoundSize);
-            DiffBounds = LastUpdateBound;
+
+            NextDiffBounds = LastUpdateBound;
+            PrevDiffBounds = LastUpdateBound;
 
             WorldAwake();
         }
@@ -93,16 +95,23 @@ namespace CodeBlaze.Vloxy.Engine.World {
             if (!(NewFocusChunkCoord == FocusChunkCoord).AndReduce()) {
                 FocusChunkCoord = NewFocusChunkCoord;
                 GridBounds NewUpdateBound = new(_BoundOffset + FocusChunkCoord.x, _BoundOffset + FocusChunkCoord.z, _BoundSize, _BoundSize);
-                DiffBounds = NewUpdateBound.DiffBounds(LastUpdateBound);
+
+                NextDiffBounds = NewUpdateBound.DiffBounds(LastUpdateBound);
+                PrevDiffBounds = LastUpdateBound.DiffBounds(NewUpdateBound);
+
                 LastUpdateBound = NewUpdateBound;
 
-                Scheduler.FocusChunkUpdate(FocusChunkCoord);
+                // Debug.Log(NextDiffBounds);
+                // Debug.Log(PrevDiffBounds);
+
+                Scheduler.SchedulerUpdate(FocusChunkCoord, NextDiffBounds, PrevDiffBounds);
+
+                // Scheduler.FocusChunkUpdate(FocusChunkCoord);
                 
                 WorldFocusUpdate();
             }
             
             // There are "should" and "could" checks that need to happen every frame as chunks may be ready
-            Scheduler.SchedulerUpdate(DiffBounds, FocusChunkCoord);
 
             // Schedule every 'x' frames (throttling)
             if (_UpdateFrame % Settings.Scheduler.TickRate == 0) {
@@ -118,7 +127,8 @@ namespace CodeBlaze.Vloxy.Engine.World {
             WorldUpdate();
 
 #if VLOXY_LOGGING
-            DebugUtils.DrawBounds(DiffBounds, Color.green);
+            DebugUtils.DrawBounds(NextDiffBounds, Color.green);
+            DebugUtils.DrawBounds(PrevDiffBounds, Color.magenta);
             DebugUtils.DrawBounds(LastUpdateBound, Color.cyan);
 #endif
         }

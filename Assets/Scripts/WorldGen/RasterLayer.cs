@@ -16,13 +16,13 @@ namespace CodeBlaze.Vloxy.Demo {
     public class RasterChunk : LayerChunk<RasterLayer, RasterChunk> 
     {
         // TODO : Can we avoid this native reference
-        public NativeReference<Chunk> Chunk { get; private set; }
+        public NativeReference<Chunk> Data { get; private set; }
         public bool Loaded { get; private set; }
 
         public override void Create(int level, bool destroy)
         {
             if (destroy) {
-                Chunk.Dispose(); // Clear instead of dispose
+                Data.Dispose(); // Clear instead of dispose
                 Loaded = false;
             } else {
                 var data = new Chunk(new int3(bounds.min.x, 0, bounds.min.y), new int3(32, 256, 32));
@@ -52,7 +52,7 @@ namespace CodeBlaze.Vloxy.Demo {
 
                 data.AddBlocks(current_block, count); // Finale interval
 
-                Chunk = new NativeReference<Chunk>(data, Allocator.Persistent);
+                Data = new NativeReference<Chunk>(data, Allocator.Persistent);
                 Loaded = true; 
             }
         }
@@ -73,23 +73,34 @@ namespace CodeBlaze.Vloxy.Demo {
         public override int chunkH => 32;
 
         private NativeParallelHashMap<int3, Chunk> _AccessorMap;
-        private readonly FastNoiseLite fnl;
+        private readonly FastNoiseLite fnl_height;
+        private readonly FastNoiseLite fnl_continent;
         private readonly int3 _ChunkSize;
 
         // public GridBounds Bounds => this.Bounds;
 
         public RasterLayer() {
-            fnl = new FastNoiseLite();
+            fnl_height = new FastNoiseLite();
 
-            fnl.SetSeed(1337);
-            fnl.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-            fnl.SetFrequency(0.01f);
-            fnl.SetFractalType(FastNoiseLite.FractalType.FBm);
-            fnl.SetFractalOctaves(3);
-            fnl.SetFractalLacunarity(2.0f);
-            fnl.SetFractalGain(0.5f);
+            fnl_height.SetSeed(777);
+            fnl_height.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+            fnl_height.SetFrequency(0.01f);
+            fnl_height.SetFractalType(FastNoiseLite.FractalType.FBm);
+            fnl_height.SetFractalOctaves(1);
+            fnl_height.SetFractalLacunarity(2.0f);
+            fnl_height.SetFractalGain(0.5f);
 
-            var meshing_batch_size = 6; // TODO : Fix Hardcode
+            fnl_continent = new FastNoiseLite();
+
+            fnl_continent.SetSeed(1337);
+            fnl_continent.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+            fnl_continent.SetFrequency(0.002f);
+            fnl_continent.SetFractalType(FastNoiseLite.FractalType.FBm);
+            fnl_continent.SetFractalOctaves(3);
+            fnl_continent.SetFractalLacunarity(2.0f);
+            fnl_continent.SetFractalGain(0.5f);
+
+            var meshing_batch_size = 4; // TODO : Fix Hardcode
 
             _AccessorMap = new NativeParallelHashMap<int3, Chunk>(
                 (meshing_batch_size + 1) * (meshing_batch_size + 1), 
@@ -100,9 +111,14 @@ namespace CodeBlaze.Vloxy.Demo {
         }
 
         public int GetNoise(float x, float z) {
-            var height = fnl.GetNoise(x, z);
-            // [-1,1] -> [0,256]
-            return math.clamp((int) math.round(height * 128), -128, 128) + 128;
+            var height = NoiseScaleShift(fnl_height.GetNoise(x, z), 32); // [-1, 1] -> [-16, 16]
+            var continent = NoiseScaleShift(fnl_continent.GetNoise(x, z), 64, 128); // [-1, 1] -> [64, 192]
+            return math.clamp(continent + height, 0, 256); // [64, 192] + [-16, 16] -> [0, 256]
+        }
+
+        private int NoiseScaleShift(float noise, int scale, int shift = 0)
+        {
+            return math.clamp((int) math.round(noise * scale), -scale, scale) + shift;
         }
 
         public bool IsChunkLoaded(int3 position)
@@ -114,13 +130,20 @@ namespace CodeBlaze.Vloxy.Demo {
             return chunk.Loaded;
         }
 
-        public List<int3> GetChunksInBounds(GridBounds bounds)
+        public List<int3> GetChunkPositionsInBounds(GridBounds bounds)
         {
             List<int3> chunks = new();
 
-            HandleChunksInBounds(null, bounds, 0, (chunk) => {
-                chunks.Add(new int3(chunk.bounds.min.x, 0 , chunk.bounds.min.y));
-            });
+            Point point = new(Crd.Div(bounds.min.x, chunkW), Crd.Div(bounds.min.y, chunkH));
+            Point point2 = new(Crd.DivUp(bounds.max.x, chunkW), Crd.DivUp(bounds.max.y, chunkH));
+
+            for (int x = point.x; x < point2.x; x++)
+            {
+                for (int z = point.y; z < point2.y; z++)
+                {
+                    chunks.Add(new int3(x * chunkW, 0 , z * chunkH));
+                }
+            }
 
             return chunks;
         }
@@ -143,8 +166,7 @@ namespace CodeBlaze.Vloxy.Demo {
 
                         if (!_AccessorMap.ContainsKey(pos))
                         {
-                            UnityEngine.Debug.Log(raster_chunk.Chunk.IsCreated);
-                            _AccessorMap.Add(pos, raster_chunk.Chunk.Value);
+                            _AccessorMap.Add(pos, raster_chunk.Data.Value);
                         }
                     }
                 }
@@ -158,7 +180,7 @@ namespace CodeBlaze.Vloxy.Demo {
         public void Dispose()
         {
             foreach (var chunk in chunks) {
-                chunk.Chunk.Dispose();
+                chunk.Data.Dispose();
             }
         }
     }

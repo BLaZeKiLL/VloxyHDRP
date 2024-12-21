@@ -16,7 +16,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
     public interface IChunkManager {
         public int ChunkCount();
         public bool IsChunkLoaded(int3 position);
-        public List<int3> GetChunksInBounds(GridBounds bounds);
+        public List<int3> GetChunkPositionsInBounds(GridBounds bounds);
         public ChunkAccessor GetAccessor(List<int3> positions);
         public void Dispose();
     }
