@@ -31,7 +31,6 @@ namespace CodeBlaze.Vloxy.Engine.World {
         public GridBounds PrevDiffBounds { get; private set; }
         
         public VloxyScheduler Scheduler { get; private set; }
-        public NoiseProfile NoiseProfile { get; private set; }
         public IChunkManager ChunkManager { get; private set; }
 
         #endregion
@@ -159,7 +158,6 @@ namespace CodeBlaze.Vloxy.Engine.World {
         }
         
         private void ConstructVloxyComponents() {
-            NoiseProfile = VloxyProvider.Current.NoiseProfile();
             ChunkManager = VloxyProvider.Current.TopLevelChunkManager();
 
             _ChunkPool = VloxyProvider.Current.ChunkPool(transform);

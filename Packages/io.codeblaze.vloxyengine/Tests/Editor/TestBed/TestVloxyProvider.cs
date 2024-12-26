@@ -8,7 +8,7 @@ namespace CodeBlaze.Vloxy.Engine.Tests.Editor.Tests.Editor.TestBed {
             return new TestVloxyProvider {
                 Settings = new VloxySettings {
                     Chunk = new ChunkSettings(),
-                    Noise = new NoiseSettings(),
+                    // Noise = new NoiseSettings(),
                     Renderer = new RendererSettings(),
                     Scheduler = new SchedulerSettings()
                 }

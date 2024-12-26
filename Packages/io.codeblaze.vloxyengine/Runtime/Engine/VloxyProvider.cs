@@ -14,16 +14,6 @@ namespace CodeBlaze.Vloxy.Engine {
 
         public VloxySettings Settings { get; set; }
 
-        internal virtual NoiseProfile NoiseProfile() => new (new NoiseProfile.Settings {
-            Height = Settings.Noise.Height,
-            WaterLevel = Settings.Noise.WaterLevel,
-            Seed = Settings.Noise.Seed,
-            Scale = Settings.Noise.Scale,
-            Lacunarity = Settings.Noise.Lacunarity,
-            Persistance = Settings.Noise.Persistance,
-            Octaves = Settings.Noise.Octaves,
-        });
-
         protected internal virtual IChunkManager TopLevelChunkManager() => null;
 
         protected internal virtual ChunkPool ChunkPool(Transform transform) => new (transform, Settings);

@@ -86,14 +86,14 @@ namespace CodeBlaze {
             }
 
             public void SetValue(VloxySettings settings) {
-                var noise = settings.Noise;
+                // var noise = settings.Noise;
 
-                noise.Height = int.Parse(_height.value);
-                noise.Seed = int.Parse(_seed.value);
-                noise.Scale = float.Parse(_frequency.value);
-                noise.Persistance = float.Parse(_gain.value);
-                noise.Lacunarity = float.Parse(_lacunarity.value);
-                noise.Octaves = int.Parse(_octaves.value);
+                // noise.Height = int.Parse(_height.value);
+                // noise.Seed = int.Parse(_seed.value);
+                // noise.Scale = float.Parse(_frequency.value);
+                // noise.Persistance = float.Parse(_gain.value);
+                // noise.Lacunarity = float.Parse(_lacunarity.value);
+                // noise.Octaves = int.Parse(_octaves.value);
             }
 
         }
