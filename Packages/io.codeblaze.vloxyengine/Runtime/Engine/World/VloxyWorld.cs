@@ -101,12 +101,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
 
                 LastUpdateBound = NewUpdateBound;
 
-                // Debug.Log(NextDiffBounds);
-                // Debug.Log(PrevDiffBounds);
-
-                Scheduler.SchedulerUpdate(FocusChunkCoord, NextDiffBounds, PrevDiffBounds);
-
-                // Scheduler.FocusChunkUpdate(FocusChunkCoord);
+                Scheduler.FocusUpdate(FocusChunkCoord, NextDiffBounds, PrevDiffBounds);
                 
                 WorldFocusUpdate();
             }
@@ -134,7 +129,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
         }
 
         private void LateUpdate() {
-            Scheduler.SchedulerLateUpdate();
+            Scheduler.LateUpdate();
 
             WorldLateUpdate();
         }

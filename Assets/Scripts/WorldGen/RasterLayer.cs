@@ -12,8 +12,9 @@ using Runevision.LayerProcGen;
 using Unity.Collections;
 using Unity.Mathematics;
 
-namespace CodeBlaze.Vloxy.Demo {
-    public class RasterChunk : LayerChunk<RasterLayer, RasterChunk> 
+namespace CodeBlaze.Vloxy.Demo
+{
+    public class RasterChunk : LayerChunk<RasterLayer, RasterChunk>
     {
         // TODO : Can we avoid this native reference
         public NativeReference<Chunk> Data { get; private set; }
@@ -21,10 +22,13 @@ namespace CodeBlaze.Vloxy.Demo {
 
         public override void Create(int level, bool destroy)
         {
-            if (destroy) {
+            if (destroy)
+            {
                 Data.Dispose(); // Clear instead of dispose
                 Loaded = false;
-            } else {
+            }
+            else
+            {
                 var data = new Chunk(new int3(bounds.min.x, 0, bounds.min.y), new int3(32, 256, 32));
 
                 var noise = layer.GetNoise(bounds.min.x, bounds.min.y);
@@ -33,15 +37,21 @@ namespace CodeBlaze.Vloxy.Demo {
                 int count = 0;
 
                 // Loop order should be same as flatten order for AddBlocks to work properly
-                for (var y = 0; y < 256; y++) {
-                    for (var z = 0; z < 32; z++) {
-                        for (var x = 0; x < 32; x++) {
+                for (var y = 0; y < 256; y++)
+                {
+                    for (var z = 0; z < 32; z++)
+                    {
+                        for (var x = 0; x < 32; x++)
+                        {
                             noise = layer.GetNoise(bounds.min.x + x, bounds.min.y + z);
                             var block = GetBlock(y, noise);
-            
-                            if (block == current_block) {
+
+                            if (block == current_block)
+                            {
                                 count++;
-                            } else {
+                            }
+                            else
+                            {
                                 data.AddBlocks(current_block, count);
                                 current_block = block;
                                 count = 1;
@@ -53,16 +63,17 @@ namespace CodeBlaze.Vloxy.Demo {
                 data.AddBlocks(current_block, count); // Finale interval
 
                 Data = new NativeReference<Chunk>(data, Allocator.Persistent);
-                Loaded = true; 
+                Loaded = true;
             }
         }
 
-        private static int GetBlock(int Y, int height) {
-            if (Y > height) return Y > 96 ? (int) Block.AIR : (int) Block.WATER;
-            if (Y == height) return (int) Block.GRASS;
-            if (Y <= height - 1 && Y >= height - 3) return (int) Block.DIRT;
+        private static int GetBlock(int Y, int height)
+        {
+            if (Y > height) return Y > 96 ? (int)Block.AIR : (int)Block.WATER;
+            if (Y == height) return (int)Block.GRASS;
+            if (Y <= height - 1 && Y >= height - 3) return (int)Block.DIRT;
 
-            return (int) Block.STONE;
+            return (int)Block.STONE;
         }
     }
 
@@ -79,7 +90,8 @@ namespace CodeBlaze.Vloxy.Demo {
 
         // public GridBounds Bounds => this.Bounds;
 
-        public RasterLayer() {
+        public RasterLayer()
+        {
             fnl_height = new FastNoiseLite();
 
             fnl_height.SetSeed(777);
@@ -103,14 +115,15 @@ namespace CodeBlaze.Vloxy.Demo {
             var meshing_batch_size = 4; // TODO : Fix Hardcode
 
             _AccessorMap = new NativeParallelHashMap<int3, Chunk>(
-                (meshing_batch_size + 1) * (meshing_batch_size + 1), 
+                (meshing_batch_size + 1) * (meshing_batch_size + 1),
                 Allocator.Persistent
             );
 
             _ChunkSize = new int3(32, 256, 32); // TODO : Fix Hardcode
         }
 
-        public int GetNoise(float x, float z) {
+        public int GetNoise(float x, float z)
+        {
             var height = NoiseScaleShift(fnl_height.GetNoise(x, z), 32); // [-1, 1] -> [-16, 16]
             var continent = NoiseScaleShift(fnl_continent.GetNoise(x, z), 64, 128); // [-1, 1] -> [64, 192]
             return math.clamp(continent + height, 0, 256); // [64, 192] + [-16, 16] -> [0, 256]
@@ -118,7 +131,7 @@ namespace CodeBlaze.Vloxy.Demo {
 
         private int NoiseScaleShift(float noise, int scale, int shift = 0)
         {
-            return math.clamp((int) math.round(noise * scale), -scale, scale) + shift;
+            return math.clamp((int)math.round(noise * scale), -scale, scale) + shift;
         }
 
         public bool IsChunkLoaded(int3 position)
@@ -141,7 +154,7 @@ namespace CodeBlaze.Vloxy.Demo {
             {
                 for (int z = point.y; z < point2.y; z++)
                 {
-                    chunks.Add(new int3(x * chunkW, 0 , z * chunkH));
+                    chunks.Add(new int3(x * chunkW, 0, z * chunkH));
                 }
             }
 
@@ -152,12 +165,16 @@ namespace CodeBlaze.Vloxy.Demo {
         {
             _AccessorMap.Clear();
 
-            foreach (var position in positions) {
-                for (var x = -1; x <= 1; x++) {
-                    for (var z = -1; z <= 1; z++) {
-                        var pos = position + _ChunkSize.MemberMultiply(x,0,z);
+            foreach (var position in positions)
+            {
+                for (var x = -1; x <= 1; x++)
+                {
+                    for (var z = -1; z <= 1; z++)
+                    {
+                        var pos = position + _ChunkSize.MemberMultiply(x, 0, z);
 
-                        if (!IsChunkLoaded(pos)) {
+                        if (!IsChunkLoaded(pos))
+                        {
                             // Anytime this exception is thrown, mesh building completely stops
                             throw new InvalidOperationException($"Chunk {pos} has not been generated");
                         }
@@ -179,7 +196,8 @@ namespace CodeBlaze.Vloxy.Demo {
 
         public void Dispose()
         {
-            foreach (var chunk in chunks) {
+            foreach (var chunk in chunks)
+            {
                 chunk.Data.Dispose();
             }
         }
