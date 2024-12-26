@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿using Runevision.Common;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Mathematics;
 
@@ -67,6 +68,8 @@ namespace CodeBlaze.Vloxy.Engine.Utils.Extensions {
         public static int3 Int3(this Vector3Int vec) => new(vec.x, vec.y, vec.z);
         
         public static int3 Int3(this Vector3 vec) => Vector3Int.FloorToInt(vec).Int3();
+
+        public static Point Point(this int3 vec) => new(vec.x, vec.z);
 
     }
     

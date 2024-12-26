@@ -26,7 +26,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
         public Transform Focus => _Focus;
         public VloxySettings Settings => _Settings;
         public int3 FocusChunkCoord { get; private set; }
-        public GridBounds LastUpdateBound { get; private set; }
+        public GridBounds CurrentUpdateBound { get; private set; }
         public GridBounds NextDiffBounds { get; private set; } // this will be used to query chunks for meshing
         public GridBounds PrevDiffBounds { get; private set; }
         
@@ -75,10 +75,10 @@ namespace CodeBlaze.Vloxy.Engine.World {
             ConstructVloxyComponents();
             
             FocusChunkCoord = new int3(1,1,1) * int.MinValue;
-            LastUpdateBound = new(int.MinValue, int.MinValue, _BoundSize, _BoundSize);
+            CurrentUpdateBound = new(int.MinValue, int.MinValue, _BoundSize, _BoundSize);
 
-            NextDiffBounds = LastUpdateBound;
-            PrevDiffBounds = LastUpdateBound;
+            NextDiffBounds = CurrentUpdateBound;
+            PrevDiffBounds = CurrentUpdateBound;
 
             WorldAwake();
         }
@@ -96,10 +96,10 @@ namespace CodeBlaze.Vloxy.Engine.World {
                 FocusChunkCoord = NewFocusChunkCoord;
                 GridBounds NewUpdateBound = new(_BoundOffset + FocusChunkCoord.x, _BoundOffset + FocusChunkCoord.z, _BoundSize, _BoundSize);
 
-                NextDiffBounds = NewUpdateBound.DiffBounds(LastUpdateBound);
-                PrevDiffBounds = LastUpdateBound.DiffBounds(NewUpdateBound);
+                NextDiffBounds = NewUpdateBound.DiffBounds(CurrentUpdateBound);
+                PrevDiffBounds = CurrentUpdateBound.DiffBounds(NewUpdateBound);
 
-                LastUpdateBound = NewUpdateBound;
+                CurrentUpdateBound = NewUpdateBound;
 
                 Scheduler.FocusUpdate(FocusChunkCoord, NextDiffBounds, PrevDiffBounds);
                 
@@ -112,7 +112,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
             if (_UpdateFrame % Settings.Scheduler.TickRate == 0) {
                 _UpdateFrame = 1;
 
-                Scheduler.JobUpdate();
+                Scheduler.JobUpdate(CurrentUpdateBound);
 
                 WorldSchedulerUpdate();
             } else {
@@ -124,7 +124,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
 #if VLOXY_LOGGING
             DebugUtils.DrawBounds(NextDiffBounds, Color.green);
             DebugUtils.DrawBounds(PrevDiffBounds, Color.magenta);
-            DebugUtils.DrawBounds(LastUpdateBound, Color.cyan);
+            DebugUtils.DrawBounds(CurrentUpdateBound, Color.cyan);
 #endif
         }
 

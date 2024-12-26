@@ -88,7 +88,7 @@ namespace CodeBlaze.Vloxy.Engine.Components
 
         internal ChunkBehaviour Claim(int3 position)
         {
-            Debug.Log(position);
+            // Debug.Log(position);
             if (_MeshMap.ContainsKey(position))
             {
                 throw new InvalidOperationException($"Chunk ({position}) already active");

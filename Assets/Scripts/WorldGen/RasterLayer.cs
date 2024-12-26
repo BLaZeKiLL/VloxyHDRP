@@ -98,7 +98,7 @@ namespace CodeBlaze.Vloxy.Demo
             fnl_height.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
             fnl_height.SetFrequency(0.01f);
             fnl_height.SetFractalType(FastNoiseLite.FractalType.FBm);
-            fnl_height.SetFractalOctaves(1);
+            fnl_height.SetFractalOctaves(3);
             fnl_height.SetFractalLacunarity(2.0f);
             fnl_height.SetFractalGain(0.5f);
 
@@ -106,7 +106,7 @@ namespace CodeBlaze.Vloxy.Demo
 
             fnl_continent.SetSeed(1337);
             fnl_continent.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-            fnl_continent.SetFrequency(0.002f);
+            fnl_continent.SetFrequency(0.00001f);
             fnl_continent.SetFractalType(FastNoiseLite.FractalType.FBm);
             fnl_continent.SetFractalOctaves(3);
             fnl_continent.SetFractalLacunarity(2.0f);
@@ -124,7 +124,7 @@ namespace CodeBlaze.Vloxy.Demo
 
         public int GetNoise(float x, float z)
         {
-            var height = NoiseScaleShift(fnl_height.GetNoise(x, z), 32); // [-1, 1] -> [-16, 16]
+            var height = NoiseScaleShift(fnl_height.GetNoise(x, z), 16); // [-1, 1] -> [-16, 16]
             var continent = NoiseScaleShift(fnl_continent.GetNoise(x, z), 64, 128); // [-1, 1] -> [64, 192]
             return math.clamp(continent + height, 0, 256); // [64, 192] + [-16, 16] -> [0, 256]
         }

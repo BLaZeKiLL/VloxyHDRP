@@ -12,10 +12,12 @@ using Runevision.Common;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Engine.Jobs {
-    
-    public class VloxyScheduler {
-        
+namespace CodeBlaze.Vloxy.Engine.Jobs
+{
+
+    public class VloxyScheduler
+    {
+
         private readonly MeshBuildScheduler _MeshBuildScheduler;
         private readonly ColliderBuildScheduler _ColliderBuildScheduler;
 
@@ -31,12 +33,13 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         private readonly VloxySettings _Settings;
 
         internal VloxyScheduler(
-            VloxySettings settings, 
+            VloxySettings settings,
             MeshBuildScheduler meshBuildScheduler,
             ColliderBuildScheduler colliderBuildScheduler,
             ChunkPool chunkPool,
             IChunkManager chunkManager
-        ) {
+        )
+        {
             _MeshBuildScheduler = meshBuildScheduler;
             _ColliderBuildScheduler = colliderBuildScheduler;
 
@@ -52,67 +55,94 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
             _Settings = settings;
         }
 
-        internal void FocusUpdate(int3 focus, GridBounds new_diff, GridBounds old_diff) {
-            if (old_diff.min != Point.one * int.MinValue) {
+        internal void FocusUpdate(int3 focus, GridBounds new_diff, GridBounds old_diff)
+        {
+            if (old_diff.min != Point.one * int.MinValue)
+            {
                 var old_chunk_positions = _ChunkManager.GetChunkPositionsInBounds(old_diff);
                 _ChunkPool.ReclaimChunks(old_chunk_positions);
             }
 
             var new_chunk_positions = _ChunkManager.GetChunkPositionsInBounds(new_diff);
-            foreach (var chunk_pos in new_chunk_positions) {
-                if (_ViewQueue.Contains(chunk_pos)) {
+
+            foreach (var chunk_pos in new_chunk_positions)
+            {
+                if (_ViewQueue.Contains(chunk_pos))
+                {
                     _ViewQueue.UpdatePriority(chunk_pos, (chunk_pos - focus).SqrMagnitude());
-                } else if (ShouldScheduleForMeshing(chunk_pos) /*&& CanGenerateMeshForChunk(chunk_pos)*/) {
+                }
+                else if (ShouldScheduleForMeshing(chunk_pos) /*&& CanGenerateMeshForChunk(chunk_pos)*/)
+                {
                     _ViewQueue.Enqueue(chunk_pos, (chunk_pos - focus).SqrMagnitude());
                 }
             }
-            
+
         }
 
-        internal void JobUpdate() {
-            if (_ViewQueue.Count > 0 && _MeshBuildScheduler.IsReady) {
+        internal void JobUpdate(GridBounds current_update_bound)
+        {
+            if (_ViewQueue.Count > 0 && _MeshBuildScheduler.IsReady)
+            {
                 var count = math.min(_Settings.Scheduler.MeshingBatchSize, _ViewQueue.Count);
-                
-                for (var i = 0; i < count; i++) {
+                for (var i = 0; i < count; i++)
+                {
                     var chunk = _ViewQueue.First;
-                    
+
+                    // Remove chunks no longer in current bound
+                    if (!current_update_bound.Contains(chunk.Point()))
+                    {
+                        _ViewQueue.Dequeue();
+                        continue;
+                    }
+
                     // The chunk may be removed from memory by the time we schedule,
                     // Should we check this only here ?
-                    if (CanGenerateMeshForChunk(chunk)) {
+                    if (CanGenerateMeshForChunk(chunk))
+                    {
                         _ViewQueue.Dequeue();
                         _ViewSet.Add(chunk);
                     }
+                    // else
+                    // {
+                    //     VloxyLogger.Warn<VloxyScheduler>($"Can't Mesh Chunk {chunk}");
+                    // }
                 }
 
                 _MeshBuildScheduler.Start(_ViewSet.ToList());
             }
 
-            if (_ColliderQueue.Count > 0 && _ColliderBuildScheduler.IsReady) {
+            if (_ColliderQueue.Count > 0 && _ColliderBuildScheduler.IsReady)
+            {
                 var count = math.min(_Settings.Scheduler.ColliderBatchSize, _ColliderQueue.Count);
 
-                for (var i = 0; i < count; i++) {
+                for (var i = 0; i < count; i++)
+                {
                     var position = _ColliderQueue.Dequeue();
 
                     if (CanBakeColliderForChunk(position)) _ColliderSet.Add(position);
                 }
-                
+
                 _ColliderBuildScheduler.Start(_ColliderSet.ToList());
             }
         }
 
-        internal void LateUpdate() {
-            if (_MeshBuildScheduler.IsComplete && !_MeshBuildScheduler.IsReady) {
+        internal void LateUpdate()
+        {
+            if (_MeshBuildScheduler.IsComplete && !_MeshBuildScheduler.IsReady)
+            {
                 _MeshBuildScheduler.Complete();
                 _ViewSet.Clear();
             }
 
-            if (_ColliderBuildScheduler.IsComplete && !_ColliderBuildScheduler.IsReady) {
+            if (_ColliderBuildScheduler.IsComplete && !_ColliderBuildScheduler.IsReady)
+            {
                 _ColliderBuildScheduler.Complete();
                 _ColliderSet.Clear();
             }
         }
 
-        internal void Dispose() {
+        internal void Dispose()
+        {
             _ChunkManager.Dispose();
             _MeshBuildScheduler.Dispose();
             _ColliderBuildScheduler.Dispose();
@@ -120,7 +150,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
 
         private bool ShouldScheduleForMeshing(int3 position)
         {
-            return 
+            return
             // Should not be active or should be marked for re-build
             (!_ChunkPool.IsActive(position) /* || _ChunkManager.ShouldReMesh(position), need to handle this somewhere */)
             // Should not be scheduled in a job 
@@ -137,11 +167,14 @@ namespace CodeBlaze.Vloxy.Engine.Jobs {
         /// </summary>
         /// <param name="position">Position of chunk to check</param>
         /// <returns>Is it ready to be meshed</returns>
-        private bool CanGenerateMeshForChunk(int3 position) {
+        private bool CanGenerateMeshForChunk(int3 position)
+        {
             var result = true;
-            
-            for (var x = -1; x <= 1; x++) {
-                for (var z = -1; z <= 1; z++) {
+
+            for (var x = -1; x <= 1; x++)
+            {
+                for (var z = -1; z <= 1; z++)
+                {
                     var pos = position + _Settings.Chunk.ChunkSize.MemberMultiply(x, 0, z);
                     result &= _ChunkManager.IsChunkLoaded(pos);
                 }
