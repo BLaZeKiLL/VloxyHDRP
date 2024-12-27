@@ -1,42 +1,31 @@
-using System;
-using CodeBlaze.Vloxy.Engine.Noise;
-using CodeBlaze.Vloxy.Engine.Settings;
-using Unity.Mathematics;
+using CodeBlaze.Vloxy.Demo;
 using UnityEditor;
 using UnityEngine;
 
 namespace CodeBlaze.Editor {
 
-    [CustomEditor(typeof(NoiseSettings))]
+    [CustomEditor(typeof(FastNoiseLiteProfile))]
     public class NoiseEditor : UnityEditor.Editor {
 
-        private NoiseProfile NoiseProfile;
+        private FastNoiseLite FNL;
         private Texture2D Image;
 
-        private int PreviewScale = 10;
+        private int PreviewScale = 1;
 
         private void OnEnable() {
             Image = new Texture2D(256, 256);
         }
         
         private void GeneratePreview() {
-            var settings = (NoiseSettings) target;
+            var profile = (FastNoiseLiteProfile) target;
 
-            NoiseProfile = new NoiseProfile(new NoiseProfile.Settings {
-                Height = settings.Height,
-                WaterLevel = settings.WaterLevel,
-                Seed = settings.Seed,
-                Scale = settings.Scale,
-                Lacunarity = settings.Lacunarity,
-                Persistance = settings.Persistance,
-                Octaves = settings.Octaves
-            });
+            FNL = FastNoiseLiteExtensions.FromProfile(profile);   
 
             for (var x = 0; x < Image.width; x++) {
                 for (var y = 0; y < Image.height; y++) {
-                    var noise = NoiseProfile.GetNoise(new int3(x, 0, y) * PreviewScale);
+                    var noise_value = FNL.GetNoise(x * PreviewScale, y * PreviewScale);
 
-                    var height = ((float) noise.Height + settings.Height / 2) / settings.Height;
+                    var height = ((float) noise_value + 1) / 2;
                     
                     Image.SetPixel(x, y, new Color(height, height, height));
                 }

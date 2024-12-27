@@ -92,25 +92,25 @@ namespace CodeBlaze.Vloxy.Demo
 
         public RasterLayer()
         {
-            fnl_height = new FastNoiseLite();
+            fnl_height = FastNoiseLiteExtensions.FromProfile(WorldData.Current.HeightNoiseProfile);
 
-            fnl_height.SetSeed(777);
-            fnl_height.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-            fnl_height.SetFrequency(0.01f);
-            fnl_height.SetFractalType(FastNoiseLite.FractalType.FBm);
-            fnl_height.SetFractalOctaves(3);
-            fnl_height.SetFractalLacunarity(2.0f);
-            fnl_height.SetFractalGain(0.5f);
+            // fnl_height.SetSeed(777);
+            // fnl_height.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+            // fnl_height.SetFrequency(0.01f);
+            // fnl_height.SetFractalType(FastNoiseLite.FractalType.FBm);
+            // fnl_height.SetFractalOctaves(3);
+            // fnl_height.SetFractalLacunarity(2.0f);
+            // fnl_height.SetFractalGain(0.5f);
 
-            fnl_continent = new FastNoiseLite();
+            fnl_continent = FastNoiseLiteExtensions.FromProfile(WorldData.Current.ContinentNoiseProfile);
 
-            fnl_continent.SetSeed(1337);
-            fnl_continent.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-            fnl_continent.SetFrequency(0.00001f);
-            fnl_continent.SetFractalType(FastNoiseLite.FractalType.FBm);
-            fnl_continent.SetFractalOctaves(3);
-            fnl_continent.SetFractalLacunarity(2.0f);
-            fnl_continent.SetFractalGain(0.5f);
+            // fnl_continent.SetSeed(1337);
+            // fnl_continent.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+            // fnl_continent.SetFrequency(0.00001f);
+            // fnl_continent.SetFractalType(FastNoiseLite.FractalType.FBm);
+            // fnl_continent.SetFractalOctaves(3);
+            // fnl_continent.SetFractalLacunarity(2.0f);
+            // fnl_continent.SetFractalGain(0.5f);
 
             var meshing_batch_size = 4; // TODO : Fix Hardcode
 
