@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: ContinentNoiseProfile
   m_EditorClassIdentifier: 
   Seed: 1337
-  Frequency: 0.0005
+  Frequency: 0.01
   NoiseType: 1
-  FractalType: 1
+  FractalType: 0
   FractalGain: 0.5
   FractalLacunarity: 2
   FractalOctaves: 8

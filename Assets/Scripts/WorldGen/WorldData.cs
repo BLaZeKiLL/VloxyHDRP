@@ -8,8 +8,10 @@ namespace CodeBlaze.Vloxy.Demo
     {
         [SerializeField] private FastNoiseLiteProfile _HeightNoiseProfile;
         [SerializeField] private FastNoiseLiteProfile _ContinentNoiseProfile;
+        [SerializeField] private AnimationCurve _ContinentRemapCurve;
 
         public FastNoiseLiteProfile HeightNoiseProfile => _HeightNoiseProfile;
         public FastNoiseLiteProfile ContinentNoiseProfile => _ContinentNoiseProfile;
+        public BakedAnimationCurve ContinentRemapCurve => new(_ContinentRemapCurve, 4096);
     }
 }

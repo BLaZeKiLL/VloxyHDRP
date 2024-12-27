@@ -11,6 +11,7 @@ using Runevision.LayerProcGen;
 
 using Unity.Collections;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Demo
 {
@@ -69,7 +70,7 @@ namespace CodeBlaze.Vloxy.Demo
 
         private static int GetBlock(int Y, int height)
         {
-            if (Y > height) return Y > 96 ? (int)Block.AIR : (int)Block.WATER;
+            if (Y > height) return Y > 60 ? (int)Block.AIR : (int)Block.WATER;
             if (Y == height) return (int)Block.GRASS;
             if (Y <= height - 1 && Y >= height - 3) return (int)Block.DIRT;
 
@@ -86,6 +87,7 @@ namespace CodeBlaze.Vloxy.Demo
         private NativeParallelHashMap<int3, Chunk> _AccessorMap;
         private readonly FastNoiseLite fnl_height;
         private readonly FastNoiseLite fnl_continent;
+        private readonly BakedAnimationCurve continent_curve;
         private readonly int3 _ChunkSize;
 
         // public GridBounds Bounds => this.Bounds;
@@ -93,24 +95,9 @@ namespace CodeBlaze.Vloxy.Demo
         public RasterLayer()
         {
             fnl_height = FastNoiseLiteExtensions.FromProfile(WorldData.Current.HeightNoiseProfile);
-
-            // fnl_height.SetSeed(777);
-            // fnl_height.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-            // fnl_height.SetFrequency(0.01f);
-            // fnl_height.SetFractalType(FastNoiseLite.FractalType.FBm);
-            // fnl_height.SetFractalOctaves(3);
-            // fnl_height.SetFractalLacunarity(2.0f);
-            // fnl_height.SetFractalGain(0.5f);
-
             fnl_continent = FastNoiseLiteExtensions.FromProfile(WorldData.Current.ContinentNoiseProfile);
 
-            // fnl_continent.SetSeed(1337);
-            // fnl_continent.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
-            // fnl_continent.SetFrequency(0.00001f);
-            // fnl_continent.SetFractalType(FastNoiseLite.FractalType.FBm);
-            // fnl_continent.SetFractalOctaves(3);
-            // fnl_continent.SetFractalLacunarity(2.0f);
-            // fnl_continent.SetFractalGain(0.5f);
+            continent_curve = WorldData.Current.ContinentRemapCurve;
 
             var meshing_batch_size = 4; // TODO : Fix Hardcode
 
@@ -125,13 +112,34 @@ namespace CodeBlaze.Vloxy.Demo
         public int GetNoise(float x, float z)
         {
             var height = NoiseScaleShift(fnl_height.GetNoise(x, z), 16); // [-1, 1] -> [-16, 16]
-            var continent = NoiseScaleShift(fnl_continent.GetNoise(x, z), 64, 128); // [-1, 1] -> [64, 192]
-            return math.clamp(continent + height, 0, 256); // [64, 192] + [-16, 16] -> [0, 256]
+            var continent = NoiseRemapScaleShift(fnl_continent.GetNoise(x, z), continent_curve, 160); // [-1, 1] -> [32, 192]
+            return math.clamp(continent, 0, 256); // [64, 192] + [-16, 16] -> [0, 256]
         }
 
+        /// <summary>
+        /// noise = [-1, 1] -scale-> [-scale, scale] -shift-> [-scale+shift, scale+shift]
+        /// </summary>
+        /// <param name="noise"></param>
+        /// <param name="scale"></param>
+        /// <param name="shift"></param>
+        /// <returns></returns>
         private int NoiseScaleShift(float noise, int scale, int shift = 0)
         {
             return math.clamp((int)math.round(noise * scale), -scale, scale) + shift;
+        }
+
+        /// <summary>
+        /// ! Animation curves are not thread safe :(
+        /// noise = [-1, 1] -curve-> [0, 1] -scale-> [0, scale] -shift-> [shift, scale+shift]
+        /// </summary>
+        /// <param name="noise"></param>
+        /// <param name="curve"></param>
+        /// <param name="scale"></param>
+        /// <param name="shift"></param>
+        /// <returns></returns>
+        private int NoiseRemapScaleShift(float noise, BakedAnimationCurve curve, int scale, int shift = 0) {
+            var remap_val = curve.Evaluate(noise, -1.0f, 1.0f);
+            return math.clamp((int)math.round(remap_val * scale), 0, scale) + shift;
         }
 
         public bool IsChunkLoaded(int3 position)
