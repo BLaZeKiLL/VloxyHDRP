@@ -70,7 +70,7 @@ namespace CodeBlaze.Vloxy.Demo
 
         private static int GetBlock(int Y, int height)
         {
-            if (Y > height) return Y > 60 ? (int)Block.AIR : (int)Block.WATER;
+            if (Y > height) return Y > 96 ? (int)Block.AIR : (int)Block.WATER;
             if (Y == height) return (int)Block.GRASS;
             if (Y <= height - 1 && Y >= height - 3) return (int)Block.DIRT;
 
@@ -112,8 +112,8 @@ namespace CodeBlaze.Vloxy.Demo
         public int GetNoise(float x, float z)
         {
             var height = NoiseScaleShift(fnl_height.GetNoise(x, z), 16); // [-1, 1] -> [-16, 16]
-            var continent = NoiseRemapScaleShift(fnl_continent.GetNoise(x, z), continent_curve, 160); // [-1, 1] -> [32, 192]
-            return math.clamp(continent, 0, 256); // [64, 192] + [-16, 16] -> [0, 256]
+            var continent = NoiseRemapScaleShift(fnl_continent.GetNoise(x, z), continent_curve, 160, 32); // [-1, 1] -> [32, 192]
+            return math.clamp(continent + height, 0, 256); // [64, 192] + [-16, 16] -> [0, 256]
         }
 
         /// <summary>
@@ -129,7 +129,6 @@ namespace CodeBlaze.Vloxy.Demo
         }
 
         /// <summary>
-        /// ! Animation curves are not thread safe :(
         /// noise = [-1, 1] -curve-> [0, 1] -scale-> [0, scale] -shift-> [shift, scale+shift]
         /// </summary>
         /// <param name="noise"></param>

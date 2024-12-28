@@ -3,6 +3,9 @@ using Unity.Mathematics;
 using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Demo {
+    /// <summary>
+    /// Since Animation Curve is not thread safe this is required
+    /// </summary>
     public class BakedAnimationCurve {
         private readonly List<float> _points;
         private readonly int _resolution;
@@ -17,9 +20,9 @@ namespace CodeBlaze.Vloxy.Demo {
             }  
         }
 
-        public float Evaluate(float x, float min = 0.0f, float max = 1.0f) {
-            x = (x + math.abs(min)) / (math.abs(min) + math.abs(max));
-            return _points[math.clamp(((int) math.round(x * _resolution)), 0, _resolution-1)];
+        public float Evaluate(float x, float tmin = 0.0f, float tmax = 1.0f) {
+            x = (x + math.abs(tmin)) / (math.abs(tmin) + math.abs(tmax));
+            return _points[math.clamp((int) math.round(x * _resolution), 0, _resolution-1)];
         }
     }
 }
