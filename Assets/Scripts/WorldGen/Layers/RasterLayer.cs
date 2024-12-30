@@ -21,6 +21,8 @@ namespace CodeBlaze.Vloxy.Demo
         public NativeReference<Chunk> Data { get; private set; }
         public bool Loaded { get; private set; }
 
+        public const float SquishFactor = 0.05f;
+
         public override void Create(int level, bool destroy)
         {
             if (destroy)
@@ -32,8 +34,10 @@ namespace CodeBlaze.Vloxy.Demo
             {
                 var data = new Chunk(new int3(bounds.min.x, 0, bounds.min.y), new int3(32, 256, 32));
 
-                var noise = layer.GetNoise(bounds.min.x, bounds.min.y);
-                int current_block = GetBlock(0, noise);
+                var posX = bounds.min.x;
+                var posZ = bounds.min.y;
+
+                int current_block = GetBlock(posX, 0, posZ);
 
                 int count = 0;
 
@@ -44,8 +48,7 @@ namespace CodeBlaze.Vloxy.Demo
                     {
                         for (var x = 0; x < 32; x++)
                         {
-                            noise = layer.GetNoise(bounds.min.x + x, bounds.min.y + z);
-                            var block = GetBlock(y, noise);
+                            var block = GetBlock(posX + x, y, posZ + z);
 
                             if (block == current_block)
                             {
@@ -65,6 +68,19 @@ namespace CodeBlaze.Vloxy.Demo
 
                 Data = new NativeReference<Chunk>(data, Allocator.Persistent);
                 Loaded = true;
+            }
+        }
+
+        private int GetBlock(int x, int y, int z) {
+            var continentalness = layer.GetContinentalValue(x, z);
+            
+            var mod = (continentalness - y) * SquishFactor;
+            var density = layer.GetNoise3D(x, y, z);
+
+            if (density + mod > 0f) {
+                return (int)Block.STONE;
+            } else {
+                return (int)Block.AIR;
             }
         }
 
@@ -90,8 +106,6 @@ namespace CodeBlaze.Vloxy.Demo
         private readonly BakedAnimationCurve continent_curve;
         private readonly int3 _ChunkSize;
 
-        // public GridBounds Bounds => this.Bounds;
-
         public RasterLayer()
         {
             fnl_height = FastNoiseLiteExtensions.FromProfile(WorldData.Current.HeightNoiseProfile);
@@ -99,7 +113,7 @@ namespace CodeBlaze.Vloxy.Demo
 
             continent_curve = WorldData.Current.ContinentRemapCurve;
 
-            var meshing_batch_size = 4; // TODO : Fix Hardcode
+            var meshing_batch_size = 2; // TODO : Fix Hardcode
 
             _AccessorMap = new NativeParallelHashMap<int3, Chunk>(
                 (meshing_batch_size + 1) * (meshing_batch_size + 1),
@@ -107,6 +121,14 @@ namespace CodeBlaze.Vloxy.Demo
             );
 
             _ChunkSize = new int3(32, 256, 32); // TODO : Fix Hardcode
+        }
+
+        public int GetContinentalValue(float x, float z) {
+            return NoiseRemapScaleShift(fnl_continent.GetNoise(x, z), continent_curve, 160, 32);
+        }
+
+        public float GetNoise3D(float x, float y, float z) {
+            return fnl_height.GetNoise(x, y, z);
         }
 
         public int GetNoise(float x, float z)

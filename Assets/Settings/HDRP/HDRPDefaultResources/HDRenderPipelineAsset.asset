@@ -53,7 +53,7 @@ MonoBehaviour:
     customBufferFormat: 12
     supportedLitShaderMode: 2
     planarReflectionResolution:
-      m_Values: 000200000008000000100000
+      m_Values: 001000000010000000100000
       m_SchemaId:
         m_Id: With3Levels
     cubeReflectionResolution:
@@ -96,11 +96,11 @@ MonoBehaviour:
       maxEnvLightsOnScreen: 64
       reflectionCacheCompressed: 0
       reflectionProbeFormat: 74
-      reflectionProbeTexCacheSize: 16384
+      reflectionProbeTexCacheSize: 4096
       reflectionProbeTexLastValidCubeMip: 3
       reflectionProbeTexLastValidPlanarMip: 0
       reflectionProbeDecreaseResToFit: 1
-      skyReflectionSize: 1024
+      skyReflectionSize: 4096
       skyLightingOverrideLayerMask:
         serializedVersion: 2
         m_Bits: 0
@@ -117,9 +117,9 @@ MonoBehaviour:
     hdShadowInitParams:
       maxShadowRequests: 128
       directionalShadowsDepthBits: 32
-      punctualShadowFilteringQuality: 1
+      punctualShadowFilteringQuality: 2
       directionalShadowFilteringQuality: 2
-      areaShadowFilteringQuality: 0
+      areaShadowFilteringQuality: 1
       punctualLightShadowAtlas:
         shadowAtlasResolution: 4096
         shadowAtlasDepthBits: 32

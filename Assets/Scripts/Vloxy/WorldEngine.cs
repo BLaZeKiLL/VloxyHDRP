@@ -14,7 +14,7 @@ namespace CodeBlaze.Vloxy.Demo {
         }
     }
 
-    public class World : VloxyWorld {
+    public class WorldEngine : VloxyWorld {
         protected override VloxyProvider Provider() => new WorldProvider();
 
         // protected override void WorldInitialize() {
