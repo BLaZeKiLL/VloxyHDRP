@@ -11,7 +11,6 @@ using Runevision.LayerProcGen;
 
 using Unity.Collections;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Demo
 {
@@ -100,11 +99,9 @@ namespace CodeBlaze.Vloxy.Demo
 
         public override int chunkH => 32;
 
-        private NativeParallelHashMap<int3, Chunk> _AccessorMap;
         private readonly FastNoiseLite fnl_height;
         private readonly FastNoiseLite fnl_continent;
         private readonly BakedAnimationCurve continent_curve;
-        private readonly int3 _ChunkSize;
 
         public RasterLayer()
         {
@@ -112,15 +109,6 @@ namespace CodeBlaze.Vloxy.Demo
             fnl_continent = FastNoiseLiteExtensions.FromProfile(WorldData.Current.ContinentNoiseProfile);
 
             continent_curve = WorldData.Current.ContinentRemapCurve;
-
-            var meshing_batch_size = 2; // TODO : Fix Hardcode
-
-            _AccessorMap = new NativeParallelHashMap<int3, Chunk>(
-                (meshing_batch_size + 1) * (meshing_batch_size + 1),
-                Allocator.Persistent
-            );
-
-            _ChunkSize = new int3(32, 256, 32); // TODO : Fix Hardcode
         }
 
         public int GetContinentalValue(float x, float z) {
@@ -190,17 +178,15 @@ namespace CodeBlaze.Vloxy.Demo
             return chunks;
         }
 
-        public ChunkAccessor GetAccessor(List<int3> positions)
+        public void PopulateChunkAccessor(List<int3> positions, NativeParallelHashMap<int3, Chunk> chunk_map)
         {
-            _AccessorMap.Clear();
-
             foreach (var position in positions)
             {
                 for (var x = -1; x <= 1; x++)
                 {
                     for (var z = -1; z <= 1; z++)
                     {
-                        var pos = position + _ChunkSize.MemberMultiply(x, 0, z);
+                        var pos = position + new int3(chunkW, 0, chunkH).MemberMultiply(x, 0, z);
 
                         if (!IsChunkLoaded(pos))
                         {
@@ -210,15 +196,13 @@ namespace CodeBlaze.Vloxy.Demo
 
                         var raster_chunk = chunks[pos.x / chunkW, pos.z / chunkH];
 
-                        if (!_AccessorMap.ContainsKey(pos))
+                        if (!chunk_map.ContainsKey(pos))
                         {
-                            _AccessorMap.Add(pos, raster_chunk.Data.Value);
+                            chunk_map.Add(pos, raster_chunk.Data.Value);
                         }
                     }
                 }
             }
-
-            return new ChunkAccessor(_AccessorMap.AsReadOnly(), _ChunkSize);
         }
 
         public int ChunkCount() => chunks.Count();

@@ -17,7 +17,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
         public int ChunkCount();
         public bool IsChunkLoaded(int3 position);
         public List<int3> GetChunkPositionsInBounds(GridBounds bounds);
-        public ChunkAccessor GetAccessor(List<int3> positions);
+        public void PopulateChunkAccessor(List<int3> positions, NativeParallelHashMap<int3, Chunk> chunk_map);
         public void Dispose();
     }
 
