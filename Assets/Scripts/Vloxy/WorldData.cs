@@ -4,14 +4,33 @@ using UnityEngine;
 namespace CodeBlaze.Vloxy.Game
 {
     
+    // [DefaultExecutionOrder(-1000)]
     public class WorldData : SingletonBehaviour<WorldData> 
     {
-        [SerializeField] private FastNoiseLiteProfile _HeightNoiseProfile;
-        [SerializeField] private FastNoiseLiteProfile _ContinentNoiseProfile;
-        [SerializeField] private AnimationCurve _ContinentRemapCurve;
+        [SerializeField] private FastNoiseLiteProfile _ShapeNoiseProfile;
+        [SerializeField] private FastNoiseLiteProfile _ContinentalNoiseProfile;
+        [SerializeField] private AnimationCurve _ContinentalCurve;
+        [SerializeField] private FastNoiseLiteProfile _SquishNoiseProfile;
+        [SerializeField] private AnimationCurve _SquishCurve;
 
-        public FastNoiseLiteProfile HeightNoiseProfile => _HeightNoiseProfile;
-        public FastNoiseLiteProfile ContinentNoiseProfile => _ContinentNoiseProfile;
-        public BakedAnimationCurve ContinentRemapCurve => new(_ContinentRemapCurve, 4096);
+        private WorldGenerator _Generator;
+
+        // public FastNoiseLiteProfile HeightNoiseProfile => _ShapeNoiseProfile;
+        // public FastNoiseLiteProfile ContinentNoiseProfile => _ContinentalNoiseProfile;
+        // public BakedAnimationCurve ContinentRemapCurve => new(_ContinentalCurve, 4096);
+
+        // TODO: Cache this ?
+        public WorldGenerator Generator => _Generator;
+
+        protected override void Initialize()
+        {
+            _Generator = new(
+                _ShapeNoiseProfile,
+                _ContinentalNoiseProfile,
+                _ContinentalCurve,
+                _ShapeNoiseProfile,
+                _SquishCurve
+            );
+        }
     }
 }

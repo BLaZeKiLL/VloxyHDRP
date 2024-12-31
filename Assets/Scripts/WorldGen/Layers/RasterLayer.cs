@@ -11,16 +11,14 @@ using Runevision.LayerProcGen;
 
 using Unity.Collections;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Game
 {
     public class RasterChunk : LayerChunk<RasterLayer, RasterChunk>
     {
-        // TODO : Can we avoid this native reference
         public NativeReference<Chunk> Data { get; private set; }
         public bool Loaded { get; private set; }
-
-        public const float SquishFactor = 0.1f;
 
         public override void Create(int level, bool destroy)
         {
@@ -36,7 +34,7 @@ namespace CodeBlaze.Vloxy.Game
                 var posX = bounds.min.x;
                 var posZ = bounds.min.y;
 
-                int current_block = GetBlock(posX, 0, posZ);
+                int current_block = layer.WorldGenerator.GetBlock(posX, 0, posZ);
 
                 int count = 0;
 
@@ -47,7 +45,7 @@ namespace CodeBlaze.Vloxy.Game
                     {
                         for (var x = 0; x < 32; x++)
                         {
-                            var block = GetBlock(posX + x, y, posZ + z);
+                            var block = layer.WorldGenerator.GetBlock(posX + x, y, posZ + z);
 
                             if (block == current_block)
                             {
@@ -69,28 +67,6 @@ namespace CodeBlaze.Vloxy.Game
                 Loaded = true;
             }
         }
-
-        private int GetBlock(int x, int y, int z) {
-            var continentalness = layer.GetContinentalValue(x, z);
-            
-            var mod = (continentalness - y) * SquishFactor;
-            var density = layer.GetNoise3D(x, y, z);
-
-            if (density + mod > 0f) {
-                return (int)Block.STONE;
-            } else {
-                return (int)Block.AIR;
-            }
-        }
-
-        private static int GetBlock(int Y, int height)
-        {
-            if (Y > height) return Y > 96 ? (int)Block.AIR : (int)Block.WATER;
-            if (Y == height) return (int)Block.GRASS;
-            if (Y <= height - 1 && Y >= height - 3) return (int)Block.DIRT;
-
-            return (int)Block.STONE;
-        }
     }
 
     public class RasterLayer : ChunkBasedDataLayer<RasterLayer, RasterChunk>, IChunkManager
@@ -99,58 +75,14 @@ namespace CodeBlaze.Vloxy.Game
 
         public override int chunkH => 32;
 
-        private readonly FastNoiseLite fnl_height;
-        private readonly FastNoiseLite fnl_continent;
-        private readonly BakedAnimationCurve continent_curve;
+        public WorldGenerator WorldGenerator { get; private set; }
 
         public RasterLayer()
         {
-            fnl_height = FastNoiseLiteExtensions.FromProfile(WorldData.Current.HeightNoiseProfile);
-            fnl_continent = FastNoiseLiteExtensions.FromProfile(WorldData.Current.ContinentNoiseProfile);
-
-            continent_curve = WorldData.Current.ContinentRemapCurve;
+            WorldGenerator = WorldData.Current.Generator;
         }
 
-        public int GetContinentalValue(float x, float z) {
-            return NoiseRemapScaleShift(fnl_continent.GetNoise(x, z), continent_curve, 160, 32);
-        }
-
-        public float GetNoise3D(float x, float y, float z) {
-            return fnl_height.GetNoise(x, y, z);
-        }
-
-        public int GetNoise(float x, float z)
-        {
-            var height = NoiseScaleShift(fnl_height.GetNoise(x, z), 16); // [-1, 1] -> [-16, 16]
-            var continent = NoiseRemapScaleShift(fnl_continent.GetNoise(x, z), continent_curve, 160, 32); // [-1, 1] -> [32, 192]
-            return math.clamp(continent + height, 0, 256); // [64, 192] + [-16, 16] -> [0, 256]
-        }
-
-        /// <summary>
-        /// noise = [-1, 1] -scale-> [-scale, scale] -shift-> [-scale+shift, scale+shift]
-        /// </summary>
-        /// <param name="noise"></param>
-        /// <param name="scale"></param>
-        /// <param name="shift"></param>
-        /// <returns></returns>
-        private int NoiseScaleShift(float noise, int scale, int shift = 0)
-        {
-            return math.clamp((int)math.round(noise * scale), -scale, scale) + shift;
-        }
-
-        /// <summary>
-        /// noise = [-1, 1] -curve-> [0, 1] -scale-> [0, scale] -shift-> [shift, scale+shift]
-        /// </summary>
-        /// <param name="noise"></param>
-        /// <param name="curve"></param>
-        /// <param name="scale"></param>
-        /// <param name="shift"></param>
-        /// <returns></returns>
-        private int NoiseRemapScaleShift(float noise, BakedAnimationCurve curve, int scale, int shift = 0) {
-            var remap_val = curve.Evaluate(noise, -1.0f, 1.0f);
-            return math.clamp((int)math.round(remap_val * scale), 0, scale) + shift;
-        }
-
+        #region ChunkManager
         public bool IsChunkLoaded(int3 position)
         {
             var chunk = chunks[position.x / chunkW, position.z / chunkH];
@@ -214,5 +146,6 @@ namespace CodeBlaze.Vloxy.Game
                 chunk.Data.Dispose();
             }
         }
+        #endregion
     }
 }

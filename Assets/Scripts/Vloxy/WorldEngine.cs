@@ -23,7 +23,8 @@ namespace CodeBlaze.Vloxy.Game {
         // }
 
         public Vector3 GetSpawnPoint() {
-            return new Vector3(16f, RasterLayer.instance.GetNoise(16f, 16f) + 4f, 16f);
+            // TODO: Fix this !!!
+            return new Vector3(16f, 128f, 16f);
         }
 
     }
