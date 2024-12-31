@@ -1,4 +1,4 @@
-namespace CodeBlaze.Vloxy.Demo {
+namespace CodeBlaze.Vloxy.Game {
     public static class FastNoiseLiteExtensions {
 
         public static FastNoiseLite FromProfile(FastNoiseLiteProfile profile) {

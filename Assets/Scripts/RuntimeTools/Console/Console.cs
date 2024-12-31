@@ -1,6 +1,6 @@
-using CodeBlaze.Vloxy.Demo.Utils;
+using CodeBlaze.Vloxy.Game.Utils;
 
-namespace CodeBlaze.Vloxy.Demo.RuntimeTools.Console {
+namespace CodeBlaze.Vloxy.Game.RuntimeTools.Console {
 
     public class Console : SingletonBehaviour<Console> {
 

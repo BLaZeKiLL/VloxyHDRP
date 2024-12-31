@@ -1,4 +1,4 @@
-using CodeBlaze.Vloxy.Demo;
+using CodeBlaze.Vloxy.Game;
 using CodeBlaze.Vloxy.Engine;
 using CodeBlaze.Vloxy.Engine.Settings;
 using CodeBlaze.Vloxy.Engine.Utils;

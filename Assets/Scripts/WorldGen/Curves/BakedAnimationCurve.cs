@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo {
+namespace CodeBlaze.Vloxy.Game {
     /// <summary>
     /// Since Animation Curve is not thread safe this is required
     /// </summary>

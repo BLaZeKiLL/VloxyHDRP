@@ -5,7 +5,7 @@ using KinematicCharacterController;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace CodeBlaze.Vloxy.Demo.Player {
+namespace CodeBlaze.Vloxy.Game.Player {
 
     public class VloxyCharacterController : MonoBehaviour, ICharacterController {
 

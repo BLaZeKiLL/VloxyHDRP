@@ -12,7 +12,7 @@ using Runevision.LayerProcGen;
 using Unity.Collections;
 using Unity.Mathematics;
 
-namespace CodeBlaze.Vloxy.Demo
+namespace CodeBlaze.Vloxy.Game
 {
     public class RasterChunk : LayerChunk<RasterLayer, RasterChunk>
     {
@@ -20,7 +20,7 @@ namespace CodeBlaze.Vloxy.Demo
         public NativeReference<Chunk> Data { get; private set; }
         public bool Loaded { get; private set; }
 
-        public const float SquishFactor = 0.05f;
+        public const float SquishFactor = 0.1f;
 
         public override void Create(int level, bool destroy)
         {

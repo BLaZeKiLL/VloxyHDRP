@@ -1,4 +1,4 @@
-using CodeBlaze.Vloxy.Demo;
+using CodeBlaze.Vloxy.Game;
 using UnityEditor;
 using UnityEngine;
 

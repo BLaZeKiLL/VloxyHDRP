@@ -1,10 +1,10 @@
 using System;
-using CodeBlaze.Vloxy.Demo.Managers;
+using CodeBlaze.Vloxy.Game.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
-namespace CodeBlaze.Vloxy.Demo.Player {
+namespace CodeBlaze.Vloxy.Game.Player {
 
     public class VloxyInputController : MonoBehaviour {
 

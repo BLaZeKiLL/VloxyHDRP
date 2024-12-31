@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo.Utils {
+namespace CodeBlaze.Vloxy.Game.Utils {
     
     public class GameLogger {
 

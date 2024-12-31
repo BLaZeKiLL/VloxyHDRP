@@ -1,8 +1,8 @@
-using CodeBlaze.Vloxy.Demo.Managers;
+using CodeBlaze.Vloxy.Game.Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace CodeBlaze.Vloxy.Demo.RuntimeTools {
+namespace CodeBlaze.Vloxy.Game.RuntimeTools {
 
     public class DebugController : MonoBehaviour {
 

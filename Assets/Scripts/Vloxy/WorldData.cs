@@ -1,7 +1,7 @@
-using CodeBlaze.Vloxy.Demo.Utils;
+using CodeBlaze.Vloxy.Game.Utils;
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo
+namespace CodeBlaze.Vloxy.Game
 {
     
     public class WorldData : SingletonBehaviour<WorldData> 

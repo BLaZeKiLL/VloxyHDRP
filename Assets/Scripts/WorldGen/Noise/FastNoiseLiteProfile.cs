@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo {
+namespace CodeBlaze.Vloxy.Game {
 
     [CreateAssetMenu(fileName = "FastNoiseLiteProfile", menuName = "Vloxy/FastNoiseLiteProfile", order = 0)]
     public class FastNoiseLiteProfile : ScriptableObject {

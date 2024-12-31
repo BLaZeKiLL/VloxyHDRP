@@ -1,13 +1,13 @@
 using System;
-using CodeBlaze.Vloxy.Demo.Managers;
-using CodeBlaze.Vloxy.Demo.Utils;
+using CodeBlaze.Vloxy.Game.Managers;
+using CodeBlaze.Vloxy.Game.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace CodeBlaze.Vloxy.Demo.RuntimeTools.Console {
+namespace CodeBlaze.Vloxy.Game.RuntimeTools.Console {
 
     public class ConsoleController : MonoBehaviour {
 

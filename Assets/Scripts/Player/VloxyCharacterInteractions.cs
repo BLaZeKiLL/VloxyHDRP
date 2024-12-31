@@ -1,11 +1,11 @@
 using System;
-using CodeBlaze.Vloxy.Demo.Managers;
-using CodeBlaze.Vloxy.Demo.Utils;
+using CodeBlaze.Vloxy.Game.Managers;
+using CodeBlaze.Vloxy.Game.Utils;
 using CodeBlaze.Vloxy.Engine.Data;
 using CodeBlaze.Vloxy.Engine.Utils;
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo.Player {
+namespace CodeBlaze.Vloxy.Game.Player {
 
     public class VloxyCharacterInteractions : MonoBehaviour {
 

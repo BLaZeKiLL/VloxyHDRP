@@ -6,7 +6,7 @@ using Unity.Mathematics;
 
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo {
+namespace CodeBlaze.Vloxy.Game {
 
     public class WorldProvider : VloxyProvider {
         protected override IChunkManager TopLevelChunkManager() {
