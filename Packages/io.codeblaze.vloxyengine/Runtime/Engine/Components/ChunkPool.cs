@@ -24,10 +24,10 @@ namespace CodeBlaze.Vloxy.Engine.Components
     /// </summary>
     public class ChunkPool
     {
-
         private readonly ObjectPool<ChunkBehaviour> _Pool;
         private readonly Dictionary<int3, ChunkBehaviour> _MeshMap;
         private readonly HashSet<int3> _ColliderSet;
+        private readonly Queue<int3> _ReclaimQueue;
 
         private readonly int _ChunkPoolSize;
 
@@ -35,6 +35,7 @@ namespace CodeBlaze.Vloxy.Engine.Components
         {
             _ChunkPoolSize = settings.Chunk.DrawDistance.XZSize();
 
+            _ReclaimQueue = new Queue<int3>();
             _MeshMap = new Dictionary<int3, ChunkBehaviour>(_ChunkPoolSize);
             _ColliderSet = new HashSet<int3>(settings.Chunk.ColliderDistance.XZSize());
 
@@ -79,16 +80,19 @@ namespace CodeBlaze.Vloxy.Engine.Components
 
         internal void ReclaimChunks(List<int3> positions)
         {
+            ProcessReclaimQueue(); // Pending Reclaims
+
             foreach (var chunk_position in positions)
             {
                 if (_MeshMap.ContainsKey(chunk_position))
                     ReclaimChunk(chunk_position);
+                else
+                    _ReclaimQueue.Enqueue(chunk_position);
             }
         }
 
         internal ChunkBehaviour Claim(int3 position)
         {
-            // Debug.Log(position);
             if (_MeshMap.ContainsKey(position))
             {
                 throw new InvalidOperationException($"Chunk ({position}) already active");
@@ -103,17 +107,6 @@ namespace CodeBlaze.Vloxy.Engine.Components
             _MeshMap.Add(position, behaviour);
 
             return behaviour;
-        }
-
-        private void ReclaimChunk(int3 reclaim_chunk_position)
-        {
-            var reclaim_behaviour = _MeshMap[reclaim_chunk_position];
-
-            reclaim_behaviour.Collider.sharedMesh = null;
-
-            _Pool.Release(reclaim_behaviour);
-            _MeshMap.Remove(reclaim_chunk_position);
-            _ColliderSet.Remove(reclaim_chunk_position);
         }
 
         internal Dictionary<int3, ChunkBehaviour> GetActiveMeshes(List<int3> positions)
@@ -143,6 +136,24 @@ namespace CodeBlaze.Vloxy.Engine.Components
             }
 
             return _MeshMap[position];
+        }
+
+        private void ProcessReclaimQueue() {
+            while (_ReclaimQueue.Count != 0) {
+                if (_MeshMap.ContainsKey(_ReclaimQueue.Peek()))
+                    ReclaimChunk(_ReclaimQueue.Dequeue());
+            }
+        }
+
+        private void ReclaimChunk(int3 reclaim_chunk_position)
+        {
+            var reclaim_behaviour = _MeshMap[reclaim_chunk_position];
+
+            reclaim_behaviour.Collider.sharedMesh = null;
+
+            _Pool.Release(reclaim_behaviour);
+            _MeshMap.Remove(reclaim_chunk_position);
+            _ColliderSet.Remove(reclaim_chunk_position);
         }
 
     }

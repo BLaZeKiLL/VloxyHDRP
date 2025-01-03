@@ -7,19 +7,12 @@ namespace CodeBlaze.Vloxy.Game
     // [DefaultExecutionOrder(-1000)]
     public class WorldData : SingletonBehaviour<WorldData> 
     {
-        [SerializeField] private FastNoiseLiteProfile _ShapeNoiseProfile;
-        [SerializeField] private FastNoiseLiteProfile _ContinentalNoiseProfile;
-        [SerializeField] private AnimationCurve _ContinentalCurve;
-        [SerializeField] private FastNoiseLiteProfile _SquishNoiseProfile;
-        [SerializeField] private AnimationCurve _SquishCurve;
+        [SerializeField] private ShapeNoiseProfile _ShapeNoiseProfile;
+        [SerializeField] private ContinentalNoiseProfile _ContinentalNoiseProfile;
+        [SerializeField] private SquishNoiseProfile _SquishNoiseProfile;
 
         private WorldGenerator _Generator;
 
-        // public FastNoiseLiteProfile HeightNoiseProfile => _ShapeNoiseProfile;
-        // public FastNoiseLiteProfile ContinentNoiseProfile => _ContinentalNoiseProfile;
-        // public BakedAnimationCurve ContinentRemapCurve => new(_ContinentalCurve, 4096);
-
-        // TODO: Cache this ?
         public WorldGenerator Generator => _Generator;
 
         protected override void Initialize()
@@ -27,10 +20,33 @@ namespace CodeBlaze.Vloxy.Game
             _Generator = new(
                 _ShapeNoiseProfile,
                 _ContinentalNoiseProfile,
-                _ContinentalCurve,
-                _ShapeNoiseProfile,
-                _SquishCurve
+                _SquishNoiseProfile
             );
         }
+
+        public ShapeNoiseProfile ShapeNoiseProfile
+        {
+            get => _ShapeNoiseProfile;
+            #if UNITY_EDITOR
+            set => _ShapeNoiseProfile = value;
+            #endif
+        }
+
+        public ContinentalNoiseProfile ContinentalNoiseProfile
+        {
+            get => _ContinentalNoiseProfile;
+            #if UNITY_EDITOR
+            set => _ContinentalNoiseProfile = value;
+            #endif
+        }
+
+        public SquishNoiseProfile SquishNoiseProfile
+        {
+            get => _SquishNoiseProfile;
+            #if UNITY_EDITOR
+            set => _SquishNoiseProfile = value;
+            #endif
+        }
+
     }
 }
