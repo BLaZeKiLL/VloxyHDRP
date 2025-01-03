@@ -2,7 +2,6 @@
 
 namespace CodeBlaze.Vloxy.Game {
 
-    [CreateAssetMenu(fileName = "FastNoiseLiteProfile", menuName = "Vloxy/Profile/FastNoiseLiteProfile", order = 0)]
     public class FastNoiseLiteProfile : ScriptableObject {
 
         public int Seed = 777;

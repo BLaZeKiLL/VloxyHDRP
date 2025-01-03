@@ -6,17 +6,20 @@ namespace CodeBlaze.Editor
 {
     public class WorldEditor : EditorWindow
     {
-        private ShapeNoiseProfile ShapeNoiseProfileInstance;
-        private ContinentalNoiseProfile ContinentalNoiseProfileInstance;
-        private SquishNoiseProfile SquishNoiseProfileInstance;
+        private WorldProfile WorldProfileInstance;
+        private ShapeProfile ShapeProfileInstance;
+        private ContinentalProfile ContinentalProfileInstance;
+        private SquishProfile SquishProfileInstance;
 
-        private SerializedObject ShapeNoiseProfileObject;
-        private SerializedObject ContinentalNoiseProfileObject;
-        private SerializedObject SquishNoiseProfileObject;
+        private SerializedObject WorldProfileObject;
+        private SerializedObject ShapeProfileObject;
+        private SerializedObject ContinentalProfileObject;
+        private SerializedObject SquishProfileObject;
 
-        private const string ShapeNoiseProfileKey = "WorldEditor_ShapeNoiseProfile";
-        private const string ContinentalNoiseProfileKey = "WorldEditor_ContinentalNoiseProfile";
-        private const string SquishNoiseProfileKey = "WorldEditor_SquishNoiseProfile";
+        private const string WorldProfileKey = "WorldEditor_WorldProfileKey";
+        private const string ShapeProfileKey = "WorldEditor_ShapeProfile";
+        private const string ContinentalProfileKey = "WorldEditor_ContinentalProfile";
+        private const string SquishProfileKey = "WorldEditor_SquishProfile";
 
         private Vector2 scrollPosition; // Scroll position for the scroll view
 
@@ -31,9 +34,10 @@ namespace CodeBlaze.Editor
         private void OnEnable()
         {
             // Load saved object references
-            ShapeNoiseProfileInstance = LoadObjectFromPrefs<ShapeNoiseProfile>(ShapeNoiseProfileKey);
-            ContinentalNoiseProfileInstance = LoadObjectFromPrefs<ContinentalNoiseProfile>(ContinentalNoiseProfileKey);
-            SquishNoiseProfileInstance = LoadObjectFromPrefs<SquishNoiseProfile>(SquishNoiseProfileKey);
+            WorldProfileInstance = LoadObjectFromPrefs<WorldProfile>(WorldProfileKey);
+            ShapeProfileInstance = LoadObjectFromPrefs<ShapeProfile>(ShapeProfileKey);
+            ContinentalProfileInstance = LoadObjectFromPrefs<ContinentalProfile>(ContinentalProfileKey);
+            SquishProfileInstance = LoadObjectFromPrefs<SquishProfile>(SquishProfileKey);
 
             // Update serialized objects
             UpdateSerializedObjects();
@@ -41,9 +45,10 @@ namespace CodeBlaze.Editor
 
         private void OnDisable()
         {
-            SaveObjectToPrefs(ShapeNoiseProfileInstance, ShapeNoiseProfileKey);
-            SaveObjectToPrefs(ContinentalNoiseProfileInstance, ContinentalNoiseProfileKey);
-            SaveObjectToPrefs(SquishNoiseProfileInstance, SquishNoiseProfileKey);
+            SaveObjectToPrefs(WorldProfileInstance, WorldProfileKey);
+            SaveObjectToPrefs(ShapeProfileInstance, ShapeProfileKey);
+            SaveObjectToPrefs(ContinentalProfileInstance, ContinentalProfileKey);
+            SaveObjectToPrefs(SquishProfileInstance, SquishProfileKey);
         }
 
         private void OnGUI()
@@ -51,9 +56,7 @@ namespace CodeBlaze.Editor
             GUILayout.Label("World Profile Objects", EditorStyles.boldLabel);
 
             // Object selectors for each ScriptableObject type
-            ShapeNoiseProfileInstance = (ShapeNoiseProfile)EditorGUILayout.ObjectField("Shape Noise Profile", ShapeNoiseProfileInstance, typeof(ShapeNoiseProfile), false);
-            ContinentalNoiseProfileInstance = (ContinentalNoiseProfile)EditorGUILayout.ObjectField("Continental Noise Profile", ContinentalNoiseProfileInstance, typeof(ContinentalNoiseProfile), false);
-            SquishNoiseProfileInstance = (SquishNoiseProfile)EditorGUILayout.ObjectField("Squish Noise Profile", SquishNoiseProfileInstance, typeof(SquishNoiseProfile), false);
+            DrawObjectSelectors();
 
             // Update serialized objects if instances are assigned
             UpdateSerializedObjects();
@@ -68,41 +71,73 @@ namespace CodeBlaze.Editor
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
 
             // Edit fields for each ScriptableObject
-            if (ShapeNoiseProfileInstance != null)
-            {
-                GUILayout.Label("Shape Profile", EditorStyles.boldLabel);
-                DrawSerializedProperties(ShapeNoiseProfileObject);
-            }
-
-            GUILayout.Space(16);
-
-            if (ContinentalNoiseProfileInstance != null)
-            {
-                GUILayout.Label("Continental Profile", EditorStyles.boldLabel);
-                DrawSerializedProperties(ContinentalNoiseProfileObject);
-            }
-
-            GUILayout.Space(16);
-
-            if (SquishNoiseProfileInstance != null)
-            {
-                GUILayout.Label("Squish Profile", EditorStyles.boldLabel);
-                DrawSerializedProperties(SquishNoiseProfileObject);
-            }
+            DrawObjectEditors();
 
             EditorGUILayout.EndScrollView();
         }
 
+        private void DrawObjectSelectors()
+        {
+            WorldProfileInstance = (WorldProfile)EditorGUILayout.ObjectField(
+                "World Profile", WorldProfileInstance, typeof(WorldProfile), false
+            );
+            ShapeProfileInstance = (ShapeProfile)EditorGUILayout.ObjectField(
+                "Shape Profile", ShapeProfileInstance, typeof(ShapeProfile), false
+            );
+            ContinentalProfileInstance = (ContinentalProfile)EditorGUILayout.ObjectField(
+                "Continental Profile", ContinentalProfileInstance, typeof(ContinentalProfile), false
+            );
+            SquishProfileInstance = (SquishProfile)EditorGUILayout.ObjectField(
+                "Squish Profile", SquishProfileInstance, typeof(SquishProfile), false
+            );
+        }
+
+        private void DrawObjectEditors()
+        {
+            if (WorldProfileInstance != null)
+            {
+                GUILayout.Label("World Profile", EditorStyles.boldLabel);
+                DrawSerializedProperties(WorldProfileObject);
+            }
+
+            GUILayout.Space(16);
+
+            if (ShapeProfileInstance != null)
+            {
+                GUILayout.Label("Shape Profile", EditorStyles.boldLabel);
+                DrawSerializedProperties(ShapeProfileObject);
+            }
+
+            GUILayout.Space(16);
+
+            if (ContinentalProfileInstance != null)
+            {
+                GUILayout.Label("Continental Profile", EditorStyles.boldLabel);
+                DrawSerializedProperties(ContinentalProfileObject);
+            }
+
+            GUILayout.Space(16);
+
+            if (SquishProfileInstance != null)
+            {
+                GUILayout.Label("Squish Profile", EditorStyles.boldLabel);
+                DrawSerializedProperties(SquishProfileObject);
+            }
+        }
+
         private void UpdateSerializedObjects()
         {
-            if (ShapeNoiseProfileInstance != null && (ShapeNoiseProfileObject == null || ShapeNoiseProfileObject.targetObject != ShapeNoiseProfileInstance))
-                ShapeNoiseProfileObject = new SerializedObject(ShapeNoiseProfileInstance);
+            if (WorldProfileInstance != null && (WorldProfileObject == null || WorldProfileObject.targetObject != WorldProfileInstance))
+                WorldProfileObject = new SerializedObject(WorldProfileInstance);
 
-            if (ContinentalNoiseProfileInstance != null && (ContinentalNoiseProfileObject == null || ContinentalNoiseProfileObject.targetObject != ContinentalNoiseProfileInstance))
-                ContinentalNoiseProfileObject = new SerializedObject(ContinentalNoiseProfileInstance);
+            if (ShapeProfileInstance != null && (ShapeProfileObject == null || ShapeProfileObject.targetObject != ShapeProfileInstance))
+                ShapeProfileObject = new SerializedObject(ShapeProfileInstance);
 
-            if (SquishNoiseProfileInstance != null && (SquishNoiseProfileObject == null || SquishNoiseProfileObject.targetObject != SquishNoiseProfileInstance))
-                SquishNoiseProfileObject = new SerializedObject(SquishNoiseProfileInstance);
+            if (ContinentalProfileInstance != null && (ContinentalProfileObject == null || ContinentalProfileObject.targetObject != ContinentalProfileInstance))
+                ContinentalProfileObject = new SerializedObject(ContinentalProfileInstance);
+
+            if (SquishProfileInstance != null && (SquishProfileObject == null || SquishProfileObject.targetObject != SquishProfileInstance))
+                SquishProfileObject = new SerializedObject(SquishProfileInstance);
         }
 
         private void UpdateWorldProfiles()
@@ -115,19 +150,24 @@ namespace CodeBlaze.Editor
                 return;
             }
 
-            if (ShapeNoiseProfileInstance != null)
+            if (WorldProfileInstance != null)
             {
-                world_data.ShapeNoiseProfile = ShapeNoiseProfileInstance;
+                world_data.WorldProfile = WorldProfileInstance;
             }
 
-            if (ContinentalNoiseProfileInstance != null)
+            if (ShapeProfileInstance != null)
             {
-                world_data.ContinentalNoiseProfile = ContinentalNoiseProfileInstance;
+                world_data.ShapeProfile = ShapeProfileInstance;
             }
 
-            if (SquishNoiseProfileInstance != null)
+            if (ContinentalProfileInstance != null)
             {
-                world_data.SquishNoiseProfile = SquishNoiseProfileInstance;
+                world_data.ContinentalProfile = ContinentalProfileInstance;
+            }
+
+            if (SquishProfileInstance != null)
+            {
+                world_data.SquishProfile = SquishProfileInstance;
             }
         }
 

@@ -18,7 +18,6 @@ using UnityEngine.Pool;
 
 namespace CodeBlaze.Vloxy.Engine.Components
 {
-
     /// <summary>
     /// Chunks are created on demand
     /// </summary>
@@ -139,9 +138,12 @@ namespace CodeBlaze.Vloxy.Engine.Components
         }
 
         private void ProcessReclaimQueue() {
-            while (_ReclaimQueue.Count != 0) {
+            var count = _ReclaimQueue.Count;
+
+            while (count > 0) {
                 if (_MeshMap.ContainsKey(_ReclaimQueue.Peek()))
                     ReclaimChunk(_ReclaimQueue.Dequeue());
+                count--;
             }
         }
 

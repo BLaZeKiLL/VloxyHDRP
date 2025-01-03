@@ -5,32 +5,36 @@ namespace CodeBlaze.Vloxy.Game
 {
     public class WorldGenerator
     {
+        private readonly WorldProfile _WorldProfile;
 
         private readonly FastNoiseLite _ShapeNoise;
-        private readonly ShapeNoiseProfile _ShapeNoiseProfile;
+        private readonly ShapeProfile _ShapeProfile;
 
         private readonly FastNoiseLite _ContinentalNoise;
         private readonly BakedAnimationCurve _ContinentalCurve;
-        private readonly ContinentalNoiseProfile _ContinentalNoiseProfile;
+        private readonly ContinentalProfile _ContinentalProfile;
 
         private readonly FastNoiseLite _SquishNoise;
         private readonly BakedAnimationCurve _SquishCurve;
-        private readonly SquishNoiseProfile _SquishNoiseProfile;
+        private readonly SquishProfile _SquishProfile;
 
         public WorldGenerator(
-            ShapeNoiseProfile shapeNoiseProfile,
-            ContinentalNoiseProfile continentalNoiseProfile,
-            SquishNoiseProfile squishNoiseProfile
+            WorldProfile worldProfile,
+            ShapeProfile shapeNoiseProfile,
+            ContinentalProfile continentalNoiseProfile,
+            SquishProfile squishNoiseProfile
         )
         {
-            _ShapeNoiseProfile = shapeNoiseProfile;
+            _WorldProfile = worldProfile;
+
+            _ShapeProfile = shapeNoiseProfile;
             _ShapeNoise = FastNoiseLiteExtensions.FromProfile(shapeNoiseProfile);
 
-            _ContinentalNoiseProfile = continentalNoiseProfile;
+            _ContinentalProfile = continentalNoiseProfile;
             _ContinentalNoise = FastNoiseLiteExtensions.FromProfile(continentalNoiseProfile);
             _ContinentalCurve = new(continentalNoiseProfile.Curve, continentalNoiseProfile.CurveResolution);
 
-            _SquishNoiseProfile = squishNoiseProfile;
+            _SquishProfile = squishNoiseProfile;
             _SquishNoise = FastNoiseLiteExtensions.FromProfile(squishNoiseProfile);
             _SquishCurve = new(squishNoiseProfile.Curve, squishNoiseProfile.CurveResolution);
         }
@@ -49,7 +53,7 @@ namespace CodeBlaze.Vloxy.Game
             }
             else
             {
-                return (int)Block.AIR;
+                return y >= _WorldProfile.WaterLevel ? (int)Block.AIR : (int)Block.WATER;
             }
         }
 
@@ -63,8 +67,8 @@ namespace CodeBlaze.Vloxy.Game
             return _ContinentalNoise.CurveSampleNoiseScaleShiftInt(
                 x, z, 
                 _ContinentalCurve, 
-                _ContinentalNoiseProfile.Scale, 
-                _ContinentalNoiseProfile.Shift
+                _ContinentalProfile.Scale, 
+                _ContinentalProfile.Shift
             );
         }
 
@@ -73,7 +77,7 @@ namespace CodeBlaze.Vloxy.Game
             return _SquishNoise.CurveSampleNoiseScaleShiftFloat(
                 x, z, 
                 _SquishCurve, 
-                _SquishNoiseProfile.Scale
+                _SquishProfile.Scale
             );
         }
     }

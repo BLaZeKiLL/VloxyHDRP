@@ -1,8 +1,8 @@
 using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Game {
-    [CreateAssetMenu(fileName = "ContinentalNoiseProfile", menuName = "Vloxy/Profile/ContinentalNoiseProfile", order = 0)]
-    public class ContinentalNoiseProfile : FastNoiseLiteProfile {
+    [CreateAssetMenu(fileName = "ContinentalProfile", menuName = "Vloxy/Profiles/ContinentalProfile", order = 0)]
+    public class ContinentalProfile : FastNoiseLiteProfile {
         public AnimationCurve Curve;
         public int CurveResolution = 4096;
         public int Scale = 160;

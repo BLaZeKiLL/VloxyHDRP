@@ -7,9 +7,10 @@ namespace CodeBlaze.Vloxy.Game
     // [DefaultExecutionOrder(-1000)]
     public class WorldData : SingletonBehaviour<WorldData> 
     {
-        [SerializeField] private ShapeNoiseProfile _ShapeNoiseProfile;
-        [SerializeField] private ContinentalNoiseProfile _ContinentalNoiseProfile;
-        [SerializeField] private SquishNoiseProfile _SquishNoiseProfile;
+        [SerializeField] private WorldProfile _WorldProfile;
+        [SerializeField] private ShapeProfile _ShapeProfile;
+        [SerializeField] private ContinentalProfile _ContinentalProfile;
+        [SerializeField] private SquishProfile _SquishProfile;
 
         private WorldGenerator _Generator;
 
@@ -18,33 +19,42 @@ namespace CodeBlaze.Vloxy.Game
         protected override void Initialize()
         {
             _Generator = new(
-                _ShapeNoiseProfile,
-                _ContinentalNoiseProfile,
-                _SquishNoiseProfile
+                _WorldProfile,
+                _ShapeProfile,
+                _ContinentalProfile,
+                _SquishProfile
             );
         }
 
-        public ShapeNoiseProfile ShapeNoiseProfile
+        public WorldProfile WorldProfile
         {
-            get => _ShapeNoiseProfile;
+            get => _WorldProfile;
             #if UNITY_EDITOR
-            set => _ShapeNoiseProfile = value;
+            set => _WorldProfile = value;
             #endif
         }
 
-        public ContinentalNoiseProfile ContinentalNoiseProfile
+        public ShapeProfile ShapeProfile
         {
-            get => _ContinentalNoiseProfile;
+            get => _ShapeProfile;
             #if UNITY_EDITOR
-            set => _ContinentalNoiseProfile = value;
+            set => _ShapeProfile = value;
             #endif
         }
 
-        public SquishNoiseProfile SquishNoiseProfile
+        public ContinentalProfile ContinentalProfile
         {
-            get => _SquishNoiseProfile;
+            get => _ContinentalProfile;
             #if UNITY_EDITOR
-            set => _SquishNoiseProfile = value;
+            set => _ContinentalProfile = value;
+            #endif
+        }
+
+        public SquishProfile SquishProfile
+        {
+            get => _SquishProfile;
+            #if UNITY_EDITOR
+            set => _SquishProfile = value;
             #endif
         }
 

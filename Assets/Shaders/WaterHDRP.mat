@@ -139,7 +139,7 @@ Material:
     - _Foam_Speed: {r: 1, g: 1, b: 0, a: 0}
     - _UV1: {r: 1, g: 1, b: 0, a: 0}
     - _UV2: {r: 1, g: 1, b: 0, a: 0}
-    - _Underwater_Albedo: {r: 0.4812656, g: 0.990566, b: 0.8707021, a: 0}
+    - _Underwater_Albedo: {r: 0.84000003, g: 1, b: 1, a: 1}
     - _Wave_Speed_1: {r: 1, g: 1, b: 0, a: 0}
     - _Wave_Speed_2: {r: -1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []

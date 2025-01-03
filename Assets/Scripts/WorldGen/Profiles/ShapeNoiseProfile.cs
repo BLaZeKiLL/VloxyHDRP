@@ -1,8 +1,8 @@
 using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Game {
-    [CreateAssetMenu(fileName = "ShapeNoiseProfile", menuName = "Vloxy/Profile/ShapeNoiseProfile", order = 0)]
-    public class ShapeNoiseProfile : FastNoiseLiteProfile {
+    [CreateAssetMenu(fileName = "ShapeProfile", menuName = "Vloxy/Profiles/ShapeProfile", order = 0)]
+    public class ShapeProfile : FastNoiseLiteProfile {
 
     }
 }
