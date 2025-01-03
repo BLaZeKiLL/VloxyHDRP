@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
 
-namespace CodeBlaze.Vloxy.Demo
+namespace CodeBlaze.Vloxy.Game
 {
     public partial class @VloxyInput: IInputActionCollection2, IDisposable
     {

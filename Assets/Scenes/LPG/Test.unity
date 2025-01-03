@@ -202,7 +202,7 @@ MonoBehaviour:
   layers:
   - layerClassName:
       className: CodeBlaze.Vloxy.Demo.RasterLayer
-    color: {r: 0, g: 0, b: 0, a: 0}
+    color: {r: 1, g: 0, b: 0, a: 0}
   worldOffset: 0
   spacingUnit: 1
   spacingAmount: 4
@@ -217,6 +217,7 @@ GameObject:
   - component: {fileID: 1741154451}
   - component: {fileID: 1741154452}
   - component: {fileID: 1741154453}
+  - component: {fileID: 1741154454}
   m_Layer: 0
   m_Name: GenerationSource
   m_TagString: Untagged
@@ -254,8 +255,8 @@ MonoBehaviour:
   layer:
     className: CodeBlaze.Vloxy.Demo.RasterLayer
   size:
-    x: 128
-    y: 128
+    x: 192
+    y: 192
 --- !u!114 &1741154453
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -268,6 +269,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f79f5f14dc34bf9b53b959a91df523, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1741154454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1741154450}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fef7f84dc4750467587f71430c72d021, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Settings: {fileID: 11400000, guid: 9bbcd6a6c04834ddeb43ccb34c77e185, type: 2}
 --- !u!1 &2013410473
 GameObject:
   m_ObjectHideFlags: 1

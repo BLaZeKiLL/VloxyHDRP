@@ -18,7 +18,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
     public class MeshBuildScheduler : JobScheduler
     {
 
-        private readonly ChunkManager _ChunkManager;
+        private readonly IChunkManager _ChunkManager;
         private readonly ChunkPool _ChunkPool;
 
         private int3 _ChunkSize;
@@ -29,11 +29,12 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
         private NativeParallelHashMap<int3, int2> _Results;
         private UnityEngine.Mesh.MeshDataArray _MeshDataArray;
         private NativeArray<VertexAttributeDescriptor> _VertexParams;
+        private NativeParallelHashMap<int3, Chunk> _AccessorMap;
 
         public MeshBuildScheduler(
             VloxySettings settings,
-            ChunkManager chunkManager,
-            ChunkPool chunkPool
+            ChunkPool chunkPool,
+            IChunkManager chunkManager
         )
         {
             _ChunkManager = chunkManager;
@@ -52,7 +53,12 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
             _VertexParams[4] = new VertexAttributeDescriptor(VertexAttribute.TexCoord1, VertexAttributeFormat.Float32, 2);
             _VertexParams[5] = new VertexAttributeDescriptor(VertexAttribute.TexCoord2, VertexAttributeFormat.Float32, 4);
 
-            _Results = new NativeParallelHashMap<int3, int2>(settings.Chunk.DrawDistance.CubedSize(), Allocator.Persistent); // TODO: should be based on batch size
+            _AccessorMap = new NativeParallelHashMap<int3, Chunk>(
+                (settings.Scheduler.MeshingBatchSize + 1) * (settings.Scheduler.MeshingBatchSize + 1),
+                Allocator.Persistent
+            );
+
+            _Results = new NativeParallelHashMap<int3, int2>(settings.Scheduler.MeshingBatchSize, Allocator.Persistent);
             _Jobs = new NativeList<int3>(Allocator.Persistent);
         }
 
@@ -65,7 +71,11 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
 
             IsReady = false;
 
-            _ChunkAccessor = _ChunkManager.GetAccessor(jobs);
+            _AccessorMap.Clear();
+
+            _ChunkManager.PopulateChunkAccessor(jobs, _AccessorMap);
+
+            _ChunkAccessor = new ChunkAccessor(_AccessorMap.AsReadOnly(), _ChunkSize);
 
             foreach (var j in jobs)
             {
@@ -108,14 +118,15 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
                 //     continue;
                 // }
 
-                if (_ChunkManager.ReMeshedChunk(position))
-                {
-                    meshes[_Results[position].x] = _ChunkPool.Get(position).Mesh;
-                }
-                else
-                {
-                    meshes[_Results[position].x] = _ChunkPool.Claim(position).Mesh;
-                }
+                // TODO ReMesh
+                // if (_ChunkManager.ReMeshedChunk(position))
+                // {
+                //     meshes[_Results[position].x] = _ChunkPool.Get(position).Mesh;
+                // }
+                // else
+                // {
+                meshes[_Results[position].x] = _ChunkPool.Claim(position).Mesh;
+                // }
             }
 
             UnityEngine.Mesh.ApplyAndDisposeWritableMeshData(
@@ -149,6 +160,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh
             _Handle.Complete();
 
             _VertexParams.Dispose();
+            _AccessorMap.Dispose();
             _Results.Dispose();
             _Jobs.Dispose();
         }

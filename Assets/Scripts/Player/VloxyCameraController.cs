@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo.Player {
+namespace CodeBlaze.Vloxy.Game.Player {
 
     public class VloxyCameraController : MonoBehaviour {
 

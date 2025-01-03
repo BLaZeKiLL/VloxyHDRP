@@ -91,13 +91,13 @@ Material:
     - _Metallic: 0.3
     - _Noise_Scale_1: 1
     - _Noise_Scale_2: 1
-    - _Normal_Strength: 0.45
+    - _Normal_Strength: 0.2
     - _OpaqueCullMode: 2
     - _PerPixelSorting: 0
     - _RayTracing: 0
     - _ReceivesSSR: 1
     - _ReceivesSSRTransparent: 1
-    - _Reflection_Refraction: 0.3
+    - _Reflection_Refraction: 0.1
     - _Refraction: 0.1
     - _RefractionModel: 0
     - _RenderQueueType: 4
@@ -135,11 +135,11 @@ Material:
     m_Colors:
     - _DoubleSidedConstants: {r: 1, g: 1, b: 1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Foam_Color: {r: 0.9391687, g: 0.990566, b: 0.97830975, a: 1}
+    - _Foam_Color: {r: 1, g: 1, b: 1, a: 1}
     - _Foam_Speed: {r: 1, g: 1, b: 0, a: 0}
     - _UV1: {r: 1, g: 1, b: 0, a: 0}
     - _UV2: {r: 1, g: 1, b: 0, a: 0}
-    - _Underwater_Albedo: {r: 0.4812656, g: 0.990566, b: 0.8707021, a: 0}
+    - _Underwater_Albedo: {r: 0.84000003, g: 1, b: 1, a: 1}
     - _Wave_Speed_1: {r: 1, g: 1, b: 0, a: 0}
     - _Wave_Speed_2: {r: -1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []

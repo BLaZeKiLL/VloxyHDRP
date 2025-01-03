@@ -1,11 +1,11 @@
 using System;
-using CodeBlaze.Vloxy.Demo.Managers;
-using CodeBlaze.Vloxy.Demo.Utils;
+using CodeBlaze.Vloxy.Game.Managers;
+using CodeBlaze.Vloxy.Game.Utils;
 using CodeBlaze.Vloxy.Engine.Data;
 using CodeBlaze.Vloxy.Engine.Utils;
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo.Player {
+namespace CodeBlaze.Vloxy.Game.Player {
 
     public class VloxyCharacterInteractions : MonoBehaviour {
 
@@ -29,7 +29,7 @@ namespace CodeBlaze.Vloxy.Demo.Player {
                     GameLogger.Info<VloxyCharacterInteractions>($"Break Block : {block_pos}");
                     Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.red, 5);
 
-                    WorldAPI.Current.World.ChunkManager.SetBlock(Block.AIR, block_pos);
+                    // WorldAPI.Current.World.ChunkManager.SetBlock(Block.AIR, block_pos);
                 }
             }
         }
@@ -45,7 +45,7 @@ namespace CodeBlaze.Vloxy.Demo.Player {
                     GameLogger.Info<VloxyCharacterInteractions>($"Place Block : {block_pos}");
                     Debug.DrawRay(ray.origin, ray.direction * hit.distance, Color.green, 5);
 
-                    WorldAPI.Current.World.ChunkManager.SetBlock(Block.STONE, block_pos);
+                    // WorldAPI.Current.World.ChunkManager.SetBlock(Block.STONE, block_pos);
                 }
             }
         }

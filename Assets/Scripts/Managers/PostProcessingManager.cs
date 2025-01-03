@@ -1,10 +1,10 @@
 using System;
-using CodeBlaze.Vloxy.Demo.Utils;
+using CodeBlaze.Vloxy.Game.Utils;
 using CodeBlaze.Vloxy.Engine.Data;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace CodeBlaze.Vloxy.Demo.Managers {
+namespace CodeBlaze.Vloxy.Game.Managers {
 
     public enum PostProcessingMode {
         MAIN,

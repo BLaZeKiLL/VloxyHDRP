@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace CodeBlaze.Vloxy.Demo.Utils {
+namespace CodeBlaze.Vloxy.Game.Utils {
     
     [DefaultExecutionOrder(-100)]
     public abstract class SingletonBehaviour<T> : MonoBehaviour where T : SingletonBehaviour<T> {
