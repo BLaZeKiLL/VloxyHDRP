@@ -4,8 +4,9 @@ using System.Linq;
 
 using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Data;
+using CodeBlaze.Vloxy.Engine.Utils;
 using CodeBlaze.Vloxy.Engine.Utils.Extensions;
-
+using CodeBlaze.Vloxy.Engine.Utils.Logger;
 using Runevision.Common;
 using Runevision.LayerProcGen;
 
@@ -83,6 +84,11 @@ namespace CodeBlaze.Vloxy.Game
         }
 
         #region ChunkManager
+        public NativeReference<Chunk> GetChunk(int3 position) 
+        {
+            return chunks[position.x / chunkW, position.z / chunkH].Data;
+        }
+        
         public bool IsChunkLoaded(int3 position)
         {
             var chunk = chunks[position.x / chunkW, position.z / chunkH];
@@ -145,6 +151,42 @@ namespace CodeBlaze.Vloxy.Game
             {
                 chunk.Data.Dispose();
             }
+        }
+
+        public Block GetBlock(int3 position)
+        {
+            var chunk_pos = VloxyUtils.GetChunkCoords(position);
+            var block_pos = VloxyUtils.GetBlockIndex(position);
+            
+            if (!IsChunkLoaded(chunk_pos)) {
+                VloxyLogger.Warn<IChunkManager>($"Chunk : {chunk_pos} not loaded");
+                return Block.ERROR;
+            }
+            
+            var chunk = GetChunk(chunk_pos).Value;
+
+            return (Block) chunk.GetBlock(block_pos);
+        }
+
+        public bool SetBlock(Block block, int3 position)
+        {
+            var chunk_pos = VloxyUtils.GetChunkCoords(position);
+            var block_pos = VloxyUtils.GetBlockIndex(position);
+
+            if (!IsChunkLoaded(chunk_pos)) {
+                VloxyLogger.Warn<IChunkManager>($"Chunk : {chunk_pos} not loaded");
+                return false;
+            }
+
+            var chunk = GetChunk(chunk_pos).Value;
+            
+            var result = chunk.SetBlock(block_pos, VloxyUtils.GetBlockId(block));
+
+            // _Chunks[chunk_pos] = chunk;
+
+            // if (remesh && result) ReMeshChunks(position.Int3());
+            
+            return result;
         }
         #endregion
     }

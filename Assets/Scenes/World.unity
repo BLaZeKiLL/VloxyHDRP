@@ -3646,7 +3646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer:
-    className: CodeBlaze.Vloxy.Game.RasterLayer
+    className: CodeBlaze.Vloxy.Game.DecorationLayer
   size:
     x: 256
     y: 256
@@ -7956,6 +7956,9 @@ MonoBehaviour:
   - layerClassName:
       className: CodeBlaze.Vloxy.Game.RasterLayer
     color: {r: 1, g: 0, b: 0, a: 0}
+  - layerClassName:
+      className: CodeBlaze.Vloxy.Game.DecorationLayer
+    color: {r: 0, g: 1, b: 0.11449838, a: 0}
   worldOffset: 0
   spacingUnit: 1
   spacingAmount: 4
@@ -7989,7 +7992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f788e7d356b4a5cafd9dc42d4b15e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useParallelThreads: 1
+  useParallelThreads: 0
   generationPlane: 1
   debugQueueText: {fileID: 1673017348}
   debugStatusText: {fileID: 0}
@@ -8006,9 +8009,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _isPersistant: 0
-  _ShapeNoiseProfile: {fileID: 11400000, guid: f68d78e6abce24d8c87a6a48f6dca367, type: 2}
-  _ContinentalNoiseProfile: {fileID: 11400000, guid: 1e945cda5aba14acda34219b70865916, type: 2}
-  _SquishNoiseProfile: {fileID: 11400000, guid: 2a8f93aaf56a04ad19b45f357803970b, type: 2}
+  _WorldProfile: {fileID: 11400000, guid: 298de730e895e4000b91cd72c79cd681, type: 2}
+  _ShapeProfile: {fileID: 11400000, guid: f68d78e6abce24d8c87a6a48f6dca367, type: 2}
+  _ContinentalProfile: {fileID: 11400000, guid: 1e945cda5aba14acda34219b70865916, type: 2}
+  _SquishProfile: {fileID: 11400000, guid: 2a8f93aaf56a04ad19b45f357803970b, type: 2}
 --- !u!1 &2128243692
 GameObject:
   m_ObjectHideFlags: 0

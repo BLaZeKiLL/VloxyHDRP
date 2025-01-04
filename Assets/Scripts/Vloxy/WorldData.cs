@@ -4,7 +4,6 @@ using UnityEngine;
 namespace CodeBlaze.Vloxy.Game
 {
     
-    // [DefaultExecutionOrder(-1000)]
     public class WorldData : SingletonBehaviour<WorldData> 
     {
         [SerializeField] private WorldProfile _WorldProfile;
