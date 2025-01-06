@@ -1,4 +1,5 @@
 using Runevision.Common;
+using Unity.Mathematics;
 
 public static class GridBoundsExtensions {
     public static GridBounds DiffBounds(this GridBounds A, GridBounds B) {
@@ -18,4 +19,5 @@ public static class GridBoundsExtensions {
         
         return GridBounds.Empty();
     }
+
 }

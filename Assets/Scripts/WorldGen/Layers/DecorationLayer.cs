@@ -1,8 +1,10 @@
 using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Data;
+using CodeBlaze.Vloxy.Engine.Utils.Extensions;
 using CodeBlaze.Vloxy.Engine.Utils.Logger;
 using Runevision.LayerProcGen;
 using Unity.Mathematics;
+using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Game
 {
@@ -12,44 +14,32 @@ namespace CodeBlaze.Vloxy.Game
         {
             if (destroy) return;
 
-            var position = new int3(bounds.min.x, 0, bounds.min.y);
+            var position = bounds.min.ToInt3XZ();
 
-            if (layer.ChunkManager.IsChunkLoaded(position)) {
-                VloxyLogger.Warn<DecorationLayer>($"Decoration run for {position} while chunk not loaded");
-                return;
-            }
+            var chunk = layer.ChunkManager.GetChunkUnsafe(position).Value;
 
-            var chunk = layer.ChunkManager.GetChunk(position).Value;
-
-            // UnityEngine.Debug.Log(chunk);
+            var height_map = RasterLayer.instance.GetHeightMapForChunk(position); 
 
             // Surface Replacement
             for (var z = 0; z < 32; z++)
             {
                 for (var x = 0; x < 32; x++)
                 {
-                    for (var y = 0; y < 256; y++)
-                    {
-                        var y_invert = 255 - y;
+                    var y = height_map[x, z];
                         
+                    if (chunk.GetBlock(x, y, z) == (int) Block.STONE) 
+                    {
+                        chunk.SetBlock(x, y, z, (int) Block.GRASS);
 
-                        if (chunk.GetBlock(x, y_invert, z) == (int) Block.STONE) 
+                        for (var y_iter = y - 1; y_iter >= math.max(0, y - 3); y_iter--)
                         {
-                            chunk.SetBlock(x, y_invert, z, (int) Block.GRASS);
-
-                            for (var y_iter = y_invert - 1; y_iter >= math.max(0, y_iter - 3); y_iter--)
-                            {
-                                chunk.SetBlock(x, y_invert, z, (int) Block.DIRT);
-                            }
-
-                            break;
+                            chunk.SetBlock(x, y_iter, z, (int) Block.DIRT);
                         }
-
                     }
                 }
             }
 
-            // UnityEngine.Debug.Log(chunk);
+            if ((position == int3.zero).AndReduce()) Debug.Log(chunk);
         }
     }
 

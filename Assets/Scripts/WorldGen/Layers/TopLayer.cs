@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Data;
 using CodeBlaze.Vloxy.Engine.Utils;
@@ -12,7 +9,16 @@ using Unity.Collections;
 using Unity.Mathematics;
 
 namespace CodeBlaze.Vloxy.Game {
-    public class TopChunk : LayerChunk<TopLayer, TopChunk> {}
+    public class TopChunk : LayerChunk<TopLayer, TopChunk> {
+        public override void Create(int level, bool destroy)
+        {
+            if (destroy) return;
+
+            var position = bounds.min.ToInt3XZ();
+
+            layer.ChunkManager.MarkChunkReady(position);
+        }
+    }
 
     public class TopLayer : ChunkBasedDataLayer<TopLayer, TopChunk>
     {
@@ -20,7 +26,11 @@ namespace CodeBlaze.Vloxy.Game {
 
         public override int chunkH => 32;
 
+        public ChunkManager ChunkManager { get; private set; }
+
         public TopLayer() {
+            ChunkManager = WorldAPI.Current.World.ChunkManager;
+
             AddLayerDependency(new LayerDependency(DecorationLayer.instance, 0));
         }
     }

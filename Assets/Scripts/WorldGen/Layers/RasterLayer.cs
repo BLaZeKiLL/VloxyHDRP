@@ -18,52 +18,65 @@ namespace CodeBlaze.Vloxy.Game
 {
     public class RasterChunk : LayerChunk<RasterLayer, RasterChunk>
     {
+        public int[,] HeightMap { get; private set; } = new int[32, 32];
+
         public override void Create(int level, bool destroy)
         {
-            if (destroy)
-            {
+            if (destroy) {
+                HeightMap.Clear();
+                return;
             }
-            else
+
+            var position = bounds.min.ToInt3XZ();
+            var chunk = new Chunk(position, new int3(32, 256, 32));
+
+            var posX = position.x;
+            var posZ = position.z;
+
+            int current_block = layer.WorldGenerator.GetBlock(posX, 0, posZ);
+
+            int count = 0;
+
+            // Loop order should be same as flatten order for AddBlocks to work properly
+            for (var y = 0; y < 256; y++)
             {
-                var position = new int3(bounds.min.x, 0, bounds.min.y);
-                var chunk = new Chunk(position, new int3(32, 256, 32));
-
-                var posX = position.x;
-                var posZ = position.z;
-
-                int current_block = layer.WorldGenerator.GetBlock(posX, 0, posZ);
-
-                int count = 0;
-
-                // Loop order should be same as flatten order for AddBlocks to work properly
-                for (var y = 0; y < 256; y++)
+                for (var z = 0; z < 32; z++)
                 {
-                    for (var z = 0; z < 32; z++)
+                    for (var x = 0; x < 32; x++)
                     {
-                        for (var x = 0; x < 32; x++)
-                        {
-                            var block = layer.WorldGenerator.GetBlock(posX + x, y, posZ + z);
+                        var block = layer.WorldGenerator.GetBlock(posX + x, y, posZ + z);
 
-                            if (block == current_block)
-                            {
-                                count++;
-                            }
-                            else
-                            {
-                                chunk.AddBlocks(current_block, count);
-                                current_block = block;
-                                count = 1;
-                            }
+                        if (block == (int) Block.STONE) {
+                            HeightMap[x, z] = math.max(HeightMap[x, z], y);
                         }
+
+                        #if VLOXY_COMPRESS
+                        if (block == current_block)
+                        {
+                            count++;
+                        }
+                        else
+                        {
+                            chunk.AddBlocks(current_block, count);
+                            current_block = block;
+                            count = 1;
+                        }
+                        #else
+                        chunk.SetBlock(x, y, z, block);
+                        #endif
                     }
                 }
-
-                chunk.AddBlocks(current_block, count); // Finale interval
-
-                var chunk_ref = new NativeReference<Chunk>(chunk, Allocator.Persistent);
-
-                layer.ChunkManager.AddChunk(position, chunk_ref);
             }
+
+            #if VLOXY_COMPRESS
+            chunk.AddBlocks(current_block, count); // Finale interval
+            #endif
+
+            var chunk_ref = new NativeReference<Chunk>(chunk, Allocator.Persistent);
+
+            layer.ChunkManager.AddChunk(position, chunk_ref);
+
+            if ((position == int3.zero).AndReduce()) Debug.Log(chunk);
         }
     }
 
@@ -80,6 +93,15 @@ namespace CodeBlaze.Vloxy.Game
         {
             WorldGenerator = WorldData.Current.Generator;
             ChunkManager = WorldAPI.Current.World.ChunkManager;
+        }
+
+        public int[,] GetHeightMapForChunk(int3 position) {
+            var chunk = chunks[
+                Crd.Div(position.x, chunkW), 
+                Crd.Div(position.z, chunkH)
+            ];
+
+            return chunk.HeightMap;
         }
     }
 }

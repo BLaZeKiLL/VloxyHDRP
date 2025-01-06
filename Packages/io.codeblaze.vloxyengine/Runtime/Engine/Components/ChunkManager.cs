@@ -15,11 +15,14 @@ namespace CodeBlaze.Vloxy.Engine.Components {
 
     public class ChunkManager
     {
-        private Dictionary<int3, NativeReference<Chunk>> Chunks;
+        private readonly Dictionary<int3, NativeReference<Chunk>> Chunks;
+        private readonly object ChunksLock;
+
+        private readonly HashSet<int3> ReadyChunks;
+        private readonly object ReadyChunksLock;
 
         private int3 ChunkSize;
 
-        private object ChunksLock;
 
         public ChunkManager(VloxySettings settings) {
             ChunkSize = settings.Chunk.ChunkSize;
@@ -27,8 +30,10 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             var size = settings.Chunk.DrawDistance.XZSize();
 
             Chunks = new Dictionary<int3, NativeReference<Chunk>>(size);
-
             ChunksLock = new();
+
+            ReadyChunks = new HashSet<int3>(size);
+            ReadyChunksLock = new object();
         }
 
         public int ChunkCount() => Chunks.Count;
@@ -46,6 +51,12 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             }
         }
 
+        public void MarkChunkReady(int3 postion) {
+            lock (ReadyChunksLock) {
+                ReadyChunks.Add(postion);
+            }
+        }
+
         public Block GetBlock(int3 position)
         {
             var chunk_pos = VloxyUtils.GetChunkCoords(position);
@@ -56,7 +67,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
                 return Block.ERROR;
             }
             
-            var chunk = GetChunk(chunk_pos).Value;
+            var chunk = GetChunkUnsafe(chunk_pos).Value;
 
             return (Block) chunk.GetBlock(block_pos);
         }
@@ -71,7 +82,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
                 return false;
             }
 
-            var chunk = GetChunk(chunk_pos).Value;
+            var chunk = GetChunkUnsafe(chunk_pos).Value;
             
             var result = chunk.SetBlock(block_pos, VloxyUtils.GetBlockId(block));
 
@@ -82,18 +93,9 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             return result;
         }
 
-        public NativeReference<Chunk> GetChunk(int3 position)
-        {
-            throw new NotImplementedException();
-        }
+        public NativeReference<Chunk> GetChunkUnsafe(int3 position) => Chunks[position];
 
-        public bool IsChunkLoaded(int3 position)
-        {
-            if (!Chunks.ContainsKey(position))
-                return false;
-
-            return Chunks[position].IsCreated;
-        }
+        public bool IsChunkLoaded(int3 position) => ReadyChunks.Contains(position);
 
         internal List<int3> GetChunkPositionsInBounds(GridBounds bounds)
         {
@@ -141,14 +143,17 @@ namespace CodeBlaze.Vloxy.Engine.Components {
         }
 
         internal void RemoveChunks(List<int3> positions) {
-            foreach (var position in positions) {
-                RemoveChunk(position);
+            lock (ChunksLock) {
+                foreach (var position in positions) {
+                    RemoveChunk(position);
+                }
             }
         }
 
         private void RemoveChunk(int3 position) {
             Chunks[position].Dispose();
             Chunks.Remove(position);
+            ReadyChunks.Remove(position);
         }
     }
 
