@@ -18,22 +18,18 @@ namespace CodeBlaze.Vloxy.Game
 {
     public class RasterChunk : LayerChunk<RasterLayer, RasterChunk>
     {
-        public NativeReference<Chunk> Data { get; private set; }
-        public bool Loaded { get; private set; }
-
         public override void Create(int level, bool destroy)
         {
             if (destroy)
             {
-                Data.Dispose(); // Clear instead of dispose
-                Loaded = false;
             }
             else
             {
-                var data = new Chunk(new int3(bounds.min.x, 0, bounds.min.y), new int3(32, 256, 32));
+                var position = new int3(bounds.min.x, 0, bounds.min.y);
+                var chunk = new Chunk(position, new int3(32, 256, 32));
 
-                var posX = bounds.min.x;
-                var posZ = bounds.min.y;
+                var posX = position.x;
+                var posZ = position.z;
 
                 int current_block = layer.WorldGenerator.GetBlock(posX, 0, posZ);
 
@@ -54,7 +50,7 @@ namespace CodeBlaze.Vloxy.Game
                             }
                             else
                             {
-                                data.AddBlocks(current_block, count);
+                                chunk.AddBlocks(current_block, count);
                                 current_block = block;
                                 count = 1;
                             }
@@ -62,132 +58,28 @@ namespace CodeBlaze.Vloxy.Game
                     }
                 }
 
-                data.AddBlocks(current_block, count); // Finale interval
+                chunk.AddBlocks(current_block, count); // Finale interval
 
-                Data = new NativeReference<Chunk>(data, Allocator.Persistent);
-                Loaded = true;
+                var chunk_ref = new NativeReference<Chunk>(chunk, Allocator.Persistent);
+
+                layer.ChunkManager.AddChunk(position, chunk_ref);
             }
         }
     }
 
-    public class RasterLayer : ChunkBasedDataLayer<RasterLayer, RasterChunk>, IChunkManager
+    public class RasterLayer : ChunkBasedDataLayer<RasterLayer, RasterChunk>
     {
         public override int chunkW => 32;
 
         public override int chunkH => 32;
 
         public WorldGenerator WorldGenerator { get; private set; }
+        public ChunkManager ChunkManager { get; private set; }
 
         public RasterLayer()
         {
             WorldGenerator = WorldData.Current.Generator;
+            ChunkManager = WorldAPI.Current.World.ChunkManager;
         }
-
-        #region ChunkManager
-        public NativeReference<Chunk> GetChunk(int3 position) 
-        {
-            return chunks[position.x / chunkW, position.z / chunkH].Data;
-        }
-        
-        public bool IsChunkLoaded(int3 position)
-        {
-            var chunk = chunks[position.x / chunkW, position.z / chunkH];
-
-            if (chunk == null) return false;
-
-            return chunk.Loaded;
-        }
-
-        public List<int3> GetChunkPositionsInBounds(GridBounds bounds)
-        {
-            List<int3> chunks = new();
-
-            Point point = new(Crd.Div(bounds.min.x, chunkW), Crd.Div(bounds.min.y, chunkH));
-            Point point2 = new(Crd.DivUp(bounds.max.x, chunkW), Crd.DivUp(bounds.max.y, chunkH));
-
-            for (int x = point.x; x < point2.x; x++)
-            {
-                for (int z = point.y; z < point2.y; z++)
-                {
-                    chunks.Add(new int3(x * chunkW, 0, z * chunkH));
-                }
-            }
-
-            return chunks;
-        }
-
-        public void PopulateChunkAccessor(List<int3> positions, NativeParallelHashMap<int3, Chunk> chunk_map)
-        {
-            foreach (var position in positions)
-            {
-                for (var x = -1; x <= 1; x++)
-                {
-                    for (var z = -1; z <= 1; z++)
-                    {
-                        var pos = position + new int3(chunkW, 0, chunkH).MemberMultiply(x, 0, z);
-
-                        if (!IsChunkLoaded(pos))
-                        {
-                            // Anytime this exception is thrown, mesh building completely stops
-                            throw new InvalidOperationException($"Chunk {pos} has not been generated");
-                        }
-
-                        var raster_chunk = chunks[pos.x / chunkW, pos.z / chunkH];
-
-                        if (!chunk_map.ContainsKey(pos))
-                        {
-                            chunk_map.Add(pos, raster_chunk.Data.Value);
-                        }
-                    }
-                }
-            }
-        }
-
-        public int ChunkCount() => chunks.Count();
-
-        public void Dispose()
-        {
-            foreach (var chunk in chunks)
-            {
-                chunk.Data.Dispose();
-            }
-        }
-
-        public Block GetBlock(int3 position)
-        {
-            var chunk_pos = VloxyUtils.GetChunkCoords(position);
-            var block_pos = VloxyUtils.GetBlockIndex(position);
-            
-            if (!IsChunkLoaded(chunk_pos)) {
-                VloxyLogger.Warn<IChunkManager>($"Chunk : {chunk_pos} not loaded");
-                return Block.ERROR;
-            }
-            
-            var chunk = GetChunk(chunk_pos).Value;
-
-            return (Block) chunk.GetBlock(block_pos);
-        }
-
-        public bool SetBlock(Block block, int3 position)
-        {
-            var chunk_pos = VloxyUtils.GetChunkCoords(position);
-            var block_pos = VloxyUtils.GetBlockIndex(position);
-
-            if (!IsChunkLoaded(chunk_pos)) {
-                VloxyLogger.Warn<IChunkManager>($"Chunk : {chunk_pos} not loaded");
-                return false;
-            }
-
-            var chunk = GetChunk(chunk_pos).Value;
-            
-            var result = chunk.SetBlock(block_pos, VloxyUtils.GetBlockId(block));
-
-            // _Chunks[chunk_pos] = chunk;
-
-            // if (remesh && result) ReMeshChunks(position.Int3());
-            
-            return result;
-        }
-        #endregion
     }
 }

@@ -15,6 +15,7 @@ using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Engine.World {
 
+    [DefaultExecutionOrder(-500)]
     public class VloxyWorld : MonoBehaviour {
 
         [SerializeField] private Transform _Focus;
@@ -30,7 +31,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
         public GridBounds PrevDiffBounds { get; private set; }
         
         public VloxyScheduler Scheduler { get; private set; }
-        public IChunkManager ChunkManager { get; private set; }
+        public ChunkManager ChunkManager { get; private set; }
 
         #endregion
         
@@ -157,7 +158,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
         }
         
         private void ConstructVloxyComponents() {
-            ChunkManager = VloxyProvider.Current.TopLevelChunkManager();
+            ChunkManager = VloxyProvider.Current.ChunkManager();
 
             _ChunkPool = VloxyProvider.Current.ChunkPool(transform);
 

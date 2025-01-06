@@ -3646,7 +3646,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   layer:
-    className: CodeBlaze.Vloxy.Game.DecorationLayer
+    className: CodeBlaze.Vloxy.Game.TopLayer
   size:
     x: 256
     y: 256
@@ -7954,11 +7954,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   layers:
   - layerClassName:
-      className: CodeBlaze.Vloxy.Game.RasterLayer
-    color: {r: 1, g: 0, b: 0, a: 0}
+      className: CodeBlaze.Vloxy.Game.TopLayer
+    color: {r: 0.98465693, g: 1, b: 0, a: 0}
   - layerClassName:
       className: CodeBlaze.Vloxy.Game.DecorationLayer
     color: {r: 0, g: 1, b: 0.11449838, a: 0}
+  - layerClassName:
+      className: CodeBlaze.Vloxy.Game.RasterLayer
+    color: {r: 1, g: 0, b: 0, a: 0}
   worldOffset: 0
   spacingUnit: 1
   spacingAmount: 4
@@ -7992,7 +7995,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63f788e7d356b4a5cafd9dc42d4b15e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useParallelThreads: 0
+  useParallelThreads: 1
   generationPlane: 1
   debugQueueText: {fileID: 1673017348}
   debugStatusText: {fileID: 0}

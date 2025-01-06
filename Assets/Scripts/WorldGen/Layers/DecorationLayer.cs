@@ -1,3 +1,4 @@
+using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Data;
 using CodeBlaze.Vloxy.Engine.Utils.Logger;
 using Runevision.LayerProcGen;
@@ -13,12 +14,14 @@ namespace CodeBlaze.Vloxy.Game
 
             var position = new int3(bounds.min.x, 0, bounds.min.y);
 
-            if (RasterLayer.instance.IsChunkLoaded(position)) {
+            if (layer.ChunkManager.IsChunkLoaded(position)) {
                 VloxyLogger.Warn<DecorationLayer>($"Decoration run for {position} while chunk not loaded");
                 return;
             }
 
-            var chunk = RasterLayer.instance.GetChunk(position).Value;
+            var chunk = layer.ChunkManager.GetChunk(position).Value;
+
+            // UnityEngine.Debug.Log(chunk);
 
             // Surface Replacement
             for (var z = 0; z < 32; z++)
@@ -27,7 +30,8 @@ namespace CodeBlaze.Vloxy.Game
                 {
                     for (var y = 0; y < 256; y++)
                     {
-                        var y_invert = 256 - y;
+                        var y_invert = 255 - y;
+                        
 
                         if (chunk.GetBlock(x, y_invert, z) == (int) Block.STONE) 
                         {
@@ -40,9 +44,12 @@ namespace CodeBlaze.Vloxy.Game
 
                             break;
                         }
+
                     }
                 }
             }
+
+            // UnityEngine.Debug.Log(chunk);
         }
     }
 
@@ -52,7 +59,11 @@ namespace CodeBlaze.Vloxy.Game
 
         public override int chunkH => 32;
 
+        public ChunkManager ChunkManager { get; private set; }
+
         public DecorationLayer() {
+            ChunkManager = WorldAPI.Current.World.ChunkManager;
+
             AddLayerDependency(new LayerDependency(RasterLayer.instance, 0));
         }
     }

@@ -8,14 +8,7 @@ using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Game {
 
-    public class WorldProvider : VloxyProvider {
-        protected override IChunkManager TopLevelChunkManager() {
-            return RasterLayer.instance;
-        }
-    }
-
     public class WorldEngine : VloxyWorld {
-        protected override VloxyProvider Provider() => new WorldProvider();
 
         // protected override void WorldInitialize() {
         //     RenderSettings.fogMode = FogMode.Linear;
