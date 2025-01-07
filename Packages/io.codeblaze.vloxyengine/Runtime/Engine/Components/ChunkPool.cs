@@ -26,7 +26,7 @@ namespace CodeBlaze.Vloxy.Engine.Components
         private readonly ObjectPool<ChunkBehaviour> _Pool;
         private readonly Dictionary<int3, ChunkBehaviour> _MeshMap;
         private readonly HashSet<int3> _ColliderSet;
-        private readonly Queue<int3> _ReclaimQueue;
+        private readonly HashSet<int3> _ReclaimSet;
 
         private readonly int _ChunkPoolSize;
 
@@ -34,7 +34,7 @@ namespace CodeBlaze.Vloxy.Engine.Components
         {
             _ChunkPoolSize = settings.Chunk.DrawDistance.XZSize();
 
-            _ReclaimQueue = new Queue<int3>();
+            _ReclaimSet = new HashSet<int3>();
             _MeshMap = new Dictionary<int3, ChunkBehaviour>(_ChunkPoolSize);
             _ColliderSet = new HashSet<int3>(settings.Chunk.ColliderDistance.XZSize());
 
@@ -79,14 +79,14 @@ namespace CodeBlaze.Vloxy.Engine.Components
 
         internal void ReclaimChunks(List<int3> positions)
         {
-            ProcessReclaimQueue(); // Pending Reclaims
+            ProcessReclaimSet(); // Pending Reclaims
 
             foreach (var chunk_position in positions)
             {
                 if (_MeshMap.ContainsKey(chunk_position))
                     ReclaimChunk(chunk_position);
                 else
-                    _ReclaimQueue.Enqueue(chunk_position);
+                    _ReclaimSet.Add(chunk_position);
             }
         }
 
@@ -137,13 +137,18 @@ namespace CodeBlaze.Vloxy.Engine.Components
             return _MeshMap[position];
         }
 
-        private void ProcessReclaimQueue() {
-            var count = _ReclaimQueue.Count;
+        private void ProcessReclaimSet() {
+            var remove_list = new List<int3>(_ReclaimSet.Count);
 
-            while (count > 0) {
-                if (_MeshMap.ContainsKey(_ReclaimQueue.Peek()))
-                    ReclaimChunk(_ReclaimQueue.Dequeue());
-                count--;
+            foreach (var positon in _ReclaimSet) {
+                if (_MeshMap.ContainsKey(positon)) {
+                    ReclaimChunk(positon);
+                    remove_list.Add(positon);
+                }
+            }
+
+            foreach (var position in remove_list) {
+                _ReclaimSet.Remove(position);
             }
         }
 

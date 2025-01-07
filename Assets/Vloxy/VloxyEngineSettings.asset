@@ -26,7 +26,7 @@ MonoBehaviour:
     - {fileID: 2100000, guid: b458752dfcecd44ea8cc5cc865912422, type: 2}
     CastShadows: 1
   Scheduler:
-    MeshingBatchSize: 2
+    MeshingBatchSize: 4
     StreamingBatchSize: 8
     ColliderBatchSize: 6
     TickRate: 1

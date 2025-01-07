@@ -144,7 +144,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
         public void RemoveChunk(int3 position) {
             Chunks.Remove(position, out var chunk);
             ReadyChunks.Remove(position);
-            chunk.Dispose();
+            chunk.Dispose(); // TODO : Check dispose
         }
     }
 
