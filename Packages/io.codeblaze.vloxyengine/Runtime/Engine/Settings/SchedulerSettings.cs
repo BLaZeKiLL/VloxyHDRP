@@ -9,8 +9,6 @@ namespace CodeBlaze.Vloxy.Engine.Settings {
 
         public int MeshingBatchSize = 4;
         
-        public int StreamingBatchSize = 8;
-
         public int ColliderBatchSize = 4;
 
         [Tooltip("Framerate at which the scheduler updates")]

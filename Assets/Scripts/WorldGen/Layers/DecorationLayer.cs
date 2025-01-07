@@ -1,10 +1,9 @@
-using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Data;
+using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Utils.Extensions;
-using CodeBlaze.Vloxy.Engine.Utils.Logger;
+
 using Runevision.LayerProcGen;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Game
 {

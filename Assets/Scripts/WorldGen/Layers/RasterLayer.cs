@@ -35,7 +35,9 @@ namespace CodeBlaze.Vloxy.Game
 
             int current_block = layer.WorldGenerator.GetBlock(posX, 0, posZ);
 
+            # if VLOXY_COMPRESS
             int count = 0;
+            #endif
 
             // Loop order should be same as flatten order for AddBlocks to work properly
             for (var y = 0; y < 256; y++)
