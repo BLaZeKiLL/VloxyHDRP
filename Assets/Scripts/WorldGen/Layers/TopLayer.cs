@@ -12,9 +12,12 @@ namespace CodeBlaze.Vloxy.Game {
     public class TopChunk : LayerChunk<TopLayer, TopChunk> {
         public override void Create(int level, bool destroy)
         {
-            if (destroy) return;
-
             var position = bounds.min.ToInt3XZ();
+
+            if (destroy) {
+                layer.ChunkManager.RemoveChunk(position);
+                return;
+            }
 
             layer.ChunkManager.MarkChunkReady(position);
         }

@@ -38,8 +38,6 @@ namespace CodeBlaze.Vloxy.Game
                     }
                 }
             }
-
-            if ((position == int3.zero).AndReduce()) Debug.Log(chunk);
         }
     }
 

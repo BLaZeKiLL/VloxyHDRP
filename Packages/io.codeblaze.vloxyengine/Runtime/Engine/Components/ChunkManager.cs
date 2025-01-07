@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using CodeBlaze.Vloxy.Engine.Data;
 using CodeBlaze.Vloxy.Engine.Settings;
@@ -15,11 +16,9 @@ namespace CodeBlaze.Vloxy.Engine.Components {
 
     public class ChunkManager
     {
-        private readonly Dictionary<int3, NativeReference<Chunk>> Chunks;
-        private readonly object ChunksLock;
+        private readonly ConcurrentDictionary<int3, NativeReference<Chunk>> Chunks;
 
-        private readonly HashSet<int3> ReadyChunks;
-        private readonly object ReadyChunksLock;
+        private readonly HashSet<int3> ReadyChunks; // TODO : Thread safety required ?
 
         private int3 ChunkSize;
 
@@ -29,11 +28,9 @@ namespace CodeBlaze.Vloxy.Engine.Components {
 
             var size = settings.Chunk.DrawDistance.XZSize();
 
-            Chunks = new Dictionary<int3, NativeReference<Chunk>>(size);
-            ChunksLock = new();
+            Chunks = new ConcurrentDictionary<int3, NativeReference<Chunk>>(Environment.ProcessorCount * 2, size);
 
             ReadyChunks = new HashSet<int3>(size);
-            ReadyChunksLock = new object();
         }
 
         public int ChunkCount() => Chunks.Count;
@@ -46,15 +43,11 @@ namespace CodeBlaze.Vloxy.Engine.Components {
         }
 
         public void AddChunk(int3 position, NativeReference<Chunk> chunk) {
-            lock (ChunksLock) {
-                Chunks.Add(position, chunk);
-            }
+            Chunks[position] = chunk;
         }
 
         public void MarkChunkReady(int3 postion) {
-            lock (ReadyChunksLock) {
-                ReadyChunks.Add(postion);
-            }
+            ReadyChunks.Add(postion);
         }
 
         public Block GetBlock(int3 position)
@@ -143,17 +136,15 @@ namespace CodeBlaze.Vloxy.Engine.Components {
         }
 
         internal void RemoveChunks(List<int3> positions) {
-            lock (ChunksLock) {
-                foreach (var position in positions) {
-                    RemoveChunk(position);
-                }
+            foreach (var position in positions) {
+                RemoveChunk(position);
             }
         }
 
-        private void RemoveChunk(int3 position) {
-            Chunks[position].Dispose();
-            Chunks.Remove(position);
+        public void RemoveChunk(int3 position) {
+            Chunks.Remove(position, out var chunk);
             ReadyChunks.Remove(position);
+            chunk.Dispose();
         }
     }
 

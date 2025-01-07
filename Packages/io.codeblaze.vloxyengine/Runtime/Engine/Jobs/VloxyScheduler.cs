@@ -61,7 +61,9 @@ namespace CodeBlaze.Vloxy.Engine.Jobs
             {
                 var old_chunk_positions = _ChunkManager.GetChunkPositionsInBounds(old_diff);
                 _ChunkPool.ReclaimChunks(old_chunk_positions);
-                _ChunkManager.RemoveChunks(old_chunk_positions);
+                // !Fix : This is wrong as view bound as not same as data bound
+                // !as a work around doing this in TopLayer
+                // _ChunkManager.RemoveChunks(old_chunk_positions); 
             }
 
             var new_chunk_positions = _ChunkManager.GetChunkPositionsInBounds(new_diff);

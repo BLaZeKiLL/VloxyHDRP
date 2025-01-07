@@ -26,7 +26,7 @@ namespace CodeBlaze.Vloxy.Engine.Behaviour {
         }
 
         private void OnDrawGizmos() {
-            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Gizmos.color = new Color(1, 0, 1, 0.5f);
             Gizmos.DrawWireCube(transform.position + new Vector3(16, 16, 16), new Vector3(32, 32, 32));
         }
     }

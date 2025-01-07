@@ -75,8 +75,6 @@ namespace CodeBlaze.Vloxy.Game
             var chunk_ref = new NativeReference<Chunk>(chunk, Allocator.Persistent);
 
             layer.ChunkManager.AddChunk(position, chunk_ref);
-
-            if ((position == int3.zero).AndReduce()) Debug.Log(chunk);
         }
     }
 

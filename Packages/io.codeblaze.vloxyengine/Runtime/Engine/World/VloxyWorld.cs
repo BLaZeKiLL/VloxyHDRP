@@ -26,9 +26,9 @@ namespace CodeBlaze.Vloxy.Engine.World {
         public Transform Focus => _Focus;
         public VloxySettings Settings => _Settings;
         public int3 FocusChunkCoord { get; private set; }
-        public GridBounds CurrentUpdateBound { get; private set; }
-        public GridBounds NextDiffBounds { get; private set; } // this will be used to query chunks for meshing
-        public GridBounds PrevDiffBounds { get; private set; }
+        public GridBounds CurrentViewBound { get; private set; }
+        public GridBounds NextViewDiffBounds { get; private set; } // this will be used to query chunks for meshing
+        public GridBounds PrevViewDiffBounds { get; private set; }
         
         public VloxyScheduler Scheduler { get; private set; }
         public ChunkManager ChunkManager { get; private set; }
@@ -74,10 +74,10 @@ namespace CodeBlaze.Vloxy.Engine.World {
             ConstructVloxyComponents();
             
             FocusChunkCoord = new int3(1,1,1) * int.MinValue;
-            CurrentUpdateBound = new(int.MinValue, int.MinValue, _BoundSize, _BoundSize);
+            CurrentViewBound = new(int.MinValue, int.MinValue, _BoundSize, _BoundSize);
 
-            NextDiffBounds = CurrentUpdateBound;
-            PrevDiffBounds = CurrentUpdateBound;
+            NextViewDiffBounds = CurrentViewBound;
+            PrevViewDiffBounds = CurrentViewBound;
 
             WorldAwake();
         }
@@ -95,12 +95,12 @@ namespace CodeBlaze.Vloxy.Engine.World {
                 FocusChunkCoord = NewFocusChunkCoord;
                 GridBounds NewUpdateBound = new(_BoundOffset + FocusChunkCoord.x, _BoundOffset + FocusChunkCoord.z, _BoundSize, _BoundSize);
 
-                NextDiffBounds = NewUpdateBound.DiffBounds(CurrentUpdateBound);
-                PrevDiffBounds = CurrentUpdateBound.DiffBounds(NewUpdateBound);
+                NextViewDiffBounds = NewUpdateBound.DiffBounds(CurrentViewBound);
+                PrevViewDiffBounds = CurrentViewBound.DiffBounds(NewUpdateBound);
 
-                CurrentUpdateBound = NewUpdateBound;
+                CurrentViewBound = NewUpdateBound;
 
-                Scheduler.FocusUpdate(FocusChunkCoord, NextDiffBounds, PrevDiffBounds);
+                Scheduler.FocusUpdate(FocusChunkCoord, NextViewDiffBounds, PrevViewDiffBounds);
                 
                 WorldFocusUpdate();
             }
@@ -111,7 +111,7 @@ namespace CodeBlaze.Vloxy.Engine.World {
             if (_UpdateFrame % Settings.Scheduler.TickRate == 0) {
                 _UpdateFrame = 1;
 
-                Scheduler.JobUpdate(CurrentUpdateBound);
+                Scheduler.JobUpdate(CurrentViewBound);
 
                 WorldSchedulerUpdate();
             } else {
@@ -121,9 +121,9 @@ namespace CodeBlaze.Vloxy.Engine.World {
             WorldUpdate();
 
 #if VLOXY_LOGGING
-            DebugUtils.DrawBounds(NextDiffBounds, Color.green);
-            DebugUtils.DrawBounds(PrevDiffBounds, Color.magenta);
-            DebugUtils.DrawBounds(CurrentUpdateBound, Color.cyan);
+            DebugUtils.DrawBounds(NextViewDiffBounds, Color.green);
+            DebugUtils.DrawBounds(PrevViewDiffBounds, Color.magenta);
+            DebugUtils.DrawBounds(CurrentViewBound, Color.cyan);
 #endif
         }
 
