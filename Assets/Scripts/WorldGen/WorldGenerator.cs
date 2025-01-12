@@ -18,11 +18,15 @@ namespace CodeBlaze.Vloxy.Game
         private readonly BakedAnimationCurve _SquishCurve;
         private readonly SquishProfile _SquishProfile;
 
+        private readonly FastNoiseLite _TreeNoise;
+        private readonly TreeProfile _TreeProfile;
+
         public WorldGenerator(
             WorldProfile worldProfile,
             ShapeProfile shapeNoiseProfile,
             ContinentalProfile continentalNoiseProfile,
-            SquishProfile squishNoiseProfile
+            SquishProfile squishNoiseProfile,
+            TreeProfile treeProfile
         )
         {
             _WorldProfile = worldProfile;
@@ -37,6 +41,9 @@ namespace CodeBlaze.Vloxy.Game
             _SquishProfile = squishNoiseProfile;
             _SquishNoise = FastNoiseLiteExtensions.FromProfile(squishNoiseProfile);
             _SquishCurve = new(squishNoiseProfile.Curve, squishNoiseProfile.CurveResolution);
+
+            _TreeProfile = treeProfile;
+            _TreeNoise = FastNoiseLiteExtensions.FromProfile(treeProfile);
         }
 
         public int GetBlock(int x, int y, int z)
