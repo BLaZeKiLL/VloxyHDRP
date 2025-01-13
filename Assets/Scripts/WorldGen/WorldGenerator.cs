@@ -87,5 +87,10 @@ namespace CodeBlaze.Vloxy.Game
                 _SquishProfile.Scale
             );
         }
+
+        public float GetTreeChanceValue(float x, float z) 
+        {
+            return _TreeNoise.NoiseScaleShiftFloat(x, z, 0.5f, 0.5f) * _TreeProfile.Scale;
+        }
     }
 }

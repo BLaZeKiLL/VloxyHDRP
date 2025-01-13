@@ -1,6 +1,7 @@
-﻿using CodeBlaze.Vloxy.Engine.Utils.Collections;
+﻿using System;
+using CodeBlaze.Vloxy.Engine.Utils.Collections;
 using CodeBlaze.Vloxy.Engine.Utils.Extensions;
-
+using CodeBlaze.Vloxy.Engine.Utils.Logger;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -82,23 +83,31 @@ namespace CodeBlaze.Vloxy.Engine.Data {
         public readonly bool IsAirChunk => false;
 
         public bool SetBlock(int x, int y, int z, int block) {
+            #if UNITY_EDITOR
+            if (ChunkSize.Flatten(x, y, z) >= 32 * 256 * 32) {
+                throw new IndexOutOfRangeException($"SET: Index ({x}, {y}, {z}) is out of range");
+            }
+            #endif
             Data[ChunkSize.Flatten(x,y,z)] = block;
             Dirty = true;
             return true;
         }
         
         public bool SetBlock(int3 pos, int block) {
-            Data[ChunkSize.Flatten(pos)] = block;
-            Dirty = true;
-            return true;
+            return SetBlock(pos.x, pos.y, pos.z, block);
         }
 
         public int GetBlock(int x, int y, int z) {
+            #if UNITY_EDITOR
+            if (ChunkSize.Flatten(x, y, z) >= 32 * 256 * 32) {
+                throw new IndexOutOfRangeException($"GET: Index ({x}, {y}, {z}) is out of range");
+            }
+            #endif
             return Data[ChunkSize.Flatten(x, y, z)];
         }
 
         public int GetBlock(int3 pos) {
-            return Data[ChunkSize.Flatten(pos.x, pos.y, pos.z)];
+            return GetBlock(pos.x, pos.y, pos.z);
         }
 
         public void Dispose() {

@@ -65,6 +65,9 @@ namespace CodeBlaze.Vloxy.Engine.Mesher {
                 (int) Block.DIRT => 52,
                 (int) Block.STONE => 39,
                 (int) Block.SAND => 57,
+                (int) Block.WOOD when normal.y is 1 or -1 => 81,
+                (int) Block.WOOD => 1,
+                (int) Block.LEAFS => 76,
                 _ => 0
             };
         }

@@ -131,6 +131,14 @@ namespace CodeBlaze.Editor
                 GUILayout.Label("Squish Profile", EditorStyles.boldLabel);
                 DrawSerializedProperties(SquishProfileObject);
             }
+
+            GUILayout.Space(16);
+
+            if (TreeProfileInstance != null)
+            {
+                GUILayout.Label("Tree Profile", EditorStyles.boldLabel);
+                DrawSerializedProperties(TreeProfileObject);
+            }
         }
 
         private void UpdateSerializedObjects()

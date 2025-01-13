@@ -94,7 +94,7 @@ namespace CodeBlaze.Vloxy.Game
             WorldGenerator = WorldData.Current.Generator;
             ChunkManager = WorldAPI.Current.World.ChunkManager;
 
-            AddLayerDependency(new LayerDependency(DecorationLayer.instance, 32));
+            // AddLayerDependency(new LayerDependency(StructureLayer.instance, 32));
         }
 
         public int[,] GetHeightMapForChunk(int3 position) {

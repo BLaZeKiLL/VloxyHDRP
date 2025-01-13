@@ -8016,6 +8016,7 @@ MonoBehaviour:
   _ShapeProfile: {fileID: 11400000, guid: f68d78e6abce24d8c87a6a48f6dca367, type: 2}
   _ContinentalProfile: {fileID: 11400000, guid: 1e945cda5aba14acda34219b70865916, type: 2}
   _SquishProfile: {fileID: 11400000, guid: 2a8f93aaf56a04ad19b45f357803970b, type: 2}
+  _TreeProfile: {fileID: 11400000, guid: 8eac9da10bd89409187adcf3a6d8d0c0, type: 2}
 --- !u!1 &2128243692
 GameObject:
   m_ObjectHideFlags: 0
