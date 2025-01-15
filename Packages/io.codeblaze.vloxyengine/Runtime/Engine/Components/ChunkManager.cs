@@ -125,8 +125,8 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             {
                 if (block_pos[index] >= 0 && block_pos[index] < ChunkSize[index]) continue;
 
-                // This is the error
-                key[index] += block_pos[index] % (ChunkSize[index] - 1) < 0 ? -1 : 1;
+                // This is the error // % (ChunkSize[index] - 1)
+                key[index] += block_pos[index] < 0 ? -1 : 1;
                 block_pos[index] -= key[index] * ChunkSize[index];
             }
 

@@ -21,7 +21,7 @@ namespace CodeBlaze.Vloxy.Engine.Data {
             for (var index = 0; index < 3; index++) {
                 if (block_pos[index] >= 0 && block_pos[index] < _ChunkSize[index]) continue;
 
-                key[index] += block_pos[index] % (_ChunkSize[index] - 1);
+                key[index] += block_pos[index] < 0 ? -1 : 1;
                 block_pos[index] -= key[index] * _ChunkSize[index];
             }
 

@@ -5,14 +5,11 @@ using CodeBlaze.Vloxy.Engine.Utils.Extensions;
 using Runevision.LayerProcGen;
 using Unity.Mathematics;
 using Runevision.Common;
-using CodeBlaze.Vloxy.Engine.Utils.Logger;
 
 namespace CodeBlaze.Vloxy.Game
 {
     public class DecorationChunk : LayerChunk<DecorationLayer, DecorationChunk>
     {
-        private static int3 _ChunkSize = new(32, 256, 32);
-
         public override void Create(int level, bool destroy)
         {
             if (destroy) return;
