@@ -19,4 +19,4 @@ MonoBehaviour:
   FractalGain: 0.5
   FractalLacunarity: 2
   FractalOctaves: 4
-  Scale: 0.3
+  Scale: 0.1

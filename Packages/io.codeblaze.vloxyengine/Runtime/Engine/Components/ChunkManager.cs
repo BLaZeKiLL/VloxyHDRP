@@ -22,8 +22,7 @@ namespace CodeBlaze.Vloxy.Engine.Components {
 
         private int3 ChunkSize;
 
-
-        public ChunkManager(VloxySettings settings) {
+        internal ChunkManager(VloxySettings settings) {
             ChunkSize = settings.Chunk.ChunkSize;
 
             var size = settings.Chunk.DrawDistance.XZSize();
@@ -33,14 +32,9 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             ReadyChunks = new HashSet<int3>(size);
         }
 
-        public int ChunkCount() => Chunks.Count;
+        #region API
 
-        public void Dispose()
-        {
-            foreach (var (_, chunk) in Chunks) {
-                chunk.Dispose();
-            }
-        }
+        public int ChunkCount() => Chunks.Count;
 
         public void AddChunk(int3 position, NativeReference<Chunk> chunk) {
             Chunks[position] = chunk;
@@ -50,45 +44,29 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             ReadyChunks.Add(postion);
         }
 
-        public Block GetBlock(int3 position)
-        {
-            var chunk_pos = VloxyUtils.GetChunkCoords(position);
-            var block_pos = VloxyUtils.GetBlockIndex(position);
-            
-            if (!IsChunkLoaded(chunk_pos)) {
-                VloxyLogger.Warn<ChunkManager>($"Chunk : {chunk_pos} not loaded");
-                return Block.ERROR;
-            }
-            
-            var chunk = GetChunkUnsafe(chunk_pos).Value;
-
-            return (Block) chunk.GetBlock(block_pos);
-        }
-
-        public bool SetBlock(Block block, int3 position)
-        {
-            var chunk_pos = VloxyUtils.GetChunkCoords(position);
-            var block_pos = VloxyUtils.GetBlockIndex(position);
-
-            if (!IsChunkLoaded(chunk_pos)) {
-                VloxyLogger.Warn<ChunkManager>($"Chunk : {chunk_pos} not loaded");
-                return false;
-            }
-
-            var chunk = GetChunkUnsafe(chunk_pos).Value;
-            
-            var result = chunk.SetBlock(block_pos, VloxyUtils.GetBlockId(block));
-
-            // _Chunks[chunk_pos] = chunk;
-
-            // if (remesh && result) ReMeshChunks(position.Int3());
-            
-            return result;
-        }
-
         public NativeReference<Chunk> GetChunkUnsafe(int3 position) => Chunks[position];
 
         public bool IsChunkLoaded(int3 position) => ReadyChunks.Contains(position);
+
+        public void MarkUnready(int3 position) {
+            ReadyChunks.Remove(position);
+        }
+
+        public void DisposeChunk(int3 position) {
+            Chunks.Remove(position, out var chunk);
+            chunk.Dispose(); // TODO : Check dispose
+        }
+
+        #endregion
+
+        #region Internal
+
+        internal void Dispose()
+        {
+            foreach (var (_, chunk) in Chunks) {
+                chunk.Dispose();
+            }
+        }
 
         internal List<int3> GetChunkPositionsInBounds(GridBounds bounds)
         {
@@ -135,17 +113,94 @@ namespace CodeBlaze.Vloxy.Engine.Components {
             }
         }
 
-        internal void RemoveChunks(List<int3> positions) {
-            foreach (var position in positions) {
-                RemoveChunk(position);
+        #endregion
+
+        # region Block API
+
+        public int3 ResolveChunkPos(ref int3 block_pos)
+        {
+            var key = int3.zero;
+
+            for (var index = 0; index < 3; index++)
+            {
+                if (block_pos[index] >= 0 && block_pos[index] < ChunkSize[index]) continue;
+
+                // This is the error
+                key[index] += block_pos[index] % (ChunkSize[index] - 1) < 0 ? -1 : 1;
+                block_pos[index] -= key[index] * ChunkSize[index];
+            }
+
+            key *= ChunkSize;
+
+            return key;
+        }
+
+        public int GetBlockLocal(int3 chunk_pos, int3 block_pos)
+        {
+            int3 key = ResolveChunkPos(ref block_pos);
+
+            try
+            {
+                return GetChunkUnsafe(chunk_pos + key).Value.GetBlock(block_pos);
+            }
+            catch
+            {
+                VloxyLogger.Error<ChunkManager>($"Error getting ref ({chunk_pos + key}) for chunk ({chunk_pos})");
+                return (int)Block.ERROR;
             }
         }
 
-        public void RemoveChunk(int3 position) {
-            Chunks.Remove(position, out var chunk);
-            ReadyChunks.Remove(position);
-            chunk.Dispose(); // TODO : Check dispose
+        public void SetBlockLocal(int3 chunk_pos, int3 block_pos, int block)
+        {
+            int3 key = ResolveChunkPos(ref block_pos);
+
+            try
+            {
+                GetChunkUnsafe(chunk_pos + key).Value.SetBlock(block_pos, block);
+            }
+            catch
+            {
+                VloxyLogger.Error<ChunkManager>($"Error setting ref ({chunk_pos + key}) for chunk ({chunk_pos})");
+            }
         }
+
+        public Block GetBlockGlobal(int3 position)
+        {
+            var chunk_pos = VloxyUtils.GetChunkCoords(position);
+            var block_pos = VloxyUtils.GetBlockIndex(position);
+            
+            if (!IsChunkLoaded(chunk_pos)) {
+                VloxyLogger.Error<ChunkManager>($"Chunk : {chunk_pos} not loaded");
+                return Block.ERROR;
+            }
+            
+            var chunk = GetChunkUnsafe(chunk_pos).Value;
+
+            return (Block) chunk.GetBlock(block_pos);
+        }
+
+        public bool SetBlockGlobal(Block block, int3 position)
+        {
+            var chunk_pos = VloxyUtils.GetChunkCoords(position);
+            var block_pos = VloxyUtils.GetBlockIndex(position);
+
+            if (!IsChunkLoaded(chunk_pos)) {
+                VloxyLogger.Error<ChunkManager>($"Chunk : {chunk_pos} not loaded");
+                return false;
+            }
+
+            var chunk = GetChunkUnsafe(chunk_pos).Value;
+            
+            var result = chunk.SetBlock(block_pos, VloxyUtils.GetBlockId(block));
+
+            // _Chunks[chunk_pos] = chunk;
+
+            // if (remesh && result) ReMeshChunks(position.Int3());
+            
+            return result;
+        }
+
+        #endregion
     }
 
 }

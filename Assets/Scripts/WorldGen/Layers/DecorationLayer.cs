@@ -5,83 +5,102 @@ using CodeBlaze.Vloxy.Engine.Utils.Extensions;
 using Runevision.LayerProcGen;
 using Unity.Mathematics;
 using Runevision.Common;
+using CodeBlaze.Vloxy.Engine.Utils.Logger;
 
 namespace CodeBlaze.Vloxy.Game
 {
     public class DecorationChunk : LayerChunk<DecorationLayer, DecorationChunk>
     {
+        private static int3 _ChunkSize = new(32, 256, 32);
+
         public override void Create(int level, bool destroy)
         {
             if (destroy) return;
 
-            var position = bounds.min.ToInt3XZ();
+            var chunk_pos = bounds.min.ToInt3XZ();
 
-            var chunk = layer.ChunkManager.GetChunkUnsafe(position).Value;
+            var chunk = layer.ChunkManager.GetChunkUnsafe(chunk_pos).Value;
 
-            var height_map = RasterLayer.instance.GetHeightMapForChunk(position); 
+            var height_map = RasterLayer.instance.GetHeightMapForChunk(chunk_pos);
 
             for (var z = 0; z < 32; z++)
             {
                 for (var x = 0; x < 32; x++)
                 {
                     var y = height_map[x, z];
-                        
-                    if (chunk.GetBlock(x, y, z) == (int) Block.STONE) 
+
+                    if (chunk.GetBlock(x, y, z) == (int)Block.STONE)
                     {
                         #region Surface Replacement
-                        chunk.SetBlock(x, y, z, (int) Block.GRASS);
+                        chunk.SetBlock(x, y, z, (int)Block.GRASS);
 
                         for (var y_iter = y - 1; y_iter >= math.max(0, y - 3); y_iter--)
                         {
-                            chunk.SetBlock(x, y_iter, z, (int) Block.DIRT);
+                            chunk.SetBlock(x, y_iter, z, (int)Block.DIRT);
                         }
                         #endregion
 
                         #region Decoration Placement
                         // Block x, y, z = Grass
-                        if (ShouldPlaceTree(x, z)) {
-                            var tree_height = CanPlaceTree(chunk, x, y, z);
-
-                            if (tree_height >= 3 && y + tree_height + 1 < 256) {
-                                // Stump
-                                for (var y_iter = 1; y_iter <= tree_height; y_iter++) {
-                                    chunk.SetBlock(x, y + y_iter, z, (int) Block.WOOD);
-                                }
-
-                                chunk.SetBlock(x, y + tree_height + 1, z, (int) Block.LEAFS);
-                            }
-                        }
-
+                        PlaceTree(chunk_pos, z, x, y);
                         #endregion
                     }
                 }
             }
         }
 
-        private bool ShouldPlaceTree(int x, int z) {
-            var val = ((float) layer.Rng.Range(0, 100, index.x, index.y, 2 * x, 2 * z)) / 100.0f;
+        private void PlaceTree(int3 chunk_pos, int z, int x, int y)
+        {
+            if (ShouldPlaceTree(x, z))
+            {
+                var tree_height = CanPlaceTree(chunk_pos, x, y, z);
+
+                if (tree_height >= 5 && y + tree_height + 1 < 256)
+                {
+                    Tree.Generate(layer.ChunkManager, chunk_pos, tree_height, x, y + 1, z);
+                }
+            }
+        }
+
+        private bool ShouldPlaceTree(int x, int z)
+        {
+            var val = ((float)layer.Rng.Range(0, 100, index.x, index.y, 2 * x, 2 * z)) / 100.0f;
             return val <= layer.WorldGenerator.GetTreeChanceValue(x, z);
         }
 
-        private int CanPlaceTree(Chunk chunk, int x, int y, int z) {
+        private int CanPlaceTree(int3 chunk_pos, int x, int y, int z)
+        {
             int height = 0;
 
-            for (var i = 1; i <= 5; i ++) {
-                if (y + i >= 256) {
-                    return 0;
-                }
-                else if (chunk.GetBlock(x, y + i, z) == (int) Block.AIR) {
-                    height = i;
-                } else {
-                    break;
+            for (var w = -4; w <= 4; w++)
+            {
+                for (var b = -4; b <= 4; b++)
+                {
+                    for (var h = 1; h <= 7; h++)
+                    {
+                        if (y + h >= 256)
+                        {
+                            return 0;
+                        }
+                        else if (layer.ChunkManager.GetBlockLocal(chunk_pos, new int3(x + w, y + h, z + b)) == (int)Block.AIR)
+                        {
+                            height = h;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
                 }
             }
 
-            if (height < 3) {
+            if (height < 5)
+            {
                 return 0;
-            } else {
-                // return 4;
-                return layer.Rng.Range(3, 5, index.x, index.y, 2 * x + 1, 2 * y + 1, 2 * z + 1);
+            }
+            else
+            {
+                return layer.Rng.Range(5, 7, index.x, index.y, 2 * x + 1, 2 * y + 1, 2 * z + 1);
             }
         }
     }
@@ -97,13 +116,14 @@ namespace CodeBlaze.Vloxy.Game
 
         public RandomHash Rng { get; private set; }
 
-        public DecorationLayer() {
+        public DecorationLayer()
+        {
             WorldGenerator = WorldData.Current.Generator;
             ChunkManager = WorldAPI.Current.World.ChunkManager;
 
             Rng = new(WorldData.Current.TreeProfile.Seed);
 
-            AddLayerDependency(new LayerDependency(RasterLayer.instance, 0));
+            AddLayerDependency(new LayerDependency(RasterLayer.instance, 32));
         }
     }
 }

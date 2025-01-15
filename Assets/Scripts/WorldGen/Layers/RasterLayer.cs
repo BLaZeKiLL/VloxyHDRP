@@ -22,12 +22,14 @@ namespace CodeBlaze.Vloxy.Game
 
         public override void Create(int level, bool destroy)
         {
+            var position = bounds.min.ToInt3XZ();
+
             if (destroy) {
                 HeightMap.Clear();
+                layer.ChunkManager.DisposeChunk(position);
                 return;
             }
 
-            var position = bounds.min.ToInt3XZ();
             var chunk = new Chunk(position, new int3(32, 256, 32));
 
             var posX = position.x;
@@ -105,5 +107,6 @@ namespace CodeBlaze.Vloxy.Game
 
             return chunk.HeightMap;
         }
+
     }
 }

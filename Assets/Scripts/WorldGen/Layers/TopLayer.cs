@@ -15,7 +15,7 @@ namespace CodeBlaze.Vloxy.Game {
             var position = bounds.min.ToInt3XZ();
 
             if (destroy) {
-                layer.ChunkManager.RemoveChunk(position);
+                layer.ChunkManager.MarkUnready(position);
                 return;
             }
 
@@ -34,7 +34,7 @@ namespace CodeBlaze.Vloxy.Game {
         public TopLayer() {
             ChunkManager = WorldAPI.Current.World.ChunkManager;
 
-            AddLayerDependency(new LayerDependency(DecorationLayer.instance, 0));
+            AddLayerDependency(new LayerDependency(DecorationLayer.instance, 32));
         }
     }
 }

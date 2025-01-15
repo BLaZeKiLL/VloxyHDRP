@@ -114,9 +114,9 @@ namespace CodeBlaze.Vloxy.Engine.Mesher {
                 for (chunkItr[direction] = -1; chunkItr[direction] < mainAxisLimit;) {
                     var n = 0;
 
-                    // Compute the mask
-                    for (chunkItr[axis2] = 0; chunkItr[axis2] < axis2Limit; ++chunkItr[axis2]) {
-                        for (chunkItr[axis1] = 0; chunkItr[axis1] < axis1Limit; ++chunkItr[axis1]) {
+                    // Compute the mask, I thought changing the chunkItr increment amount could be equivalent to LOD generation
+                    for (chunkItr[axis2] = 0; chunkItr[axis2] < axis2Limit; chunkItr[axis2] += 1) {
+                        for (chunkItr[axis1] = 0; chunkItr[axis1] < axis1Limit; chunkItr[axis1] += 1) {
                             var currentBlock = accessor.GetBlockInChunk(pos, chunkItr);
                             var compareBlock = accessor.GetBlockInChunk(pos, chunkItr + directionMask);
 
