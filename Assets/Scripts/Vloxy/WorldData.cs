@@ -4,13 +4,13 @@ using UnityEngine;
 namespace CodeBlaze.Vloxy.Game
 {
     
-    // [DefaultExecutionOrder(-1000)]
     public class WorldData : SingletonBehaviour<WorldData> 
     {
         [SerializeField] private WorldProfile _WorldProfile;
         [SerializeField] private ShapeProfile _ShapeProfile;
         [SerializeField] private ContinentalProfile _ContinentalProfile;
         [SerializeField] private SquishProfile _SquishProfile;
+        [SerializeField] private TreeProfile _TreeProfile;
 
         private WorldGenerator _Generator;
 
@@ -22,7 +22,8 @@ namespace CodeBlaze.Vloxy.Game
                 _WorldProfile,
                 _ShapeProfile,
                 _ContinentalProfile,
-                _SquishProfile
+                _SquishProfile,
+                _TreeProfile
             );
         }
 
@@ -55,6 +56,14 @@ namespace CodeBlaze.Vloxy.Game
             get => _SquishProfile;
             #if UNITY_EDITOR
             set => _SquishProfile = value;
+            #endif
+        }
+
+        public TreeProfile TreeProfile
+        {
+            get => _TreeProfile;
+            #if UNITY_EDITOR
+            set => _TreeProfile = value;
             #endif
         }
 

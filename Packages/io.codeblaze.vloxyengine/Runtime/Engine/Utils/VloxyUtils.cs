@@ -32,7 +32,9 @@ namespace CodeBlaze.Vloxy.Engine.Utils {
 
         public static int3 GetBlockIndex(Vector3 Position) => GetBlockIndex(Vector3Int.FloorToInt(Position));
 
-        public static int3 GetBlockIndex(Vector3Int Position) {
+        public static int3 GetBlockIndex(Vector3Int Position) => GetBlockIndex(Position.Int3());
+
+        public static int3 GetBlockIndex(int3 Position) {
             var chunk_coords = GetChunkCoords(Position);
 
             return new int3(Position.x - chunk_coords.x, Position.y - chunk_coords.y, Position.z - chunk_coords.z);

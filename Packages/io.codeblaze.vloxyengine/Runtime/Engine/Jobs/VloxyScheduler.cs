@@ -21,7 +21,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs
         private readonly MeshBuildScheduler _MeshBuildScheduler;
         private readonly ColliderBuildScheduler _ColliderBuildScheduler;
 
-        private readonly IChunkManager _ChunkManager;
+        private readonly ChunkManager _ChunkManager;
         private readonly ChunkPool _ChunkPool;
 
         private readonly SimpleFastPriorityQueue<int3, int> _ViewQueue;
@@ -37,7 +37,7 @@ namespace CodeBlaze.Vloxy.Engine.Jobs
             MeshBuildScheduler meshBuildScheduler,
             ColliderBuildScheduler colliderBuildScheduler,
             ChunkPool chunkPool,
-            IChunkManager chunkManager
+            ChunkManager chunkManager
         )
         {
             _MeshBuildScheduler = meshBuildScheduler;
@@ -61,6 +61,9 @@ namespace CodeBlaze.Vloxy.Engine.Jobs
             {
                 var old_chunk_positions = _ChunkManager.GetChunkPositionsInBounds(old_diff);
                 _ChunkPool.ReclaimChunks(old_chunk_positions);
+                // !Fix : This is wrong as view bound as not same as data bound
+                // !as a work around doing this in TopLayer
+                // _ChunkManager.RemoveChunks(old_chunk_positions); 
             }
 
             var new_chunk_positions = _ChunkManager.GetChunkPositionsInBounds(new_diff);

@@ -72,5 +72,9 @@ namespace CodeBlaze.Vloxy.Engine.Utils.Extensions {
         public static Point Point(this int3 vec) => new(vec.x, vec.z);
 
     }
+
+    public static class PointExtensions {
+        public static int3 ToInt3XZ(this Point point) => new(point.x, 0, point.y);
+    }
     
 }

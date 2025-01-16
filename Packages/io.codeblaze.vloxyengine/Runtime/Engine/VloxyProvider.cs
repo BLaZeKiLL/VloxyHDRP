@@ -1,4 +1,5 @@
-﻿using CodeBlaze.Vloxy.Engine.Components;
+﻿using System;
+using CodeBlaze.Vloxy.Engine.Components;
 using CodeBlaze.Vloxy.Engine.Jobs;
 using CodeBlaze.Vloxy.Engine.Jobs.Collider;
 using CodeBlaze.Vloxy.Engine.Jobs.Mesh;
@@ -13,7 +14,7 @@ namespace CodeBlaze.Vloxy.Engine {
 
         public VloxySettings Settings { get; set; }
 
-        protected internal virtual IChunkManager TopLevelChunkManager() => null;
+        protected internal ChunkManager ChunkManager() => new(Settings);
 
         protected internal virtual ChunkPool ChunkPool(Transform transform) => new (transform, Settings);
 
@@ -21,18 +22,17 @@ namespace CodeBlaze.Vloxy.Engine {
             MeshBuildScheduler meshBuildScheduler,
             ColliderBuildScheduler colliderBuildScheduler,
             ChunkPool chunkPool,
-            IChunkManager chunkManager
+            ChunkManager chunkManager
         ) => new(Settings, meshBuildScheduler, colliderBuildScheduler, chunkPool, chunkManager);
 
         protected internal virtual MeshBuildScheduler MeshBuildScheduler(
             ChunkPool chunkPool,
-            IChunkManager chunkManager
+            ChunkManager chunkManager
         ) => new(Settings, chunkPool, chunkManager);
 
         protected internal virtual ColliderBuildScheduler ColliderBuildScheduler(
             ChunkPool chunkPool
         ) => new(chunkPool);
-
     }
 
 }

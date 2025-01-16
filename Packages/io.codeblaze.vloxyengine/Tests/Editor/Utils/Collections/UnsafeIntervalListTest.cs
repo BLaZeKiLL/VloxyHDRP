@@ -31,12 +31,15 @@ namespace CodeBlaze.Vloxy.Engine.Tests.Editor.Utils.Collections {
             list.AddReplicate(3, 5);
             
             var compressed = new UnsafeIntervalList(list, 16, Allocator.Temp);
+
+            Debug.Log(compressed);
             
             Assert.AreEqual(compressed.CompressedLength, 3);
-            
-            Assert.AreEqual(1, compressed.Get(Random.Range(0, 5)));
-            Assert.AreEqual(2, compressed.Get(Random.Range(5, 10)));
-            Assert.AreEqual(3, compressed.Get(Random.Range(10, 15)));
+
+            for (var i = 0; i < 15; i++) 
+            {
+                Assert.AreEqual((i / 5) + 1, compressed.Get(i), $"Failed for i = {i}");
+            }
 
             list.Dispose();
             compressed.Dispose();
@@ -332,6 +335,25 @@ namespace CodeBlaze.Vloxy.Engine.Tests.Editor.Utils.Collections {
             
             Assert.AreEqual(5, compressed.Get(9));
             Assert.AreEqual(5, compressed.CompressedLength);
+            
+            list.Dispose();
+            compressed.Dispose();
+        }
+
+        [Test]
+        public void ShouldSet_LastItemInLastInterval() {
+            var list = new NativeList<int>(16, Allocator.Temp);
+            
+            list.AddReplicate(1, 5);
+            list.AddReplicate(2, 1);
+            list.AddReplicate(1, 5);
+
+            var compressed = new UnsafeIntervalList(list, 16, Allocator.Temp);
+
+            compressed.Set(10, 5);
+            
+            Assert.AreEqual(5, compressed.Get(10));
+            Assert.AreEqual(4, compressed.CompressedLength);
             
             list.Dispose();
             compressed.Dispose();

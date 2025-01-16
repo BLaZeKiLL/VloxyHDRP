@@ -4,6 +4,7 @@ using System.Text;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using UnityEngine;
 
 namespace CodeBlaze.Vloxy.Engine.Utils.Collections {
 
@@ -86,7 +87,7 @@ namespace CodeBlaze.Vloxy.Engine.Utils.Collections {
         /// <exception cref="IndexOutOfRangeException">Debug only</exception>
         public int Get(int index) {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (index >= Length) throw new IndexOutOfRangeException($"{index} is out of range for the given data of length {Length}");
+            if (index >= Length) throw new IndexOutOfRangeException($"GET: {index} is out of range for the given data of length {Length}");
 #endif
             return Internal[BinarySearch(index)].ID;
         }
@@ -101,7 +102,7 @@ namespace CodeBlaze.Vloxy.Engine.Utils.Collections {
         /// <exception cref="IndexOutOfRangeException">Debug only</exception>
         public bool Set(int index, int id) {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-            if (index >= Length) throw new IndexOutOfRangeException($"{index} is out of range for the given data of length {Length}");
+            if (index >= Length) throw new IndexOutOfRangeException($"SET: {index} is out of range for the given data of length {Length}");
 #endif
             
             var node_index = BinarySearch(index);
@@ -232,6 +233,14 @@ namespace CodeBlaze.Vloxy.Engine.Utils.Collections {
 
             while (min <= max) {
                 var mid = (max + min) / 2;
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                if (mid >= Internal.Length) {
+                    Debug.Log(this);
+                    throw new IndexOutOfRangeException($"BS: {mid} ({max}, {min}) for index: {index} is out of range for the given data of length {Length}, compressed : {CompressedLength}");
+                }
+#endif
+
                 var count = Internal[mid].Count;
 
                 if (index == count) return mid + 1;

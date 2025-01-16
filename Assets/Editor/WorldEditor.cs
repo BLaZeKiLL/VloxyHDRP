@@ -10,16 +10,19 @@ namespace CodeBlaze.Editor
         private ShapeProfile ShapeProfileInstance;
         private ContinentalProfile ContinentalProfileInstance;
         private SquishProfile SquishProfileInstance;
+        private TreeProfile TreeProfileInstance;
 
         private SerializedObject WorldProfileObject;
         private SerializedObject ShapeProfileObject;
         private SerializedObject ContinentalProfileObject;
         private SerializedObject SquishProfileObject;
+        private SerializedObject TreeProfileObject;
 
         private const string WorldProfileKey = "WorldEditor_WorldProfileKey";
         private const string ShapeProfileKey = "WorldEditor_ShapeProfile";
         private const string ContinentalProfileKey = "WorldEditor_ContinentalProfile";
         private const string SquishProfileKey = "WorldEditor_SquishProfile";
+        private const string TreeProfileKey = "WorldEditor_TreeProfile";
 
         private Vector2 scrollPosition; // Scroll position for the scroll view
 
@@ -38,6 +41,7 @@ namespace CodeBlaze.Editor
             ShapeProfileInstance = LoadObjectFromPrefs<ShapeProfile>(ShapeProfileKey);
             ContinentalProfileInstance = LoadObjectFromPrefs<ContinentalProfile>(ContinentalProfileKey);
             SquishProfileInstance = LoadObjectFromPrefs<SquishProfile>(SquishProfileKey);
+            TreeProfileInstance = LoadObjectFromPrefs<TreeProfile>(TreeProfileKey);
 
             // Update serialized objects
             UpdateSerializedObjects();
@@ -49,6 +53,7 @@ namespace CodeBlaze.Editor
             SaveObjectToPrefs(ShapeProfileInstance, ShapeProfileKey);
             SaveObjectToPrefs(ContinentalProfileInstance, ContinentalProfileKey);
             SaveObjectToPrefs(SquishProfileInstance, SquishProfileKey);
+            SaveObjectToPrefs(TreeProfileInstance, TreeProfileKey);
         }
 
         private void OnGUI()
@@ -90,6 +95,9 @@ namespace CodeBlaze.Editor
             SquishProfileInstance = (SquishProfile)EditorGUILayout.ObjectField(
                 "Squish Profile", SquishProfileInstance, typeof(SquishProfile), false
             );
+            TreeProfileInstance = (TreeProfile)EditorGUILayout.ObjectField(
+                "Tree Profile", TreeProfileInstance, typeof(TreeProfile), false
+            );
         }
 
         private void DrawObjectEditors()
@@ -123,6 +131,14 @@ namespace CodeBlaze.Editor
                 GUILayout.Label("Squish Profile", EditorStyles.boldLabel);
                 DrawSerializedProperties(SquishProfileObject);
             }
+
+            GUILayout.Space(16);
+
+            if (TreeProfileInstance != null)
+            {
+                GUILayout.Label("Tree Profile", EditorStyles.boldLabel);
+                DrawSerializedProperties(TreeProfileObject);
+            }
         }
 
         private void UpdateSerializedObjects()
@@ -138,6 +154,10 @@ namespace CodeBlaze.Editor
 
             if (SquishProfileInstance != null && (SquishProfileObject == null || SquishProfileObject.targetObject != SquishProfileInstance))
                 SquishProfileObject = new SerializedObject(SquishProfileInstance);
+
+            if (TreeProfileInstance != null && (TreeProfileObject == null ||
+            TreeProfileObject.targetObject != TreeProfileInstance))
+                TreeProfileObject = new SerializedObject(TreeProfileInstance);
         }
 
         private void UpdateWorldProfiles()
@@ -168,6 +188,11 @@ namespace CodeBlaze.Editor
             if (SquishProfileInstance != null)
             {
                 world_data.SquishProfile = SquishProfileInstance;
+            }
+
+            if (TreeProfileInstance != null)
+            {
+                world_data.TreeProfile = TreeProfileInstance;
             }
         }
 

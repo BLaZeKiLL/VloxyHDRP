@@ -18,11 +18,15 @@ namespace CodeBlaze.Vloxy.Game
         private readonly BakedAnimationCurve _SquishCurve;
         private readonly SquishProfile _SquishProfile;
 
+        private readonly FastNoiseLite _TreeNoise;
+        private readonly TreeProfile _TreeProfile;
+
         public WorldGenerator(
             WorldProfile worldProfile,
             ShapeProfile shapeNoiseProfile,
             ContinentalProfile continentalNoiseProfile,
-            SquishProfile squishNoiseProfile
+            SquishProfile squishNoiseProfile,
+            TreeProfile treeProfile
         )
         {
             _WorldProfile = worldProfile;
@@ -37,6 +41,9 @@ namespace CodeBlaze.Vloxy.Game
             _SquishProfile = squishNoiseProfile;
             _SquishNoise = FastNoiseLiteExtensions.FromProfile(squishNoiseProfile);
             _SquishCurve = new(squishNoiseProfile.Curve, squishNoiseProfile.CurveResolution);
+
+            _TreeProfile = treeProfile;
+            _TreeNoise = FastNoiseLiteExtensions.FromProfile(treeProfile);
         }
 
         public int GetBlock(int x, int y, int z)
@@ -49,7 +56,7 @@ namespace CodeBlaze.Vloxy.Game
 
             if (density + mod > 0f)
             {
-                return (int)Block.STONE;
+                return (int) Block.STONE;
             }
             else
             {
@@ -79,6 +86,11 @@ namespace CodeBlaze.Vloxy.Game
                 _SquishCurve, 
                 _SquishProfile.Scale
             );
+        }
+
+        public float GetTreeChanceValue(float x, float z) 
+        {
+            return _TreeNoise.NoiseScaleShiftFloat(x, z, 0.5f, 0.5f) * _TreeProfile.Scale;
         }
     }
 }
