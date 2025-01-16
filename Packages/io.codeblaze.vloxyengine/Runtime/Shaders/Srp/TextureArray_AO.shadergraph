@@ -1144,7 +1144,7 @@
     "m_TessellationMaxDisplacement": 0.009999999776482582,
     "m_DebugSymbols": false,
     "m_Version": 2,
-    "inspectorFoldoutMask": 0
+    "inspectorFoldoutMask": 1
 }
 
 {
@@ -1983,7 +1983,7 @@
     "m_Title": "AO Mixing",
     "m_Position": {
         "x": -776.0,
-        "y": -286.0
+        "y": -286.00006103515627
     }
 }
 
@@ -1994,7 +1994,7 @@
     "m_Title": "AO Interpolation",
     "m_Position": {
         "x": -1923.0001220703125,
-        "y": -106.0
+        "y": -106.00007629394531
     }
 }
 

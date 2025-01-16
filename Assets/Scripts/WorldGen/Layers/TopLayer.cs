@@ -15,11 +15,15 @@ namespace CodeBlaze.Vloxy.Game {
             var position = bounds.min.ToInt3XZ();
 
             if (destroy) {
-                layer.ChunkManager.MarkUnready(position);
+                MainThreadActionQueue.Enqueue(() => {
+                    layer.ChunkManager.MarkUnready(position);
+                });
                 return;
             }
 
-            layer.ChunkManager.MarkChunkReady(position);
+            MainThreadActionQueue.Enqueue(() => {
+                layer.ChunkManager.MarkChunkReady(position);
+            });
         }
     }
 
