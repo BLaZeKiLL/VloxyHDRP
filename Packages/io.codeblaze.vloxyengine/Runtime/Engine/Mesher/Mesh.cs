@@ -20,13 +20,17 @@ namespace CodeBlaze.Vloxy.Engine.Mesher {
     internal struct MeshBuffer {
 
         public NativeList<Vertex> VertexBuffer;
-        public NativeList<int> IndexBuffer0;
-        public NativeList<int> IndexBuffer1;
+        public NativeList<int> IndexBuffer0; // Solid
+        public NativeList<int> IndexBuffer1; // Water
+        public NativeList<int> IndexBuffer2; // Transparent
+        public NativeList<int> IndexBuffer3; // Folliage (X Mesh)
 
         internal void Dispose() {
             VertexBuffer.Dispose();
             IndexBuffer0.Dispose();
             IndexBuffer1.Dispose();
+            IndexBuffer2.Dispose();
+            IndexBuffer3.Dispose();
         }
 
     }

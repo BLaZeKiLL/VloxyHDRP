@@ -44,7 +44,7 @@ namespace CodeBlaze.Vloxy.Engine.Mesher {
                 neighbor.Normal == current.Normal &&
 
                 // Don't merge visible fluid (mesh index = 1) faces
-                current.Block != (int) Block.WATER &&
+                current.MeshIndex != 1 &&
 
                 // AO Comparison, int4 equality check returns bool4
                 neighbor.AO[0] == current.AO[0] &&
@@ -75,8 +75,9 @@ namespace CodeBlaze.Vloxy.Engine.Mesher {
         [BurstCompile]
         private static byte GetMeshIndex(int block) {
             return block switch {
-                (int) Block.AIR => 2,
+                (int) Block.AIR => 9,
                 (int) Block.WATER => 1,
+                (int) Block.LEAFS => 2,
                 _ => 0
             };
         }
@@ -88,7 +89,9 @@ namespace CodeBlaze.Vloxy.Engine.Mesher {
             var mesh = new MeshBuffer {
                 VertexBuffer = new NativeList<Vertex>(Allocator.Temp),
                 IndexBuffer0 = new NativeList<int>(Allocator.Temp),
-                IndexBuffer1 = new NativeList<int>(Allocator.Temp)
+                IndexBuffer1 = new NativeList<int>(Allocator.Temp),
+                IndexBuffer2 = new NativeList<int>(Allocator.Temp),
+                IndexBuffer3 = new NativeList<int>(Allocator.Temp),
             };
 
             var vertex_count = 0;
@@ -396,73 +399,76 @@ namespace CodeBlaze.Vloxy.Engine.Mesher {
                 indexBuffer.Add(vertex_count + 2 - mask.Normal); // 1 3
                 indexBuffer.Add(vertex_count + 2 + mask.Normal); // 3 1
             }
+
+            return 4;
             
-            if ((normal != new int3(0, 1, 0)).AndReduce()) return 4;
+            // TODO : Why do we add the other face ?
+            // if ((normal != new int3(0, 1, 0)).AndReduce()) return 4;
 
-            normal *= -1;
+            // normal *= -1;
             
-            // 1 Bottom Left
-            var vertex5 = new Vertex {
-                Position = v1,
-                Normal = normal,
-                UV0 = uv1,
-                UV1 = new float2(0, 0),
-                UV2 = mask.AO
-            };
+            // // 1 Bottom Left
+            // var vertex5 = new Vertex {
+            //     Position = v1,
+            //     Normal = normal,
+            //     UV0 = uv1,
+            //     UV1 = new float2(0, 0),
+            //     UV2 = mask.AO
+            // };
 
-            // 2 Top Left
-            var vertex6 = new Vertex {
-                Position = v2,
-                Normal = normal,
-                UV0 = uv2,
-                UV1 = new float2(0, 1),
-                UV2 = mask.AO
-            };
+            // // 2 Top Left
+            // var vertex6 = new Vertex {
+            //     Position = v2,
+            //     Normal = normal,
+            //     UV0 = uv2,
+            //     UV1 = new float2(0, 1),
+            //     UV2 = mask.AO
+            // };
 
-            // 3 Bottom Right
-            var vertex7 = new Vertex {
-                Position = v3,
-                Normal = normal,
-                UV0 = uv3,
-                UV1 = new float2(1, 0),
-                UV2 = mask.AO
-            };
+            // // 3 Bottom Right
+            // var vertex7 = new Vertex {
+            //     Position = v3,
+            //     Normal = normal,
+            //     UV0 = uv3,
+            //     UV1 = new float2(1, 0),
+            //     UV2 = mask.AO
+            // };
 
-            // 4 Top Right
-            var vertex8 = new Vertex {
-                Position = v4,
-                Normal = normal,
-                UV0 = uv4,
-                UV1 = new float2(1, 1),
-                UV2 = mask.AO
-            };
+            // // 4 Top Right
+            // var vertex8 = new Vertex {
+            //     Position = v4,
+            //     Normal = normal,
+            //     UV0 = uv4,
+            //     UV1 = new float2(1, 1),
+            //     UV2 = mask.AO
+            // };
             
-            mesh.VertexBuffer.Add(vertex5);
-            mesh.VertexBuffer.Add(vertex6);
-            mesh.VertexBuffer.Add(vertex7);
-            mesh.VertexBuffer.Add(vertex8);
+            // mesh.VertexBuffer.Add(vertex5);
+            // mesh.VertexBuffer.Add(vertex6);
+            // mesh.VertexBuffer.Add(vertex7);
+            // mesh.VertexBuffer.Add(vertex8);
 
-            vertex_count += 4;
+            // vertex_count += 4;
             
-            if (mask.AO[0] + mask.AO[3] > mask.AO[1] + mask.AO[2]) { // + -
-                indexBuffer.Add(vertex_count + 2 + mask.Normal); // 3 1
-                indexBuffer.Add(vertex_count + 2 - mask.Normal); // 1 3
-                indexBuffer.Add(vertex_count); // 0 0
+            // if (mask.AO[0] + mask.AO[3] > mask.AO[1] + mask.AO[2]) { // + -
+            //     indexBuffer.Add(vertex_count + 2 + mask.Normal); // 3 1
+            //     indexBuffer.Add(vertex_count + 2 - mask.Normal); // 1 3
+            //     indexBuffer.Add(vertex_count); // 0 0
                 
-                indexBuffer.Add(vertex_count + 1 - mask.Normal); // 0 2
-                indexBuffer.Add(vertex_count + 1 + mask.Normal); // 2 0
-                indexBuffer.Add(vertex_count + 3); // 3 3
-            } else { // + -
-                indexBuffer.Add(vertex_count + 1 - mask.Normal); // 0 2
-                indexBuffer.Add(vertex_count + 1 + mask.Normal); // 2 0
-                indexBuffer.Add(vertex_count + 1); // 1 1
+            //     indexBuffer.Add(vertex_count + 1 - mask.Normal); // 0 2
+            //     indexBuffer.Add(vertex_count + 1 + mask.Normal); // 2 0
+            //     indexBuffer.Add(vertex_count + 3); // 3 3
+            // } else { // + -
+            //     indexBuffer.Add(vertex_count + 1 - mask.Normal); // 0 2
+            //     indexBuffer.Add(vertex_count + 1 + mask.Normal); // 2 0
+            //     indexBuffer.Add(vertex_count + 1); // 1 1
                 
-                indexBuffer.Add(vertex_count + 2 + mask.Normal); // 3 1
-                indexBuffer.Add(vertex_count + 2 - mask.Normal); // 1 3
-                indexBuffer.Add(vertex_count + 2); // 2 2
-            }
+            //     indexBuffer.Add(vertex_count + 2 + mask.Normal); // 3 1
+            //     indexBuffer.Add(vertex_count + 2 - mask.Normal); // 1 3
+            //     indexBuffer.Add(vertex_count + 2); // 2 2
+            // }
 
-            return 8;
+            // return 8;
         }
 
         [BurstCompile]

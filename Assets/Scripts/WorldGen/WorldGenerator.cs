@@ -56,7 +56,7 @@ namespace CodeBlaze.Vloxy.Game
 
             if (density + mod > 0f)
             {
-                return (int)Block.STONE;
+                return (int) Block.STONE;
             }
             else
             {
