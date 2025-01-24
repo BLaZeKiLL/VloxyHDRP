@@ -24,9 +24,9 @@ MonoBehaviour:
     Materials:
     - {fileID: 2100000, guid: 4adecf602abe1664ab5a0cb24b2ea23a, type: 2}
     - {fileID: 2100000, guid: b458752dfcecd44ea8cc5cc865912422, type: 2}
+    - {fileID: 2100000, guid: 146f5eec94ba24a508d6b28871018b56, type: 2}
     CastShadows: 1
   Scheduler:
     MeshingBatchSize: 4
-    StreamingBatchSize: 8
     ColliderBatchSize: 6
     TickRate: 1

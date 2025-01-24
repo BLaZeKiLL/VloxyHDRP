@@ -38,23 +38,37 @@ namespace CodeBlaze.Vloxy.Engine.Jobs.Mesh {
             // Index Buffer
             var index0Count = meshBuffer.IndexBuffer0.Length;
             var index1Count = meshBuffer.IndexBuffer1.Length;
+            var index2Count = meshBuffer.IndexBuffer2.Length;
+            var index3Count = meshBuffer.IndexBuffer3.Length;
             
-            mesh.SetIndexBufferParams(index0Count + index1Count, IndexFormat.UInt32);
+            mesh.SetIndexBufferParams(index0Count + index1Count + index2Count + index3Count, IndexFormat.UInt32);
+
+            // Sub Mesh
+            mesh.subMeshCount = 4;
 
             var indexBuffer = mesh.GetIndexData<int>();
             
             NativeArray<int>.Copy(meshBuffer.IndexBuffer0.AsArray(), 0, indexBuffer, 0, index0Count);
-            if (index1Count > 1)
-                NativeArray<int>.Copy(meshBuffer.IndexBuffer1.AsArray(), 0, indexBuffer, index0Count, index1Count);
-
-            // Sub Mesh
-            mesh.subMeshCount = 2;
-            
             var descriptor0 = new SubMeshDescriptor(0, index0Count);
-            var descriptor1 = new SubMeshDescriptor(index0Count, index1Count);
-            
             mesh.SetSubMesh(0, descriptor0, MeshUpdateFlags.DontRecalculateBounds);
-            mesh.SetSubMesh(1, descriptor1, MeshUpdateFlags.DontRecalculateBounds);
+
+            if (index1Count > 1) {
+                NativeArray<int>.Copy(meshBuffer.IndexBuffer1.AsArray(), 0, indexBuffer, index0Count, index1Count);
+                var descriptor = new SubMeshDescriptor(index0Count, index1Count);
+                mesh.SetSubMesh(1, descriptor, MeshUpdateFlags.DontRecalculateBounds);
+            }
+
+            if (index2Count > 1) {
+                NativeArray<int>.Copy(meshBuffer.IndexBuffer2.AsArray(), 0, indexBuffer, index0Count + index1Count, index2Count);
+                var descriptor = new SubMeshDescriptor(index0Count + index1Count, index2Count);
+                mesh.SetSubMesh(2, descriptor, MeshUpdateFlags.DontRecalculateBounds);
+            }
+
+            // if (index3Count > 1) {
+            //     NativeArray<int>.Copy(meshBuffer.IndexBuffer3.AsArray(), 0, indexBuffer, index0Count + index1Count + index2Count, index3Count);
+            //     var descriptor = new SubMeshDescriptor(index0Count + index1Count + index2Count, index3Count);
+            //     mesh.SetSubMesh(3, descriptor, MeshUpdateFlags.DontRecalculateBounds);
+            // }
             
             Results.TryAdd(position, new int2(index, vertexCount));
 
