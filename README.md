@@ -1,44 +1,44 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyEngineHDRP/main/.github/assets/vloxy_logo.svg" width=256>
+  <img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyHDRP/main/.github/assets/vloxy_logo.svg" width=256>
   <h1 align="center">Vloxy Engine</h1>
 </p>
 
 <p align="center">
-  <a href="https://github.com/BLaZeKiLL/VloxyEngineHDRP/releases">
-    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/BLaZeKiLL/VloxyEngineHDRP">
+  <a href="https://github.com/BLaZeKiLL/VloxyHDRP/releases">
+    <img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/BLaZeKiLL/VloxyHDRP">
   </a>
   <a href="https://openupm.com/packages/io.codeblaze.vloxyengine/">
     <img alt="OpenUPM" src="https://img.shields.io/npm/v/io.codeblaze.vloxyengine?label=openupm&amp;registry_uri=https://package.openupm.com" />
   </a>
-  <a href="https://github.com/BLaZeKiLL/VloxyEngineHDRP/actions">
-    <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/BLaZeKiLL/VloxyEngineHDRP/build.yml?branch=main">
+  <a href="https://github.com/BLaZeKiLL/VloxyHDRP/actions">
+    <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/BLaZeKiLL/VloxyHDRP/build.yml?branch=main">
   </a>
   <a href="https://blazekill.github.io/vloxy-docs/">
     <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/BLaZeKiLL/vloxy-docs/deploy.yml?branch=master&label=docs">
   </a>
-  <a href="https://github.com/BLaZeKiLL/VloxyEngineHDRP/blob/main/LICENSE.md">
-    <img alt="GitHub" src="https://img.shields.io/github/license/BLaZeKiLL/VloxyEngineHDRP">
+  <a href="https://github.com/BLaZeKiLL/VloxyHDRP/blob/main/LICENSE.md">
+    <img alt="GitHub" src="https://img.shields.io/github/license/BLaZeKiLL/VloxyHDRP">
   </a>
   <a href="https://www.youtube.com/c/CodeBlazeX">
     <img alt="YouTube Channel Subscribers" src="https://img.shields.io/youtube/channel/subscribers/UC_qfPIYfXOvg0SDAc8Z68WA?label=CodeBlaze&style=social">
   </a>
 </p>
 
-> :warning: **VloxyEngineHDRP**: Is the next version of [VloxyEngine]() and is unstable with some features lacking, using the original engine is recommended for production uses.
+> :warning: **VloxyHDRP**: Is the next version of [VloxyEngine](https://github.com/BLaZeKiLL/VloxyEngine) and is unstable with some features lacking, using the original engine is recommended for production uses.
 
 Performance oriented voxel engine for Unity. Latest release for the engine and sandbox application can be found [here](https://github.com/BLaZeKiLL/VloxyEngine/releases).
 
-<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyEngineHDRP/main/.github/assets/1.png">
+<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyHDRP/main/.github/assets/1.png">
 
-<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyEngineHDRP/main/.github/assets/2.png">
+<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyHDRP/main/.github/assets/2.png">
 
-<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyEngineHDRP/main/.github/assets/3.png">
+<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyHDRP/main/.github/assets/3.png">
 
-<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyEngineHDRP/main/.github/assets/4.png">
+<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyHDRP/main/.github/assets/4.png">
 
-<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyEngineHDRP/main/.github/assets/5.png">
+<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyHDRP/main/.github/assets/5.png">
 
-<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyEngineHDRP/main/.github/assets/6.png">
+<img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyHDRP/main/.github/assets/6.png">
 
 ## Goals
 
