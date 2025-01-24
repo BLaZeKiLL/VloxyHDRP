@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/BLaZeKiLL/VloxyHDRP/main/.github/assets/vloxy_logo.svg" width=256>
-  <h1 align="center">Vloxy Engine</h1>
+  <h1 align="center">Vloxy Engine HDRP</h1>
 </p>
 
 <p align="center">
