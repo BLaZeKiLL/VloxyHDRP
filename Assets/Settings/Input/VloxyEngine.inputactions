@@ -944,7 +944,7 @@
                     "name": "Stats",
                     "type": "Button",
                     "id": "18157079-1706-40d9-a412-e34878104b35",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
